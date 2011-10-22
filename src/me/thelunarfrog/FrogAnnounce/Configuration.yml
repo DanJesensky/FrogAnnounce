@@ -1,0 +1,43 @@
+#
+#Remember, this file MUST be in UTF-8 format! If you include anything like Japanese symbols or a's with tildes over them (Portuguese), they turn out in gibberish or cause errors.
+#
+Settings:
+    #Interval in minutes
+    Interval: 5
+    #true: random | false: consecutive
+    Random: false
+    #true: Permissions system will be used. | false: Only OPs will be able to use.
+    Permission: true
+Announcer:
+    #Tag for Announcement. May be empty: ''
+    Tag: '&AQUA;[Announcement]'
+    #true: certain groups in permissions | false: to all
+    ToGroups: false
+    #Groups to send announcement. Only if ToGroups is true.
+    Groups:
+        - 'Default'
+    #Things you want the plugin to say. Remember, only spaces may be used in a YML configuration file. Using the 'TAB' key will create errors. So will spaces after the quotation marks.
+    #If you have problems check, the syntax here:
+    #http://yaml-online-parser.appspot.com/
+    #Here's a list of colours you can use with this plugin:
+    #&AQUA;"
+    #&BLACK;
+    #&BLUE;
+    #&DARK_AQUA;
+    #&DARK_BLUE;
+    #&DARK_GRAY;
+    #&DARK_GREEN;
+    #&DARK_PURPLE;
+    #&DARK_RED;
+    #&GOLD;
+    #&GRAY;
+    #&GREEN;
+    #&LIGHT_PURPLE;
+    #&RED;
+    #&WHITE;
+    #&YELLOW;
+    #And all of the default MineCraft colour codes, followed by a semi-colon.
+    #Yes, you must keep the ampersand (&) and the semi-colon (;).
+    Strings:
+        - "&DARK_RED;Running CraftBukkit server with &GOLD;FrogAnnounce."
+        - "&DARK_GREEN;Developed by TheLunarFrog."
