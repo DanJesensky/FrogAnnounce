@@ -29,6 +29,7 @@ public class FrogAnnounce extends JavaPlugin
 	private static boolean isScheduling = false, isRandom, permissionsEnabled = false, permission, toGroups;
 	private static List<String> strings, Groups;
 	public static PermissionHandler Permissions;
+	public static FrogAnnounce plugin;
 
     @Override
 	public void onEnable()
@@ -82,7 +83,19 @@ public class FrogAnnounce extends JavaPlugin
     	}
     }
     
-    private void scheduleOff(boolean Disabling, Player player){
+    private void OptOut(boolean OptOut, Player player){
+    	if(OptOut= true)
+    	{
+    		//getServer().getScheduler().cancelTasks();
+    		FrogAnnounce.plugin.turnOff(player);
+    	}
+    }
+    
+    private void turnOff(Player player) {
+		getServer().getScheduler().cancelTasks((FrogAnnounce) player);
+	}
+
+	private void scheduleOff(boolean Disabling, Player player){
     	if(isScheduling){
     		getServer().getScheduler().cancelTask(taskId);
     		if(player != null) player.sendMessage(ChatColor.GREEN+"Scheduling finished!");
@@ -171,36 +184,51 @@ public class FrogAnnounce extends JavaPlugin
     @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
-    	String commandName = cmd.getName();
-    	if(sender instanceof Player)
-    	{
+//    	String commandName = cmd.getName();
+//    	if(sender instanceof Player)
+//    	{
     		Player player = (Player)sender;
-    		if(commandName.equalsIgnoreCase("f-announce"))
+    		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce"))
     		{
-    			if(permission(player, "announcer.admin", player.isOp())) {
+    			if(permission(player, "frogannounce.admin", player.isOp())) {
 	    			try {
-	    				if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
-	    					auctionHelp(player);
-	    				else if(args[0].equalsIgnoreCase("off"))
+//	    				if(args[0].equalsIgnoreCase(""))
+//	    						OptOut(isEnabled(), player);
+//	    				if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
+//	    					auctionHelp(player);
+	    				if(args[0].equalsIgnoreCase("off"))
 	    					scheduleOff(false, player);
 	    				else if(args[0].equalsIgnoreCase("on"))
 	    					isScheduling = scheduleOn(player);
-	    				else if(args[0].equalsIgnoreCase("interval") || args[0].equalsIgnoreCase("i"))
+	    				else if(args[0].equalsIgnoreCase("interval") || args[0].equalsIgnoreCase("int"))
 	    					setInterval(args, player);
-	    				else if(args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("r"))
+	    				else if(args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("rand"))
 	    					setRandom(args, player);
 	    				else if(args[0].equalsIgnoreCase("restart") || args[0].equalsIgnoreCase("reload"))
 	    					scheduleRestart(player);
 	    				return true;
-	    			} catch(ArrayIndexOutOfBoundsException ex) {
+	    			}
+	    			catch(ArrayIndexOutOfBoundsException ex) {
 	    				return false;
 	    			}
-    			} else {
+    			}
+    			if(permission(player, "frogannounce", player.isOp()) || permission(player, "frogannounce.admin", player.isOp())){
+    				if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
+    					auctionHelp(player);
+    				}
+    			if(permission(player, "frogannounce.optout", player.isOp()) || permission(player, "frogannounce.admin", player.isOp())){
+//    				try {
+    					if(args[1].equalsIgnoreCase("optout") || args[1].equalsIgnoreCase("oo")){
+    						OptOut(isEnabled(), player);
+    			}
+//    			}
+    			}
+    			else {
     				player.sendMessage(ChatColor.RED + "You do not have the permission level required to use this command!");
     				return true;
     	    	}
     		}
-    	}
+//    	}
     	return false;
     }
     
@@ -211,12 +239,17 @@ public class FrogAnnounce extends JavaPlugin
     	String helpCommandColor = ChatColor.AQUA.toString();
     	String helpObligatoryColor = ChatColor.DARK_RED.toString();
         player.sendMessage(helpMainColor + " * " + auctionStatusColor + "Help for FrogAnnounce" + helpMainColor + " * ");
-        player.sendMessage(helpCommandColor + "/f-announce help" + or + helpCommandColor + "?" + helpMainColor + " - Show this message.");
-        player.sendMessage(helpCommandColor + "/f-announce on" + helpMainColor + " - Start FrogAnnounce.");
-        player.sendMessage(helpCommandColor + "/f-announce off" + helpMainColor + " - Stop FrogAnnounce.");
-        player.sendMessage(helpCommandColor + "/f-announce restart" + helpMainColor + " - Restart FrogAnnounce.");
-        player.sendMessage(helpCommandColor + "/f-announce interval" + or + helpCommandColor + "i" + helpObligatoryColor + " <minutes>" + helpMainColor + " - Set the interval time.");
-        player.sendMessage(helpCommandColor + "/f-announce random" + or + helpCommandColor + "r" + helpObligatoryColor + " <on|off>" + helpMainColor + " - Set random or consecutive.");
+        player.sendMessage(helpCommandColor + "/fa help" + or + helpCommandColor + "?" + helpMainColor + " - Show this message.");
+        player.sendMessage(helpCommandColor + "/fa on" + helpMainColor + " - Start FrogAnnounce.");
+        player.sendMessage(helpCommandColor + "/fa off" + helpMainColor + " - Stop FrogAnnounce.");
+        player.sendMessage(helpCommandColor + "/fa restart" + helpMainColor + " - Restart FrogAnnounce.");
+        player.sendMessage(helpCommandColor + "/fa interval" + or + helpCommandColor + "i" + helpObligatoryColor + " <minutes>" + helpMainColor + " - Set the interval time.");
+        player.sendMessage(helpCommandColor + "/fa random" + or + helpCommandColor + "r" + helpObligatoryColor + " <on|off>" + helpMainColor + " - Set random or consecutive.");
+        player.sendMessage(helpCommandColor + "/fa optout" + or + helpCommandColor + "oo" + helpMainColor + " - Opt-out of all announcements.");
+//        player.sendMessage(helpCommandColor + "/fa add" + helpObligatoryColor + "<on|off>" + helpMainColor + " - Opt-in to announcements (off) or opt-out (on).");
+//        player.sendMessage(helpCommandColor + "/fa remove" + helpObligatoryColor + "<on|off>" + helpMainColor + " - .");
+        //player.sendMessage(helpCommandColor + "/fa ---" + helpObligatoryColor + "<1|2>" + helpMainColor + " - .");
+        //player.sendMessage(helpCommandColor + "/fa ---" + helpObligatoryColor + "<1|2>" + helpMainColor + " - .");
     }
     
 	private void load()
