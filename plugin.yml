@@ -1,3 +1,84 @@
 name: FrogAnnounce
 main: me.thelunarfrog.FrogAnnounce.FrogAnnounce
-version: 1.0.0
+authors: [TheLunarFrog]
+version: 1.1
+commands:
+    fa help:
+        description:
+        usage: /<command> help
+    frogannounce help:
+        description:
+        usage: /<command> help
+    fa:
+        description: Get help for FrogAnnounce. Short version of /frogannounce
+        usage: /<command>
+    frogannounce:
+        description: Get help for FrogAnnounce. A shorter version is /fa.
+        usage: /<command>
+    frogannounce interval:
+        description: Set the plugin to announce per the specified interval.
+        usage: /<command> <interval|int> <minutes>
+    fa interval:
+        description: Set the plugin to announce per the specified interval.
+        usage: /<command> <interval|int> <minutes>
+    fa restart:
+        description: Reload FrogAnnounce.
+        usage: /<command> <restart|reload>
+    frogannounce restart: 
+        description: Reload FrogAnnounce.
+        usage: /<command> <restart|reload>
+    fa on:
+        description: Turn FrogAnnounce on or off.
+        usage: /<command> <on|off>
+    frogannounce on: 
+        description: Turn FrogAnnounce on or off.
+        usage: /<command> <on|off>
+    fa off:
+        description: Turn FrogAnnounce on or off.
+        usage: /<command> <on|off>
+    frogannounce off: 
+        description: Turn FrogAnnounce on or off.
+        usage: /<command> <on|off>
+    frogannounce random:
+        description: Toggle the messages to/from random order, instead of consecutive from configuration.
+        usage: /<command> <random|rand>
+    fa random:
+        description: Toggle the messages to/from random order, instead of consecutive from configuration.
+        usage: /<command> <random|rand>
+    fa optout:
+       description: Opt out of announcements.
+       usage: /<command> <optout> <on|off>
+    frogannounce optout:
+       description: Opt out of announcements. 
+       usage: /<command> <optout> <on|off>
+permissions:
+    frogannounce.*:
+        description: Gives full access
+        children:
+            frogannounce: true
+            frogannounce.admin: true
+            frogannounce.optout: true
+            frogannounce.ignore: true
+    frogannounce.admin:
+        description: Gives full access
+        children:
+            frogannounce: true
+            frogannounce.optout: true
+            frogannounce.ignore: true
+    frogannounce.optout:
+        description: Gives the user the ability to be ignored by the plugin, thus not seeing announcements
+        default: op
+    frogannounce.ignore:
+        description: Automatically ignores players or groups, forcing them to be unable to see the announcements until this permission is revoked.
+        default: op
+    frogannounce:
+        description: Gives the ability to see the help and use the base command.
+        default: op
+categories: [INFO, CHAT]
+required: []
+conflicts: []
+optional:
+engines:
+    craftbukkit:
+        min: 1337
+        max: 1337
