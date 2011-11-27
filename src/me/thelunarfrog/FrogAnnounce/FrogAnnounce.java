@@ -235,6 +235,7 @@ public class FrogAnnounce extends JavaPlugin
         player.sendMessage(helpCommandColor + "/fa <restart" + or + helpCommandColor + "reload>" + helpMainColor + " - Restart FrogAnnounce.");
         player.sendMessage(helpCommandColor + "/fa <interval" + or + helpCommandColor + "int>" + helpObligatoryColor + " <minutes>" + helpMainColor + " - Set the time between each announcement.");
         player.sendMessage(helpCommandColor + "/fa <random" + or + helpCommandColor + "rand>" + helpObligatoryColor + " <on" + or + helpObligatoryColor + "off>" + helpMainColor + " - Set random or consecutive.");
+    }
 	private void load()
 	{
 		Settings.load();
