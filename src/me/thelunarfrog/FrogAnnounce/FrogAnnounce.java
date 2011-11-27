@@ -30,9 +30,6 @@ public class FrogAnnounce extends JavaPlugin
 	private static List<String> strings, Groups;
 	public static PermissionHandler Permissions;
 	public static FrogAnnounce plugin;
-	@SuppressWarnings("unused")
-	private static boolean somTingWong;
-	public static boolean chineseNationalAnthem;
 
     @Override
 	public void onEnable()
