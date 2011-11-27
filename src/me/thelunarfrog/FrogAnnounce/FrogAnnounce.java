@@ -1,11 +1,8 @@
 package me.thelunarfrog.FrogAnnounce;
-
 import java.io.*;
 import java.util.*;
-
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,15 +11,12 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.ChatColor;
 import org.bukkit.util.config.Configuration;
-
-
 @SuppressWarnings("deprecation")
 public class FrogAnnounce extends JavaPlugin
 {
 	private static PluginDescriptionFile pdfFile;
 	private static final String DIR = "plugins" + File.separator + "FrogAnnounce" + File.separator;
 	private static final String CONFIG_FILE = "Configuration.yml";
-
 	private static Configuration Settings = new Configuration(new File(DIR + CONFIG_FILE));
 	private static String Tag;
 	private static int Interval, taskId = -1, counter = 0;
@@ -30,10 +24,6 @@ public class FrogAnnounce extends JavaPlugin
 	private static List<String> strings, Groups;
 	public static PermissionHandler Permissions;
 	public static FrogAnnounce plugin;
-	@SuppressWarnings("unused")
-	private static boolean somTingWong;
-	public static boolean chineseNationalAnthem;
-
     @Override
 	public void onEnable()
     {
@@ -53,19 +43,16 @@ public class FrogAnnounce extends JavaPlugin
     		enablePermissions();
     	else
     		System.out.println("[FrogAnnounce] No Permissions system was detected!");
-    	System.out.println("[FrogAnnounce] Settings Loaded ("+strings.size()+" announcements)!");
+    	System.out.println("[FrogAnnounce] Settings loaded " + strings.size() + " announcements!");
     	isScheduling = scheduleOn(null);
-    	System.out.println("[FrogAnnounce] v"+pdfFile.getVersion()+" is enabled!" );
-		System.out.println("[FrogAnnounce] Loaded Version " + pdfFile.getVersion() + " by TheLunarFrog");
+    	System.out.println("[FrogAnnounce] v" + pdfFile.getVersion() + " by " + pdfFile.getAuthors() + " has been enabled!" );
 	}
-
     @Override
 	public void onDisable()
     {
     	scheduleOff(true, null);
-    	System.out.println("[FrogAnnounce] v"+pdfFile.getVersion()+" has been disabled!");
+    	System.out.println("[FrogAnnounce] v" + pdfFile.getVersion() + " by " + pdfFile.getAuthors() + " has been disabled!");
     }
-    
     private void enablePermissions() {
     	Plugin p = getServer().getPluginManager().getPlugin("Permissions");
     	if(p != null) {
@@ -77,7 +64,6 @@ public class FrogAnnounce extends JavaPlugin
     	} else
     		System.out.println("[FrogAnnounce] Permissions system couldn't be found! Defaulting to OP/Non-OP system.");
     }
-    
     private boolean permission(Player player, String line, Boolean op){
     	if(permissionsEnabled) {
     		return Permissions.has(player, line);
@@ -85,7 +71,6 @@ public class FrogAnnounce extends JavaPlugin
     		return op;
     	}
     }
-    
     private void OptOut(boolean OptOut, Player player){
     	if(OptOut = true)
     	{
@@ -97,11 +82,9 @@ public class FrogAnnounce extends JavaPlugin
 			getServer().getScheduler().cancelTasks((FrogAnnounce) player);
     	}
     }
-    
     private void turnOff(Player player) {
 		getServer().getScheduler().cancelTasks((FrogAnnounce) player);
 	}
-
 	private void scheduleOff(boolean Disabling, Player player){
     	if(isScheduling){
     		getServer().getScheduler().cancelTask(taskId);
@@ -140,7 +123,6 @@ public class FrogAnnounce extends JavaPlugin
     		return true;
     	}
     }
-    
     private void scheduleRestart(Player player){
     	if(isScheduling){
     		scheduleOff(false, null);
@@ -152,7 +134,6 @@ public class FrogAnnounce extends JavaPlugin
     		player.sendMessage(ChatColor.DARK_RED+"No announcements running!");
     	}
     }
-    
     private void setInterval(String[] args, Player player){
     	if(args.length == 2) {
     		try{
@@ -168,7 +149,6 @@ public class FrogAnnounce extends JavaPlugin
     		player.sendMessage(ChatColor.DARK_RED+"Error! Usage: /fa interval 5");
     	}
     }
-    
     private void setRandom(String[] args, Player player){
     	if(args.length == 2) {
     		if(args[1].equals("on")){
@@ -188,13 +168,13 @@ public class FrogAnnounce extends JavaPlugin
     		player.sendMessage(ChatColor.DARK_RED+"Error! Usage: /fa random off");
     	}
     }
-    
     @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
-    	String commandName = cmd.getName();
+    	@SuppressWarnings("unused")
+		String commandName = cmd.getName();
     		Player player = (Player)sender;
-    		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce") || commandName.equalsIgnoreCase("fa"))
+    		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce"))
     		{
     			if(permission(player, "frogannounce.admin", player.isOp()) || permission(player, "frogannounce.*", player.isOp())) {
 	    			try {
@@ -255,7 +235,7 @@ public class FrogAnnounce extends JavaPlugin
         player.sendMessage(helpCommandColor + "/fa <restart" + or + helpCommandColor + "reload>" + helpMainColor + " - Restart FrogAnnounce.");
         player.sendMessage(helpCommandColor + "/fa <interval" + or + helpCommandColor + "int>" + helpObligatoryColor + " <minutes>" + helpMainColor + " - Set the time between each announcement.");
         player.sendMessage(helpCommandColor + "/fa <random" + or + helpCommandColor + "rand>" + helpObligatoryColor + " <on" + or + helpObligatoryColor + "off>" + helpMainColor + " - Set random or consecutive.");
-        
+    }
 	private void load()
 	{
 		Settings.load();
@@ -267,7 +247,6 @@ public class FrogAnnounce extends JavaPlugin
 		toGroups = Settings.getBoolean("Announcer.ToGroups", true);
 		Groups = Settings.getStringList("Announcer.Groups", new ArrayList<String>());
 	}
-	
 	private String colorize(String announce)
 	{
 		announce = announce.replaceAll("&AQUA;",		ChatColor.AQUA.toString());
@@ -303,7 +282,6 @@ public class FrogAnnounce extends JavaPlugin
 		return announce;
 
 	}
-
     class printAnnounce implements Runnable
     {
         @Override
@@ -322,7 +300,6 @@ public class FrogAnnounce extends JavaPlugin
         		if(counter >= strings.size())
         			counter = 0;
         	}
-
         	if(permission && toGroups){
         		Player[] players = getServer().getOnlinePlayers();
        			for(Player p: players){
@@ -339,10 +316,8 @@ public class FrogAnnounce extends JavaPlugin
 					for (String line : announce.split("&NEW_LINE;"))
         			getServer().broadcastMessage(Tag+" "+colorize(line));
         	}
-
         }
     }
-   
     public boolean isDebugging(Player player)
     {
     	if(!permission(player, "frogchat.admin", player.isOp()) || !permission(player, "frogchat.autoignore", player.isOp())){
@@ -355,12 +330,9 @@ public class FrogAnnounce extends JavaPlugin
     	}
 		return false;
     }
-
     public void setDebugging(Player player, boolean value)
     {
         debugees.put(player, Boolean.valueOf(value));
     }
-
     private final HashMap<Object, Object> debugees = new HashMap<Object, Object>();
-
 }
