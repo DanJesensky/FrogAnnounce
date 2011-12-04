@@ -1,29 +1,37 @@
 package me.thelunarfrog.FrogAnnounce;
+
 import java.io.*;
 import java.util.*;
-import org.bukkit.ChatColor;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.ChatColor;
 import org.bukkit.util.config.Configuration;
+
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
+
 @SuppressWarnings("deprecation")
 public class FrogAnnounce extends JavaPlugin
 {
 	private static PluginDescriptionFile pdfFile;
+	
 	private static final String DIR = "plugins" + File.separator + "FrogAnnounce" + File.separator;
 	private static final String CONFIG_FILE = "Configuration.yml";
 	private static Configuration Settings = new Configuration(new File(DIR + CONFIG_FILE));
+	
 	private static String Tag;
 	private static int Interval, taskId = -1, counter = 0;
 	private static boolean isScheduling = false, isRandom, permissionsEnabled = false, permission, toGroups;
 	private static List<String> strings, Groups;
 	public static PermissionHandler Permissions;
+	
 	public static FrogAnnounce plugin;
+	
     @Override
 	public void onEnable()
     {
@@ -33,18 +41,17 @@ public class FrogAnnounce extends JavaPlugin
 			fDir.mkdir();
 		try{
 			File fAuths = new File(DIR + CONFIG_FILE);
-			if (!fAuths.exists()){
+			if (!fAuths.exists())
 				fAuths.createNewFile();
-			}
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
-    	loadConfig();
-    	if(permission = true)
+    	load();
+    	if(permission)
     		enablePermissions();
     	else
     		System.out.println("[FrogAnnounce] No Permissions system was detected!");
-//    	System.out.println("[FrogAnnounce] Settings loaded " + strings.size() + " announcements!");
+    	System.out.println("[FrogAnnounce] Settings loaded " + strings.size() + " announcements!");
     	isScheduling = scheduleOn(null);
     	System.out.println("[FrogAnnounce] v" + pdfFile.getVersion() + " by " + pdfFile.getAuthors() + " has been enabled!" );
 	}
@@ -53,27 +60,6 @@ public class FrogAnnounce extends JavaPlugin
     {
     	scheduleOff(true, null);
     	System.out.println("[FrogAnnounce] v" + pdfFile.getVersion() + " by " + pdfFile.getAuthors() + " has been disabled!");
-    }
-	public void loadConfig(){
-		Settings.load();
-		Interval = Settings.getInt("Settings.Interval", 5);
-		isRandom = Settings.getBoolean("Settings.Random", false);
-		permission = Settings.getBoolean("Settings.Permission", true);
-		toGroups = Settings.getBoolean("Announcer.ToGroups", true);
-		Groups = Settings.getStringList("Announcer.Groups", new ArrayList<String>());
-		Tag = colorize(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-		strings = (ArrayList<String>) Settings.getStringList("Announcer.Strings", new ArrayList<String>());
-		Settings.save();
-	}
-    public void saveConfig(){
-    	Settings.load();
-    	Settings.setProperty("Settings.Interval", Interval);
-    	Settings.setProperty("Settings.Random", isRandom);
-    	Settings.setProperty("Settings.Permission", permission);
-    	Settings.setProperty("Announcer.toGroups", toGroups);
-    	Settings.setProperty("Announcer.Groups", Groups);
-    	Settings.setProperty("Announcer.Tag", Tag);
-    	Settings.setProperty("Announcer.Strings", strings);    	Settings.save();
     }
     private void enablePermissions() {
     	Plugin p = getServer().getPluginManager().getPlugin("Permissions");
@@ -115,8 +101,7 @@ public class FrogAnnounce extends JavaPlugin
 	    	isScheduling = false;
     	}else{
     		if(!Disabling)
-    			if(player != null)
-    				player.sendMessage(ChatColor.DARK_RED+"No annuoncements running!");
+    			if(player != null) player.sendMessage(ChatColor.DARK_RED+"No annuoncements running!");
     			System.out.println("[FrogAnnounce] No announcements running!" );
     	}
     }
@@ -149,7 +134,7 @@ public class FrogAnnounce extends JavaPlugin
     private void scheduleRestart(Player player){
     	if(isScheduling){
     		scheduleOff(false, null);
-    		loadConfig();
+    		load();
     		player.sendMessage(ChatColor.DARK_GREEN + "FrogAnnounce has been successfully reloaded!");
     		player.sendMessage(ChatColor.DARK_GREEN+"Settings loaded "+strings.size()+" announcements!");
     		isScheduling = scheduleOn(player);
@@ -162,7 +147,7 @@ public class FrogAnnounce extends JavaPlugin
     		try{
 				int interval = Integer.parseInt(args[1], 10);
 				Settings.setProperty("Settings.Interval", interval);
-				saveConfig();
+				Settings.save();
 				player.sendMessage(ChatColor.DARK_GREEN+"Interval changed successfully to "+args[1]+" minutes.");
 				if(isScheduling) player.sendMessage(ChatColor.GOLD+"Restart the schedule to apply changes.");
 			}catch(NumberFormatException err){
@@ -176,12 +161,12 @@ public class FrogAnnounce extends JavaPlugin
     	if(args.length == 2) {
     		if(args[1].equals("on")){
     			Settings.setProperty("Settings.Random", true);
-    			saveConfig();
+    			Settings.save();
     			player.sendMessage(ChatColor.DARK_GREEN+"Changed to shuffle-order mode.");
     			if(isScheduling) player.sendMessage(ChatColor.GOLD+"Restart the schedule to apply changes.");
     		}else if(args[1].equals("off")){
     			Settings.setProperty("Settings.Random", false);
-    			saveConfig();
+    			Settings.save();
     			player.sendMessage(ChatColor.DARK_GREEN+"Changed to consecutive cylcing mode.");
     			if(isScheduling) player.sendMessage(ChatColor.AQUA+"Restart the schedule to apply changes.");
     		}else{
@@ -194,7 +179,8 @@ public class FrogAnnounce extends JavaPlugin
     @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
-//		String commandName = cmd.getName();
+    	@SuppressWarnings("unused")
+		String commandName = cmd.getName();
     		Player player = (Player)sender;
     		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce"))
     		{
@@ -230,7 +216,7 @@ public class FrogAnnounce extends JavaPlugin
     			}
     			}
     			else {
-    				player.sendMessage(ChatColor.RED + "You do not have the permission required to use this command!");
+    				player.sendMessage(ChatColor.RED + "You do not have the permission level required to use this command!");
     				return true;
     	    	}
     		}
@@ -258,6 +244,17 @@ public class FrogAnnounce extends JavaPlugin
         player.sendMessage(helpCommandColor + "/fa <interval" + or + helpCommandColor + "int>" + helpObligatoryColor + " <minutes>" + helpMainColor + " - Set the time between each announcement.");
         player.sendMessage(helpCommandColor + "/fa <random" + or + helpCommandColor + "rand>" + helpObligatoryColor + " <on" + or + helpObligatoryColor + "off>" + helpMainColor + " - Set random or consecutive.");
     }
+	private void load()
+	{
+		Settings.load();
+		Interval = Settings.getInt("Settings.Interval", 5);
+		isRandom = Settings.getBoolean("Settings.Random", false);
+		permission = Settings.getBoolean("Settings.Permission", true);
+		strings = Settings.getStringList("Announcer.Strings", new ArrayList<String>());
+		Tag = colorize(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+		toGroups = Settings.getBoolean("Announcer.ToGroups", true);
+		Groups = Settings.getStringList("Announcer.Groups", new ArrayList<String>());
+	}
 	private String colorize(String announce)
 	{
 		announce = announce.replaceAll("&AQUA;",		ChatColor.AQUA.toString());
@@ -291,6 +288,7 @@ public class FrogAnnounce extends JavaPlugin
 		announce = announce.replaceAll("&f;",		ChatColor.WHITE.toString());
 		announce = announce.replaceAll("&e;",		ChatColor.YELLOW.toString());
 		return announce;
+
 	}
     class printAnnounce implements Runnable
     {
