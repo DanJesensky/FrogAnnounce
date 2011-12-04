@@ -32,6 +32,17 @@ public class FrogAnnounce extends JavaPlugin
 	
 	public static FrogAnnounce plugin;
 	
+	public void createNewConfiguration(){
+		Interval = Settings.getInt("Settings.Interval", 5);
+		isRandom = Settings.getBoolean("Settings.Random", false);
+		permission = Settings.getBoolean("Settings.Permission", true);
+		strings = Settings.getStringList("Announcer.Strings", new ArrayList<String>());
+		Tag = colorize(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+		toGroups = Settings.getBoolean("Announcer.ToGroups", false);
+		Groups = Settings.getStringList("Announcer.Groups", new ArrayList<String>());
+		Settings.save();
+	}
+	
     @Override
 	public void onEnable()
     {
@@ -41,8 +52,10 @@ public class FrogAnnounce extends JavaPlugin
 			fDir.mkdir();
 		try{
 			File fAuths = new File(DIR + CONFIG_FILE);
-			if (!fAuths.exists())
+			if (!fAuths.exists()){
 				fAuths.createNewFile();
+				createNewConfiguration();
+			}
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
