@@ -66,13 +66,13 @@ public class FrogAnnounce extends JavaPlugin
     		System.out.println("[FrogAnnounce] No Permissions system was detected!");
     	System.out.println("[FrogAnnounce] Settings loaded " + strings.size() + " announcements!");
     	isScheduling = scheduleOn(null);
-    	System.out.println("[FrogAnnounce] v" + pdfFile.getVersion() + " by " + pdfFile.getAuthors() + " has been enabled!" );
+    	System.out.println("[FrogAnnounce] Version " + pdfFile.getVersion() + " by TheLunarFrog has been enabled!" );
 	}
     @Override
 	public void onDisable()
     {
     	scheduleOff(true, null);
-    	System.out.println("[FrogAnnounce] v" + pdfFile.getVersion() + " by " + pdfFile.getAuthors() + " has been disabled!");
+    	System.out.println("[FrogAnnounce] Version " + pdfFile.getVersion() + " by TheLunarFrog has been disabled!");
     }
     private void enablePermissions() {
     	Plugin p = getServer().getPluginManager().getPlugin("Permissions");
