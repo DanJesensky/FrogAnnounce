@@ -1,0 +1,64 @@
+#
+#Hey, you! You might want to run this command: /fa off
+#    before configuring. This will stop it from announcing the unnecessary (if you're already configuring it) messages telling you
+#    to configure it.
+#Leave no whitespace, unless the empty line has a # on it somewhere! USE NO TABS. ONLY SPACES.
+#
+Settings:
+    #Interval: Time in minutes to announce by.
+    Interval: 5
+    #Random: Announce randomly? False = no, True = yes. (Duh) 
+    Random: false
+    #Permission: Use permissions? True/False should be obvious.
+    Permission: true
+Announcer:
+    #Tag: This will go in front of every announcement. You may remove it by leaving it blank: ''
+    Tag: '&AQUA;[FrogAnnounce]'
+    #ToGroups: Only announce to the groups you specify in "Groups"?
+    ToGroups: false
+    #Groups: List the groups that you want the announcements will go to. You do not need to do this if ToGroups is false.
+    Groups:
+        #Follow the below format.
+        #- 'GroupName'
+        #You must keep the dash (-) and the apostophes ('').
+        - 'Everyone'
+        - 'Default'
+        - 'Donators'
+        - 'Moderators'
+        - 'Administrators'
+        - 'SomeOtherGroup'
+    #Strings: What you want the plugin to say.    
+    Strings:
+        #Follow this format.
+        #- "&COLOUR;Message"
+        #or
+        #- "Message"
+        #You must keep the dash (-) and the quotation marks ("").
+        - "&RED;You have yet to configure &GREEN;FrogAnnounce!&NEW_LINE;&DARK_GREEN;Please configure it soon, or these defaults will get old fast (&LIGHT_PURPLE;trust me, these were boring to COME UP with&DARK_GREEN;). (This was supposed to be an example of multi-line announcements. It's not two lines in error)"
+        - "&DARK_PURPLE;No, seriously. Configure me."
+        - "&DARK_RED;Y U NO CONFIGURE PLUGINS, SERVER OWNER?"
+        - "&LIGHT_PURPLE;Moo. Anyone there?"
+        #Oh, did you just configure it? I see. Okay, that works then.
+                #
+        #You can use either /fa reload, /frogannounce reload, or just use Bukkit's built-in reload (/reload) to reload this configuration.
+        #And yes, /fa reload will load the new announcements.
+        #
+        #You may use the following colours:
+        # &AQUA;
+        # &DARK_AQUA;
+        # &BLACK;
+        # &BLUE;
+        # &DARK_BLUE;
+        # &GRAY;
+        # &DARK_GRAY;
+        # &GREEN;
+        # &DARK_GREEN;
+        # &LIGHT_PURPLE;
+        # &DARK_PURPLE;
+        # &RED;
+        # &DARK_RED;
+        # &GOLD;
+        #
+        #You may also use use this to split announcements over two (or several) lines:
+        #&NEW_LINE;
+        #Note that this will also repeat the Tag (The thing that defaults to "&AQUA;[FrogAnnounce]"). Also, colours work on that second line.

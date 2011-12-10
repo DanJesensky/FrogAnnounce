@@ -1,6 +1,5 @@
 package me.thelunarfrog.FrogAnnounce;
 
-import java.io.*;
 import java.util.*;
 
 import org.bukkit.command.Command;
@@ -10,56 +9,40 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.ChatColor;
-import org.bukkit.util.config.Configuration;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
-@SuppressWarnings("deprecation")
 public class FrogAnnounce extends JavaPlugin
 {
 	private static PluginDescriptionFile pdfFile;
-	
-	private static final String DIR = "plugins" + File.separator + "FrogAnnounce" + File.separator;
-	private static final String CONFIG_FILE = "Configuration.yml";
-	private static Configuration Settings = new Configuration(new File(DIR + CONFIG_FILE));
-	
-	private static String Tag;
-	private static int Interval, taskId = -1, counter = 0;
-	private static boolean isScheduling = false, isRandom, permissionsEnabled = false, permission, toGroups;
-	private static List<String> strings, Groups;
+
+	protected static YamlConfiguration Settings = Config.Settings;
+
+	protected static String Tag;
+	protected static int Interval, taskId = -1, counter = 0;
+	protected static boolean isScheduling = false, isRandom, permissionsEnabled = false, permission, toGroups;
+	protected static List<String> strings, Groups;
 	public static PermissionHandler Permissions;
-	
+
 	public static FrogAnnounce plugin;
-	
-	public void createNewConfiguration(){
-		Interval = Settings.getInt("Settings.Interval", 5);
-		isRandom = Settings.getBoolean("Settings.Random", false);
-		permission = Settings.getBoolean("Settings.Permission", true);
-		strings = Settings.getStringList("Announcer.Strings", new ArrayList<String>());
-		Tag = colorize(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-		toGroups = Settings.getBoolean("Announcer.ToGroups", false);
-		Groups = Settings.getStringList("Announcer.Groups", new ArrayList<String>());
-		Settings.save();
-	}
-	
+
     @Override
 	public void onEnable()
     {
     	pdfFile = this.getDescription();
-    	File fDir = new File(DIR);
-		if (!fDir.exists())
-			fDir.mkdir();
 		try{
-			File fAuths = new File(DIR + CONFIG_FILE);
-			if (!fAuths.exists()){
-				fAuths.createNewFile();
-				createNewConfiguration();
-			}
+			Config.loadConfig();
 		}catch (Exception e){
 			System.out.println(e.getMessage());
 		}
-    	load();
+		try{
+			Config.loadConfig();
+		}catch(InvalidConfigurationException e){
+			System.out.println(e.getMessage());
+		}
     	if(permission)
     		enablePermissions();
     	else
@@ -147,7 +130,11 @@ public class FrogAnnounce extends JavaPlugin
     private void scheduleRestart(Player player){
     	if(isScheduling){
     		scheduleOff(false, null);
-    		load();
+    		try {
+				Config.loadConfig();
+			} catch (InvalidConfigurationException e) {
+				e.printStackTrace();
+			}
     		player.sendMessage(ChatColor.DARK_GREEN + "FrogAnnounce has been successfully reloaded!");
     		player.sendMessage(ChatColor.DARK_GREEN+"Settings loaded "+strings.size()+" announcements!");
     		isScheduling = scheduleOn(player);
@@ -159,8 +146,12 @@ public class FrogAnnounce extends JavaPlugin
     	if(args.length == 2) {
     		try{
 				int interval = Integer.parseInt(args[1], 10);
-				Settings.setProperty("Settings.Interval", interval);
-				Settings.save();
+				Settings.set("Settings.Interval", interval);
+				try {
+					Config.saveConfig();
+				} catch (InvalidConfigurationException e) {
+					e.printStackTrace();
+				}
 				player.sendMessage(ChatColor.DARK_GREEN+"Interval changed successfully to "+args[1]+" minutes.");
 				if(isScheduling) player.sendMessage(ChatColor.GOLD+"Restart the schedule to apply changes.");
 			}catch(NumberFormatException err){
@@ -173,13 +164,21 @@ public class FrogAnnounce extends JavaPlugin
     private void setRandom(String[] args, Player player){
     	if(args.length == 2) {
     		if(args[1].equals("on")){
-    			Settings.setProperty("Settings.Random", true);
-    			Settings.save();
+    			Config.Settings.set("Settings.Random", true);
+    			try {
+					Config.saveConfig();
+				} catch (InvalidConfigurationException e) {
+					e.printStackTrace();
+				}
     			player.sendMessage(ChatColor.DARK_GREEN+"Changed to shuffle-order mode.");
     			if(isScheduling) player.sendMessage(ChatColor.GOLD+"Restart the schedule to apply changes.");
     		}else if(args[1].equals("off")){
-    			Settings.setProperty("Settings.Random", false);
-    			Settings.save();
+    			Settings.set("Settings.Random", false);
+    			try {
+					Config.saveConfig();
+				} catch (InvalidConfigurationException e) {
+					e.printStackTrace();
+				}
     			player.sendMessage(ChatColor.DARK_GREEN+"Changed to consecutive cylcing mode.");
     			if(isScheduling) player.sendMessage(ChatColor.AQUA+"Restart the schedule to apply changes.");
     		}else{
@@ -257,18 +256,7 @@ public class FrogAnnounce extends JavaPlugin
         player.sendMessage(helpCommandColor + "/fa <interval" + or + helpCommandColor + "int>" + helpObligatoryColor + " <minutes>" + helpMainColor + " - Set the time between each announcement.");
         player.sendMessage(helpCommandColor + "/fa <random" + or + helpCommandColor + "rand>" + helpObligatoryColor + " <on" + or + helpObligatoryColor + "off>" + helpMainColor + " - Set random or consecutive.");
     }
-	private void load()
-	{
-		Settings.load();
-		Interval = Settings.getInt("Settings.Interval", 5);
-		isRandom = Settings.getBoolean("Settings.Random", false);
-		permission = Settings.getBoolean("Settings.Permission", true);
-		strings = Settings.getStringList("Announcer.Strings", new ArrayList<String>());
-		Tag = colorize(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-		toGroups = Settings.getBoolean("Announcer.ToGroups", true);
-		Groups = Settings.getStringList("Announcer.Groups", new ArrayList<String>());
-	}
-	private String colorize(String announce)
+	protected static String colorize(String announce)
 	{
 		announce = announce.replaceAll("&AQUA;",		ChatColor.AQUA.toString());
 		announce = announce.replaceAll("&BLACK;",		ChatColor.BLACK.toString());
