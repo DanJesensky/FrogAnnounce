@@ -1,7 +1,7 @@
 name: FrogAnnounce
 main: me.thelunarfrog.FrogAnnounce.FrogAnnounce
 authors: [TheLunarFrog]
-version: 1.4
+version: 1.5
 commands:
     fa help:
         description:
