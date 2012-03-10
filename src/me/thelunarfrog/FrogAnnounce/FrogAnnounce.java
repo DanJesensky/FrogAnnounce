@@ -1,29 +1,22 @@
 package me.thelunarfrog.FrogAnnounce;
-
-import java.util.*;
-
-import net.milkbowl.vault.permission.Permission;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.ChatColor;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-
+import net.milkbowl.vault.permission.Permission;
 public class FrogAnnounce extends JavaPlugin
 {
 	private PluginDescriptionFile pdfFile;
-	private static String pt = "[FrogAnnounce] ";
-
 	protected static YamlConfiguration Settings = Config.Settings;
-
-	private String remove = "Remove";
-	private String add = "Add";
     public static Permission permission = null;
 	protected static String Tag;
 	protected static int Interval, taskId = -1, counter = 0;
@@ -31,13 +24,8 @@ public class FrogAnnounce extends JavaPlugin
 	protected static boolean permissionConfig;
 	protected static List<String> strings, Groups, ignoredPlayers;
 	protected boolean usingPerms;
-	
 	boolean pexEnabled, bpEnabled, pEnabled;
-	static String message;
-	int permissionsSystem;
-
 	public static FrogAnnounce plugin;
-
     @Override
 	public void onEnable()
     {
@@ -172,7 +160,6 @@ public class FrogAnnounce extends JavaPlugin
     @Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
-		String commandName = cmd.getName();
     		Player player = (Player)sender;
     		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce"))
     		{
@@ -196,21 +183,6 @@ public class FrogAnnounce extends JavaPlugin
 	    				return false;
 	    			}
     			}
-    			if(permission(player, "frogannounce", player.isOp()) || permission(player, "frogannounce.admin", player.isOp())){
-    				if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
-    					auctionHelp(player);
-    				}
-    			if(permission(player, "frogannounce.optout", player.isOp()) || permission(player, "frogannounce.admin", player.isOp())){
-    					if(args[1].equalsIgnoreCase("optout") || args[1].equalsIgnoreCase("oo")){
-//    						optOut(true, player);
-    					}else if(args[1].equalsIgnoreCase("optin")){
-//    						optOut(false, player);
-    					}
-    			}
-    			else {
-    				player.sendMessage(ChatColor.RED + "You do not have the permission level required to use this command!");
-    				return true;
-    	    	}
     		}
     	return false;
     }
@@ -260,7 +232,6 @@ public class FrogAnnounce extends JavaPlugin
 		announce = announce.replaceAll("&f;",			ChatColor.WHITE.toString());
 		announce = announce.replaceAll("&e;",			ChatColor.YELLOW.toString());
 		return announce;
-
 	}
     class printAnnounce implements Runnable
     {
@@ -311,72 +282,13 @@ public class FrogAnnounce extends JavaPlugin
     {
         debugees.put(player, Boolean.valueOf(value));
     }
-
-    //1.6
-    protected void broadcastAnnouncement(int index){
-    	String announce = " ";
-    		announce = strings.get(index);
-    		
-    		if(counter > strings.size())
-    			out("Attempted to broadcast a message, but the message doesn't exist.");
-    			counter = 0;
-    	if(permissionConfig && toGroups){
-    		Player[] players = getServer().getOnlinePlayers();
-   			for(Player p: players){
-   				for(String group: Groups){
-   					if(permission.playerInGroup(p.getWorld().getName(), p.getName(), group)){
-   						for (String line : announce.split("&NEW_LINE;"))
-   							p.sendMessage(Tag+" "+colorize(line));
-   						break;
-   					}
-    			}
-    		}
-    	}
-    	else{
-				for (String line : announce.split("&NEW_LINE;"))
-    			getServer().broadcastMessage(Tag+" "+colorize(line));
-    	}
-    }
-    protected String getTag(){
-    	if(Tag.isEmpty()){
-    		return null;
-    	}else{
-    		return Tag;
-    	}
-    }
-    protected void changeAnnouncements(String ar, String[] args, int stringIndex) throws InvalidConfigurationException{
-    	CommandSender sender = null;
-		int m = strings.size();
-		if(stringIndex > m){
-			sender.sendMessage("[FrogAnnounce] The specified announcement index does not exist.");
-			out(sender.getName()+" attempted to add or remove an announcement from file, but the announcement index doesn't exist.");
-		}else{    	
-			if(ar != remove){
-//				plugin.getConfig().getList("Announcer.Strings").add("- '"+args+"'");
-    			Config.saveConfig();
-			}else if(ar != add){
-				plugin.getConfig().getList("Announcer.Strings").remove(stringIndex);
-				Config.saveConfig();
-    		}
-		}
-    }
-    protected void removeAnnouncementFromFile(int index) throws InvalidConfigurationException{
-    	Config.saveConfig();
-    }
-    protected void listAnnouncements(CommandSender sender) throws InvalidConfigurationException{
-// 
-    	Config.loadConfig();
-    	this.out("Announcements loaded:"+strings.size());
-    	sender.sendMessage("Announcements:"+strings.toString());
-    }
-    //1.6: new string-out methods
     protected void out(String message){
-    	System.out.println(pt + message);
+    	System.out.println("[FrogAnnounce] " + message);
     }
     private boolean checkPEX() {
 		boolean PEX = false;
-		Plugin test = this.getServer().getPluginManager().getPlugin("PermissionsEX");
-		if (test != null){
+		Plugin _PEX = this.getServer().getPluginManager().getPlugin("PermissionsEX");
+		if (_PEX != null){
 			PEX = true;
 		}
 		
@@ -400,16 +312,13 @@ public class FrogAnnounce extends JavaPlugin
 	}
 	private int getPermissionsSystem(){
 		int permissionsSystem;
-		boolean usingPEX = checkPEX();
-		boolean usingbPerms = checkbPerms();
-		boolean usingPerms = checkPerms();
-		if(usingPEX = true){
+		if(checkPEX()){
 			pexEnabled = true;
 			permissionsSystem = 1;
-		}else if(usingbPerms = true){
+		}else if(checkbPerms()){
 			bpEnabled = true;
 			permissionsSystem = 2;
-		}else if(usingPerms = true){
+		}else if(checkPerms()){
 			pEnabled = true;
 			permissionsSystem = 3;
 		}else{
@@ -422,30 +331,23 @@ public class FrogAnnounce extends JavaPlugin
 		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if(vault != null){
 			if(m!=0){
-				setupPermissions();
-				Boolean q = setupPermissions();
 				if(setupPermissions()!=null){
 					out("Permissions plugin hooked.");
 					usingPerms = true;
-				}else if(q = null){
+				}else if(setupPermissions() == null){
 					out("Permissions plugin wasn't found. Defaulting to OP/Non-OP system.");
 					usingPerms = false;
 				}
 			}
-		}else{
+		}else
 			out("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
-		}
 	}
     private Boolean setupPermissions()
     {
         RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null) {
+        if (permissionProvider != null)
             permission = permissionProvider.getProvider();
-        }
         return (permission != null);
-    }
-    protected void out(Permission plugin){
-    	System.out.println(pt + permission);
     }
     private final HashMap<Object, Object> debugees = new HashMap<Object, Object>();
 }

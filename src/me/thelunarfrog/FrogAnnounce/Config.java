@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-@SuppressWarnings({ "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked", "rawtypes", "unused" })
 public class Config {
 	
     protected static YamlConfiguration Settings;
@@ -27,15 +27,6 @@ public class Config {
     	catch(Throwable e){
     		e.printStackTrace();
     	}
-    }
-    public static YamlConfiguration getConfig() throws InvalidConfigurationException {
-        if (!loaded) {
-            loadConfig();
-        }
-        return Settings;
-    }
-    public static File getConfigFile() {
-        return configFile;
     }
 	public static void loadConfig() throws InvalidConfigurationException{
         configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
@@ -92,7 +83,5 @@ public class Config {
                 fos.close();
             }
         }
-    }
-    private Config() {
     }
 }
