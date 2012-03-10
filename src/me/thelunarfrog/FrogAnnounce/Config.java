@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class Config {
 	
     protected static YamlConfiguration Settings;
@@ -19,7 +19,7 @@ public class Config {
     
     protected static void saveConfig() throws InvalidConfigurationException{
     	try{
-    	FrogAnnounce.Settings.save(configFile);
+    		FrogAnnounce.Settings.save(configFile);
     	}
     	catch(IOException e){
     		e.printStackTrace();
@@ -37,19 +37,20 @@ public class Config {
     public static File getConfigFile() {
         return configFile;
     }
-    public static void loadConfig() throws InvalidConfigurationException{
+	public static void loadConfig() throws InvalidConfigurationException{
         configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
         if (configFile.exists()) {
             Settings = new YamlConfiguration();
             try {
                 Settings.load(configFile);
-        		FrogAnnounce.Interval = Settings.getInt("Settings.Interval", 5);
-        		FrogAnnounce.isRandom = Settings.getBoolean("Settings.Random", false);
-        		FrogAnnounce.permission = Settings.getBoolean("Settings.Permission", true);
-        		FrogAnnounce.strings = Settings.getList("Announcer.Strings", new ArrayList<String>());
-        		FrogAnnounce.Tag = FrogAnnounce.colorize(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-        		FrogAnnounce.toGroups = Settings.getBoolean("Announcer.ToGroups", true);
-        		FrogAnnounce.Groups = Settings.getList("Announcer.Groups", new ArrayList<String>());
+        		FrogAnnounce.Interval 			= 			  			Settings.getInt(	"Settings.Interval",	5);
+        		FrogAnnounce.isRandom			= 			  			Settings.getBoolean("Settings.Random",		false);
+        		FrogAnnounce.permissionConfig 	= 			  			Settings.getBoolean("Settings.Permission",	true);
+        		FrogAnnounce.strings 			= (ArrayList)(			Settings.getList(	"Announcer.Strings",	new ArrayList<String>()));
+        		FrogAnnounce.Tag 				= FrogAnnounce.colorize(Settings.getString(	"Announcer.Tag", 		"&GOLD;[FrogAnnounce]"));
+        		FrogAnnounce.toGroups 			= 			  			Settings.getBoolean("Announcer.ToGroups",	true);
+        		FrogAnnounce.Groups 			= (ArrayList)(			Settings.getList(	"Announcer.Groups",		new ArrayList<String>()));
+        		FrogAnnounce.ignoredPlayers 	= (ArrayList)(			Settings.getList(	"Announcer.optedOut",	new ArrayList<String>()));
             } catch (FileNotFoundException ex) {
                 // TODO: Log
             } catch (IOException ex) {
