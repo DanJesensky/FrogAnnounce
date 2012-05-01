@@ -28,7 +28,7 @@
   <!-- Download libraries -->
   <target name="class">
   <get src="http://whiskeycraft.net/repo/org/bukkit/craftbukkit/lastsuccessful/craftbukkit.jar" dest="lib/CraftBukkit.jar"/>
-  <get src="http://whiskeycraft.net:8080/job/Vault/lastSuccessfulBuild/artifact/target/Vault-1.2.14-SNAPSHOT.jar" dest="lib/vault.jar"/>
+  <get src="http://whiskeycraft.net/repo/net/milkbowl/vault/lastsuccessful/vault.jar" dest="lib/vault.jar"/>
   </target>
   <path id="classpath">
       <fileset dir="lib" includes="**/*.jar"/>
