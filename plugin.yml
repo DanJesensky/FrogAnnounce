@@ -1,7 +1,7 @@
 name: FrogAnnounce
 main: me.thelunarfrog.FrogAnnounce.FrogAnnounce
 authors: [TheLunarFrog]
-version: 1.8
+version: 2.0
 commands:
     fa help:
         description:
@@ -21,6 +21,12 @@ commands:
     fa interval:
         description: Set the plugin to announce per the specified interval.
         usage: /<command> <interval|int> <minutes>
+    fa reload:
+        description: Reload FrogAnnounce.
+        usage: /<command> <restart|reload>
+    frogannounce reload: 
+        description: Reload FrogAnnounce.
+        usage: /<command> <restart|reload>
     fa restart:
         description: Reload FrogAnnounce.
         usage: /<command> <restart|reload>
@@ -49,18 +55,9 @@ permissions:
     frogannounce.*:
         description: Gives full access
         children:
-            frogannounce: true
             frogannounce.admin: true
-            frogannounce.optout: true
-            frogannounce.ignore: true
     frogannounce.admin:
         description: Gives full access
-        children:
-            frogannounce: true
-            frogannounce.optout: true
-            frogannounce.ignore: true
-    frogannounce:
-        description: Gives the ability to see the help and use the base command.
         default: op
 categories: [INFO, CHAT]
 required: []

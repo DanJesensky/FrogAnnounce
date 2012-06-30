@@ -4,17 +4,18 @@
 #    to configure it.
 #Leave no whitespace, unless the empty line has a # on it somewhere! USE NO TABS. ONLY SPACES.
 #
+# WARNING: WHEN YOU USE A COMMAND THAT CHANGES THE CONFIGURATION, ALL OF THE COMMENTS EXPLAINING HOW TO CONFIGURE THIS WILL BE ERASED. READ THEM BEFORE YOU DO IT.
 Settings:
     #Interval: Time in minutes to announce by.
     Interval: 5
     #Random: Announce randomly? False = no, True = yes. (Duh) 
     Random: false
-    #Permission: Use permissions? True/False should be obvious.
+    #Permission: Use permissions? True/False should be obvious. Requires Vault. If you want a non-OP to be able to administrate FrogAnnounce, give them frogannounce.* or frogannounce.admin.
     Permission: true
 Announcer:
     #Tag: This will go in front of every announcement. You may remove it by leaving it blank: ''
     Tag: '&AQUA;[FrogAnnounce]'
-    #ToGroups: Only announce to the groups you specify in "Groups"? (Only available if you have Vault; disable if you do not have it)
+    #ToGroups: Only announce to the groups you specify in "Groups"? (Only available if you have Vault disable, if you do not have it)
     ToGroups: false
     #Groups: List the groups that you want the announcements will go to. You do not need to do this if ToGroups is false. (Only available if you have Vault)
     Groups:
@@ -58,6 +59,13 @@ Announcer:
         # &RED;
         # &DARK_RED;
         # &GOLD;
+        # &WHITE;
+        # (New in 2):
+        # &MAGIC;
+        # &BOLD;
+        # &ITALIC;
+        # &UNDERLINE;
+        # &STRIKE;
         #
         #You may also use use this to split announcements over two (or several) lines:
         #&NEW_LINE;
