@@ -6,10 +6,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 /**
  * Handles the FrogAnnounce configuration.
@@ -26,6 +28,7 @@ public class ConfigurationHandler extends FrogAnnounce {
     protected static File configFile;
 	private static boolean loaded = false;
 	private static FrogAnnounce fa = new FrogAnnounce();
+	FrogAnnounce plugin;
     
 	@Override
     public void saveConfig(){
@@ -49,6 +52,8 @@ public class ConfigurationHandler extends FrogAnnounce {
         		FrogAnnounce.tag 				= FrogAnnounce.colourizeText(Settings.getString("Announcer.Tag",		"&GOLD;[FrogAnnounce]"));
         		FrogAnnounce.toGroups 			= 			  			Settings.getBoolean(	"Announcer.ToGroups",	true);
         		FrogAnnounce.Groups 			= (ArrayList)(			Settings.getList(		"Announcer.Groups",		new ArrayList<String>()));
+//        		FrogAnnounce.useChatSuite		=						Settings.getBoolean(	"ChatSuite.Use-ChatSuite",false);
+        		FrogAnnounce.ignoredPlayers		= (ArrayList<String>)	Settings.getList(		"ignoredPlayers",		new ArrayList<String>());
             } catch (FileNotFoundException ex) {
             	fa.grave("An exception has occurred while FrogAnnounce was loading the configuration.");
                 ex.printStackTrace();
@@ -96,5 +101,6 @@ public class ConfigurationHandler extends FrogAnnounce {
         }
     }
     protected ConfigurationHandler() {
+    	this.plugin = FrogAnnounce.plugin;
     }
 }

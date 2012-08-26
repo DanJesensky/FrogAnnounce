@@ -1,56 +1,14 @@
 name: FrogAnnounce
 main: me.thelunarfrog.FrogAnnounce.FrogAnnounce
 authors: [TheLunarFrog]
-version: 2.0
+version: 2.1.0
 commands:
-    fa help:
-        description:
-        usage: /<command> help
-    frogannounce help:
-        description:
-        usage: /<command> help
     fa:
         description: Get help for FrogAnnounce. Short version of /frogannounce
         usage: /<command>
     frogannounce:
         description: Get help for FrogAnnounce. A shorter version is /fa.
         usage: /<command>
-    frogannounce interval:
-        description: Set the plugin to announce per the specified interval.
-        usage: /<command> <interval|int> <minutes>
-    fa interval:
-        description: Set the plugin to announce per the specified interval.
-        usage: /<command> <interval|int> <minutes>
-    fa reload:
-        description: Reload FrogAnnounce.
-        usage: /<command> <restart|reload>
-    frogannounce reload: 
-        description: Reload FrogAnnounce.
-        usage: /<command> <restart|reload>
-    fa restart:
-        description: Reload FrogAnnounce.
-        usage: /<command> <restart|reload>
-    frogannounce restart: 
-        description: Reload FrogAnnounce.
-        usage: /<command> <restart|reload>
-    fa on:
-        description: Turn FrogAnnounce on or off.
-        usage: /<command> <on|off>
-    frogannounce on: 
-        description: Turn FrogAnnounce on or off.
-        usage: /<command> <on|off>
-    fa off:
-        description: Turn FrogAnnounce on or off.
-        usage: /<command> <on|off>
-    frogannounce off: 
-        description: Turn FrogAnnounce on or off.
-        usage: /<command> <on|off>
-    frogannounce random:
-        description: Toggle the messages to/from random order, instead of consecutive from configuration.
-        usage: /<command> <random|rand>
-    fa random:
-        description: Toggle the messages to/from random order, instead of consecutive from configuration.
-        usage: /<command> <random|rand>
 permissions:
     frogannounce.*:
         description: Gives full access
@@ -63,4 +21,4 @@ categories: [INFO, CHAT]
 required: []
 conflicts: []
 optional: []
-softdepend: [Vault]
+softdepend: [Vault, ChatSuite]
