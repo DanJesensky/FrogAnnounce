@@ -1,5 +1,5 @@
 name: FrogAnnounce
-main: main.java.me.thelunarfrog.minecraft.frogannounce.FrogAnnounce
+main: main.java.me.thelunarfrog.minecraft.FrogAnnounce.FrogAnnounce
 authors: [TheLunarFrog]
 version: 2.2.0
 commands:
