@@ -68,7 +68,7 @@ public class ConfigurationHandler extends FrogAnnounce {
         } else {
             try {
                 Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir();
-                InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/Configuration.yml");
+                InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/main/resources/Configuration.yml");
                 copyFile(jarURL, configFile);
                 Settings = new YamlConfiguration();
                 Settings.load(configFile);
