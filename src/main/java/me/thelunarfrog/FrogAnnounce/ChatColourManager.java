@@ -1,4 +1,4 @@
-package me.thelunarfrog.FrogAnnounce;
+package main.java.me.thelunarfrog.FrogAnnounce;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

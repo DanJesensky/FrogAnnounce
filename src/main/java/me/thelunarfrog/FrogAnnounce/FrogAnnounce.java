@@ -1,4 +1,4 @@
-package me.thelunarfrog.FrogAnnounce;
+package main.java.me.thelunarfrog.FrogAnnounce;
 
 import java.io.IOException;
 import java.util.ArrayList;

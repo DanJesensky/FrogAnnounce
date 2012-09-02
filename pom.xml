@@ -1,0 +1,96 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>me.thelunarfrog</groupId>
+  <artifactId>FrogAnnounce</artifactId>
+  <version>2.3.0-SNAPSHOT</version>
+
+  <!-- Build Settings -->
+  <build>
+	<resources>
+		<!--Main-->
+		<resource>
+			<targetPath>main/java/me/thelunarfrog/FrogAnnounce</targetPath>
+			<filtering>false</filtering>
+			<directory>${basedir}/src/main/java/main/me/thelunarfrog/FrogAnnounce</directory>
+			<includes>
+				<include>FrogAnnounce.java</include>
+				<include>FrogAnnounceAPI.java</include>
+				<include>ConfigurationHandler.java</include>
+				<include>ChatColourManager.java</include>
+			</includes>
+			<excludes>
+			</excludes>
+		</resource>
+		<!--Configuration.yml-->
+		<resource>
+			<targetPath>main/resources</targetPath>
+			<filtering>false</filtering>
+			<directory>${basedir}/src/main/resources</directory>
+			<includes>
+				<include>Configuration.yml</include>
+			</includes>
+			<excludes>
+			</excludes>
+		</resource>
+		<!--plugin.yml-->
+		<resource>
+			<targetPath></targetPath>
+			<filtering>false</filtering>
+			<directory>${basedir}/src/main/resources</directory>
+			<includes>
+				<include>plugin.yml</include>
+			</includes>
+			<excludes>
+			</excludes>
+		</resource>
+	</resources>
+  </build>
+  
+  <dependencies>
+	<!--Bukkit-->
+	<dependency>
+		<groupId>org.bukkit</groupId>
+		<artifactId>Bukkit</artifactId>
+		<version>1.3.2-R2.0</version>
+		<type>jar</type>
+		<scope>system</scope>
+			<systemPath>C:\Program Files\Jenkins\workspace\FrogAnnounce\CraftBukkit.jar</systemPath>
+		<optional>false</optional>
+	</dependency>
+	<!--Vault - Optional-->
+	<dependency>
+		<groupId>net.milkbowl</groupId>
+		<artifactId>Vault</artifactId>
+		<version>1</version>
+		<type>jar</type>
+		<scope>system</scope>
+			<systemPath>C:\Program Files\Jenkins\workspace\FrogAnnounce\Vault.jar</systemPath>
+		<optional>true</optional>
+	</dependency>
+	<!--ChatSuite - Optional-->
+	<dependency>
+		<groupId>net.krinsoft</groupId>
+		<artifactId>ChatSuite</artifactId>
+		<version>1</version>
+		<type>jar</type>
+		<scope>system</scope>
+			<systemPath>C:\Program Files\Jenkins\workspace\FrogAnnounce\ChatSuite.jar</systemPath>
+		<optional>true</optional>
+	</dependency>
+  </dependencies>
+
+  <!-- More Project Information -->
+  <name>FrogAnnounce</name>
+  <description>An automatic announcement plugin for Minecraft Bukkit servers.</description>
+  <url>http://mc.grminecraft.org:8080/jenkins/job/FrogAnnounce/</url>
+  <inceptionYear>2011</inceptionYear>
+  <!--<organization>Grand Rapids Minecraft</organization>-->
+  <!--<developers>TheLunarFrog</developers>-->
+
+  <!-- Environment Settings -->
+  <!--<issueManagement>http://dev.bukkit.org/server-mods/frogannounce/tickets/</issueManagement>-->
+  <!--<ciManagement>http://mc.grminecraft.org:8080/jenkins/job/FrogAnnounce/</ciManagement>-->
+</project>
