@@ -1,7 +1,7 @@
 name: FrogAnnounce
-main: main.java.me.thelunarfrog.FrogAnnounce.FrogAnnounce
+main: main.java.me.thelunarfrog.minecraft.frogannounce.FrogAnnounce
 authors: [TheLunarFrog]
-version: 2.1.0-SNAPSHOT
+version: 2.2.0
 commands:
     fa:
         description: Get help for FrogAnnounce. Short version of /frogannounce
@@ -21,4 +21,4 @@ categories: [INFO, CHAT]
 required: []
 conflicts: []
 optional: []
-softdepend: [Vault, ChatSuite]
+softdepend: [Vault]

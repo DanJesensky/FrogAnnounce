@@ -10,14 +10,16 @@ Settings:
     Interval: 5
     #Random: Announce randomly? False = no, True = yes. (Duh) 
     Random: false
-    #Permission: Use permissions? True/False should be obvious. Requires Vault. If you want a non-OP to be able to administrate FrogAnnounce, give them frogannounce.* or frogannounce.admin.
+    #Permission: Use permissions? They allow users to be ignored by the plugin and allow the use of groups below. Requires Vault.
     Permission: true
+    #Locale: The language the plugin's 
+    Locale: en_GB
 Announcer:
-    #Tag: This will go in front of every announcement. You may remove it by leaving it blank: ''
+    #Tag: Appended to the beginning of every message.
     Tag: '&AQUA;[FrogAnnounce]'
-    #ToGroups: Only announce to the groups you specify in "Groups"? (Only available if you have Vault disable, if you do not have it)
+    #ToGroups: Do you want the plugin to ONLY announce to the groups below? Only works with permissions enabled.
     ToGroups: false
-    #Groups: List the groups that you want the announcements will go to. You do not need to do this if ToGroups is false. (Only available if you have Vault)
+    #Groups: The groups you want the plugin to announce to. Only works if the configuration nodes 'ToGroups' and 'Permission' are both true, as well as the Vault plugin.
     Groups:
         #Follow the below format.
         #- 'GroupName'
@@ -28,7 +30,6 @@ Announcer:
         - 'Moderators'
         - 'Administrators'
         - 'SomeOtherGroup'
-    #Strings: What you want the plugin to say.    
     Strings:
         #Follow this format.
         #- "&COLOUR;Message"
