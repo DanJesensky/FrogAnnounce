@@ -1,4 +1,4 @@
-package main.java.me.thelunarfrog.FrogAnnounce;
+package main.java.me.thelunarfrog.frogannounce;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,13 +33,14 @@ public class ConfigurationHandler extends FrogAnnounce{
 			Settings = new YamlConfiguration();
 			try{
 				Settings.load(configFile);
-				FrogAnnounce.interval 			= 						Settings.getInt(		"Settings.Interval",	5);
+				FrogAnnounce.interval			= 						Settings.getInt(		"Settings.Interval",	5);
 				FrogAnnounce.random			= 							Settings.getBoolean(	"Settings.Random",		false);
 				FrogAnnounce.usingPermissionsSystem 	=				Settings.getBoolean(	"Settings.Permission",	true);
-				FrogAnnounce.strings 			= (ArrayList)(			Settings.getList(		"Announcer.Strings",	new ArrayList<String>()));
-				FrogAnnounce.tag 				= FrogAnnounce.colourizeText(Settings.getString("Announcer.Tag",		"&GOLD;[FrogAnnounce]"));
+				FrogAnnounce.autoIgnoreOps =							Settings.getBoolean(	"Settings.AutoIgnoreOps",false);
+				FrogAnnounce.strings			= (ArrayList)(			Settings.getList(		"Announcer.Strings",	new ArrayList<String>()));
+				FrogAnnounce.tag				= FrogAnnounce.colourizeText(Settings.getString("Announcer.Tag",		"&GOLD;[FrogAnnounce]"));
 				FrogAnnounce.usingGroupsSystem	= 						Settings.getBoolean(	"Announcer.ToGroups",	true);
-				FrogAnnounce.groups 			= (ArrayList)(			Settings.getList(		"Announcer.Groups",		new ArrayList<String>()));
+				FrogAnnounce.groups				= (ArrayList)(			Settings.getList(		"Announcer.Groups",		new ArrayList<String>()));
 //				FrogAnnounce.useChatSuite		=						Settings.getBoolean(	"ChatSuite.Use-ChatSuite",false);
 				FrogAnnounce.ignoredPlayers		= (ArrayList<String>)	Settings.getList(		"ignoredPlayers",		new ArrayList<String>());
 			}catch (FileNotFoundException ex){
