@@ -1,6 +1,8 @@
-package main.java.me.thelunarfrog.frogannounce;
+package main.java.me.thelunarfrog.FrogAnnounce;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 /**
  * Yeah! The #1 most useless Interface in the world!<br />
@@ -13,33 +15,45 @@ import org.bukkit.ChatColor;
  * @since FrogAnnounce 2.0
  */
 public interface ChatColourManager {
+
 	// Colours
-	public final String aqua 			= ChatColor.AQUA.toString();
-	public final String black 		= ChatColor.BLACK.toString();
-	public final String blue 			= ChatColor.BLUE.toString();
-	public final String darkaqua 		= ChatColor.DARK_AQUA.toString();
-	public final String darkblue 		= ChatColor.DARK_BLUE.toString();
-	public final String darkgray 		= ChatColor.DARK_GRAY.toString();
-	public final String darkgreen 	= ChatColor.DARK_GREEN.toString();
-	public final String darkpurple 	= ChatColor.DARK_PURPLE.toString();
-	public final String darkred 		= ChatColor.DARK_RED.toString();
-	public final String gold 			= ChatColor.GOLD.toString();
-	public final String gray 			= ChatColor.GRAY.toString();
-	public final String green 		= ChatColor.GREEN.toString();
-	public final String purple 		= ChatColor.LIGHT_PURPLE.toString();
-	public final String red 			= ChatColor.RED.toString();
-	public final String white 		= ChatColor.WHITE.toString();
-	public final String yellow 		= ChatColor.YELLOW.toString();
+	public String aqua 			= ChatColor.AQUA.toString();
+	public String black 		= ChatColor.BLACK.toString();
+	public String blue 			= ChatColor.BLUE.toString();
+	public String darkaqua 		= ChatColor.DARK_AQUA.toString();
+	public String darkblue 		= ChatColor.DARK_BLUE.toString();
+	public String darkgray 		= ChatColor.DARK_GRAY.toString();
+	public String darkgreen 	= ChatColor.DARK_GREEN.toString();
+	public String darkpurple 	= ChatColor.DARK_PURPLE.toString();
+	public String darkred 		= ChatColor.DARK_RED.toString();
+	public String gold 			= ChatColor.GOLD.toString();
+	public String gray 			= ChatColor.GRAY.toString();
+	public String green 		= ChatColor.GREEN.toString();
+	public String purple 		= ChatColor.LIGHT_PURPLE.toString();
+	public String red 			= ChatColor.RED.toString();
+	public String white 		= ChatColor.WHITE.toString();
+	public String yellow 		= ChatColor.YELLOW.toString();
+	
 	// Magic text from The End credits
-	public final String magic 		= ChatColor.MAGIC.toString();
+	public String magic 		= ChatColor.MAGIC.toString();
+	
 	// Formatting
-	public final String bold 			= ChatColor.BOLD.toString();
-	public final String italic 		= ChatColor.ITALIC.toString();
-	public final String strike 		= ChatColor.STRIKETHROUGH.toString();
-	public final String underline 	= ChatColor.UNDERLINE.toString();
+	public String bold 			= ChatColor.BOLD.toString();
+	public String italic 		= ChatColor.ITALIC.toString();
+	public String strike 		= ChatColor.STRIKETHROUGH.toString();
+	public String underline 	= ChatColor.UNDERLINE.toString();
+	
 	// Reset
-	public final String reset 		= ChatColor.RESET.toString();
-	//Plugin-specific Stuff
-	public final String pt			= "[FrogAnnounce] ";
-	public final String igt			= darkgreen+"[FrogAnnounce] ";
+	public String reset 		= ChatColor.RESET.toString();
+	
+	//Other stuff
+	public Player[] playersOnline= Bukkit.getServer().getOnlinePlayers();
+	public int playerCount		= Bukkit.getServer().getOnlinePlayers().length+1;
+	public String _playerCount = (String)String.valueOf(Bukkit.getServer().getOnlinePlayers().length);
+	public String currentPlayersWithMax= Bukkit.getServer().getOnlinePlayers().length+"/"+Bukkit.getServer().getMaxPlayers();
+	public String ibs = (String) String.valueOf(Bukkit.getServer().getIPBans().size());
+	public int ibsi = Bukkit.getServer().getIPBans().size();
+	public String bs = (String)String.valueOf(Bukkit.getServer().getBannedPlayers().size());
+	public int bsi = Bukkit.getServer().getBannedPlayers().size();
+	
 }
