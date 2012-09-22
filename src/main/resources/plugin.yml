@@ -1,0 +1,24 @@
+name: FrogAnnounce
+main: main.java.me.thelunarfrog.FrogAnnounce.FrogAnnounce
+authors: [TheLunarFrog]
+version: 2.2.0
+commands:
+    fa:
+        description: Get help for FrogAnnounce. Short version of /frogannounce
+        usage: /<command>
+    frogannounce:
+        description: Get help for FrogAnnounce. A shorter version is /fa.
+        usage: /<command>
+permissions:
+    frogannounce.*:
+        description: Gives full access
+        children:
+            frogannounce.admin: true
+    frogannounce.admin:
+        description: Gives full access
+        default: op
+categories: [INFO, CHAT]
+required: []
+conflicts: []
+optional: []
+softdepend: [Vault]
