@@ -410,44 +410,53 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 		else
 			otherPlayer = getServer().getPlayer(other);
 		if(otherPlayer != null && otherPlayer == player){
-			if(permission(player, "frogannounce.ignore.other", player.isOp())){
-				ignoredPlayers.add(otherPlayer.getName());
-//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
-				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-				try{
-					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-					otherPlayer.sendMessage(igt+gray+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
-				}catch (IOException e){
-					e.printStackTrace();
+			if(permission(player, "frogannounce.ignore", player.isOp())){
+				if(!ignoredPlayers.contains(player.getName())){
+					ignoredPlayers.add(otherPlayer.getName());
+					//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
+					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
+					try{
+						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+						otherPlayer.sendMessage(igt+gray+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					}catch (IOException e){
+						e.printStackTrace();
+					}
+				}else{
+					player.sendMessage(igt+red+"That player is already being ignored.");
 				}
 			}else{
 				player.sendMessage(igt+red+"You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
 		}else if(otherPlayer != null && otherPlayer != player){
 			if(permission(player, "frogannounce.ignore.other", player.isOp())){
-				ignoredPlayers.add(otherPlayer.getName());
-//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
-				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-				try{
-					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-					player.sendMessage(igt+green+"Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
-					otherPlayer.sendMessage(igt+gray+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
-				}catch (IOException e){
-					e.printStackTrace();
+				if(!ignoredPlayers.contains(otherPlayer.getName())){
+					ignoredPlayers.add(otherPlayer.getName());
+					//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
+					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
+					try{
+						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+						player.sendMessage(igt+green+"Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
+						otherPlayer.sendMessage(igt+gray+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					}catch (IOException e){
+						e.printStackTrace();
+					}
+				}else{
+					player.sendMessage(igt+red+"You're already being ignored by FrogAnnounce.");
 				}
 			}else{
 				player.sendMessage(green+"[FrogAnnounce] "+red+"You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
 		}else{
-			if(permission(player, "frogannounce.ignore", player.isOp())){
-				ignoredPlayers.add(player.getName()); 
-				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-				try{
-					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-				}catch (IOException e){
-					e.printStackTrace();
-				}
-			}
+			player.sendMessage("That player isn't online right now.");
+//			if(permission(player, "frogannounce.ignore", player.isOp())){
+//				ignoredPlayers.add(player.getName()); 
+//				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
+//				try{
+//					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+//				}catch (IOException e){
+//					e.printStackTrace();
+//				}
+//			}
 		}
 	}
 	private void unignorePlayer(Player player, String other){
@@ -458,27 +467,35 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			otherPlayer = getServer().getPlayer(other);
 		if(otherPlayer != null && otherPlayer == player){
 			if(permission(player, "frogannounce.unignore", player.isOp())){
-				ignoredPlayers.remove(otherPlayer.getName());
-				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-				try{
-					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-					otherPlayer.sendMessage(igt+gray+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
-				}catch(IOException e){
-					e.printStackTrace();
+				if(ignoredPlayers.contains(player.getName())){
+					ignoredPlayers.remove(otherPlayer.getName());
+					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
+					try{
+						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+						otherPlayer.sendMessage(igt+gray+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					}catch(IOException e){
+						e.printStackTrace();
+					}
+				}else{
+					player.sendMessage(igt+red+"You're already not being ignored.");
 				}
 			}else{
 				player.sendMessage(igt+red+"You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
 			}
 		}else if(otherPlayer != null && otherPlayer != player){
 			if(permission(player, "frogannounce.unignore.other", player.isOp())){
-				ignoredPlayers.remove(otherPlayer.getName());
-				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-				try{
-					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-					player.sendMessage(igt+green+"Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
-					otherPlayer.sendMessage(igt+gray+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
-				}catch(IOException e){
-					e.printStackTrace();
+				if(ignoredPlayers.contains(otherPlayer.getName())){
+					ignoredPlayers.remove(otherPlayer.getName());
+					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
+					try{
+						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+						player.sendMessage(igt+green+"Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
+						otherPlayer.sendMessage(igt+gray+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					}catch(IOException e){
+						e.printStackTrace();
+					}
+				}else{
+					player.sendMessage(igt+red+"That player is already not being ignored.");
 				}
 			}
 		}else{
