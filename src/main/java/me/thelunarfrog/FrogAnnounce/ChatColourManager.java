@@ -1,19 +1,7 @@
 package main.java.me.thelunarfrog.FrogAnnounce;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 
-/**
- * Yeah! The #1 most useless Interface in the world!<br />
- * For easy use of colours. FrogAnnounce implements this interface so that it isn't
- * needed to make a constructor and call it for every string that needs to be coloured.
- * Also easier to use red+"" than just using ChatColor.RED.toString()+"".
- * @author Dan
- * @category ChatColor
- * @version 1.2.8.1
- * @since FrogAnnounce 2.0
- */
 public interface ChatColourManager {
 
 	// Colours
@@ -47,13 +35,6 @@ public interface ChatColourManager {
 	public String reset 		= ChatColor.RESET.toString();
 	
 	//Other stuff
-	public Player[] playersOnline= Bukkit.getServer().getOnlinePlayers();
-	public int playerCount		= Bukkit.getServer().getOnlinePlayers().length+1;
-	public String _playerCount = (String)String.valueOf(Bukkit.getServer().getOnlinePlayers().length);
-	public String currentPlayersWithMax= Bukkit.getServer().getOnlinePlayers().length+"/"+Bukkit.getServer().getMaxPlayers();
-	public String ibs = (String) String.valueOf(Bukkit.getServer().getIPBans().size());
-	public int ibsi = Bukkit.getServer().getIPBans().size();
-	public String bs = (String)String.valueOf(Bukkit.getServer().getBannedPlayers().size());
-	public int bsi = Bukkit.getServer().getBannedPlayers().size();
-	
+	public String pt			= "[SnowballFightArena] ";
+	public String igt			= darkgreen+"[SnowballFightArena] ";
 }
