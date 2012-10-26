@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
@@ -47,7 +48,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 	protected int playersIgnoredCounter;
 	private String build = "20120922_1200";
 	protected int permissionsSystem;
-
+	private boolean debugging = false;
 	public static FrogAnnounce plugin;
 
 	@Override
@@ -175,7 +176,8 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 							reloadPlugin(player);
 							reloadConfig();
 						}else if(args[0].equalsIgnoreCase("list")){
-							listAnnouncements(player);
+							for(String s: strings)
+								player.sendMessage(colourizeText(""));
 						}
 						return true;
 					}
@@ -193,7 +195,6 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 				}
 			}
 		}else if(!(sender instanceof Player)){
-			//			info("[FrogAnnounce] You must be a player to use this command.");
 			sender = null;
 			Player console = null;
 			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
@@ -502,20 +503,20 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			player.sendMessage(igt+red+"[FrogAnnounce] That player isn't online right now!");
 		}
 	}
-	public void listAnnouncements(Player player){
-		player.sendMessage("[FrogAnnounce] Current announcements:");
-		for(String message: strings){
-			player.sendMessage(message);
-		}
-	}
 	protected void info(String i){
-		logger.log(java.util.logging.Level.INFO, pt+i);
+		logger.log(Level.INFO, pt+i);
 	}
 	protected void warning(String w){
-		logger.log(java.util.logging.Level.WARNING, pt+w);
+		logger.log(Level.WARNING, pt+w);
 	}
 	protected void severe(String s){
-		logger.log(java.util.logging.Level.SEVERE, pt+s);
+		logger.log(Level.SEVERE, pt+s);
+	}
+	protected void debug(String d){
+		if(debugging){
+			logger.log(Level.FINE, pt+d);
+			getServer().getPlayer("TheLunarFrog").sendMessage(pt+"[DEBUG] "+d);
+		}
 	}
 	class Announcer implements Runnable{
 		@Override
