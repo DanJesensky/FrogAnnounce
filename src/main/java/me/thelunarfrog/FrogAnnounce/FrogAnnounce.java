@@ -29,30 +29,22 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  */
 @SuppressWarnings("unused")
-public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
+public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 	private PluginDescriptionFile pdfFile;
-	private static String pt =		 "[FrogAnnounce] ",
-			igt=darkgreen+"[FrogAnnounce] "+green;
-
 	private Logger logger = Logger.getLogger("Minecraft");
 	public static Permission permission = null;
 	protected static String tag;
-	protected static int interval, taskId = -1, counter = 0;
-	protected static boolean running = false, random, permissionsEnabled = false, toGroups;
-	protected static boolean permissionConfig;
+	protected static int interval, taskId = -1, counter = 0, playersIgnoredCounter, permissionsSystem;
+	protected static boolean running = false, random, permissionsEnabled = false, toGroups, permissionConfig, usingPerms;
 	protected static List<String> strings, Groups;
-	protected boolean usingPerms;
-	protected static String ChatSuiteChannel = "FrogAnnounce";
-	protected static boolean useChatSuite = false;
 	protected static ArrayList<String> ignoredPlayers = null;
-	protected int playersIgnoredCounter;
-	protected int permissionsSystem;
-	private boolean debugging = false;
+	private static String pt =			"[FrogAnnounce] ",
+						  igt=darkgreen+"[FrogAnnounce] "+green;
 	public static FrogAnnounce plugin;
 
 	@Override
-	public void onEnable()
-	{
+	public void onEnable(){
+		plugin = this;
 		pdfFile = this.getDescription();
 		try{
 			ConfigurationHandler.loadConfig();
@@ -70,27 +62,26 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
 	@Override
-	public void onDisable()
-	{
+	public void onDisable(){
 		turnOff(true, null);
 		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
 	}
 	private boolean permission(Player player, String line, Boolean op){
-		if(permissionsEnabled) {
+		if(permissionsEnabled){
 			return permission.has(player, line);
-		} else {
+		}else{
 			return op;
 		}
 	}
 	private void turnOff(boolean disabled, Player player){
 		if(running){
 			getServer().getScheduler().cancelTask(taskId);
-			if(player != null) player.sendMessage(red+"Announcer disabled!");
+			if(player!=null) player.sendMessage(red+"Announcer disabled!");
 			info("The announcer has been disabled!");
 			running = false;
 		}else{
 			if(!disabled)
-				if(player != null) player.sendMessage(darkred+"The announcer is not running!");
+				if(player!=null) player.sendMessage(darkred+"The announcer is not running!");
 				else warning("No announcer isn't running!");
 		}
 	}
@@ -98,8 +89,8 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 		if(!running){
 			if(strings.size() > 0){
 				taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Announcer(), interval * 1200, interval * 1200);
-				if(taskId == -1){
-					if(player != null) player.sendMessage(darkred+"Announcer failed to start!");
+				if(taskId==-1){
+					if(player!=null) player.sendMessage(darkred+"Announcer failed to start!");
 					severe("The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
 					return false;
 				}else{
@@ -119,19 +110,19 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			}
 		}else{
 			if(player != null) player.sendMessage(darkred+"Announcer is already running.");
-			info("Announcer is already running." );
+			info("Announcer is already running.");
 			return true;
 		}
 	}
 	private void reloadPlugin(Player player){
 		if(running){
 			turnOff(false, null);
-			try {
+			try{
 				ConfigurationHandler.loadConfig();
-			} catch (InvalidConfigurationException e) {
+			} catch (InvalidConfigurationException e){
 				e.printStackTrace();
 			}
-			if(player != null){
+			if(player!=null){
 				player.sendMessage(igt+"FrogAnnounce has been successfully reloaded!");
 				player.sendMessage(igt+"Settings loaded "+strings.size()+" announcements!");
 				running = turnOn(player, true);
@@ -145,14 +136,14 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 		}
 	}
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 		String commandName = cmd.getName();
 		if(sender instanceof Player){
-			Player player = (Player)sender;
+			Player player=(Player)sender;
 			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce"))
 			{
-				if(permission(player, "frogannounce.admin", player.isOp()) || permission(player, "frogannounce.*", player.isOp()) || permission(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())) {
-					try {
+				if(permission(player, "frogannounce.admin", player.isOp()) || permission(player, "frogannounce.*", player.isOp()) || permission(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())){
+					try{
 						if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty())
 							returnHelp(player);
 						else if(args[0].equalsIgnoreCase("on"))
@@ -181,7 +172,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 						}
 						return true;
 					}
-					catch(ArrayIndexOutOfBoundsException e) {
+					catch(ArrayIndexOutOfBoundsException e){
 						return false;
 					}
 				}
@@ -189,7 +180,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 					if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
 						returnHelp(player);
 				}
-				else {
+				else{
 					player.sendMessage(red+"You do not have the permission level required to use this command!");
 					return true;
 				}
@@ -198,7 +189,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			sender = null;
 			Player console = null;
 			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
-				try {
+				try{
 					if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty())
 						returnHelp(console);
 					else if(args[0].equalsIgnoreCase("on"))
@@ -216,15 +207,14 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 						reloadConfig();
 					}
 					return true;
-				}
-				catch(ArrayIndexOutOfBoundsException e) {
+				}catch(ArrayIndexOutOfBoundsException e){
 					return false;
 				}
 			}
 		}
 		return false;
 	}
-	public void returnHelp(Player player) {
+	public void returnHelp(Player player){
 		String or = white+"|";
 		String auctionStatusColor = darkgreen;
 		String helpMainColor = gold;
@@ -240,7 +230,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			player.sendMessage(helpCommandColor+"/fa <broadcast"	+ or+helpCommandColor+"bc>"		+ helpObligatoryColor	+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
 			player.sendMessage(helpCommandColor+"/fa-add "+or+"/faadd"+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
 			player.sendMessage(helpCommandColor+"/fa <remove "+or+"delete"+or+"rem"+or+"del>"+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
-			//			player.sendMessage(helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
+			//player.sendMessage(helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
 		}else{
 			info("***Help for FrogAnnounce 2.0 (Console Help Version)***");
 			info("/fa <help|?> - You are here. Shows this message.");
@@ -249,7 +239,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			info("/fa <interval|int> <newAnnouncementInterval> - Sets the delay at which the plugin announces. Minutes.");
 			info("/fa <random|rand> <true|false> - Sets the plugin to announce randomly or not.");
 			info("/fa <broadcast|bc> <AnnouncementIndex> - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
-			//			info("/fa <manualbroadcast|mbc> <Message> - Announce text to the entire server. Ignores groups in the config.");
+			//info("/fa <manualbroadcast|mbc> <Message> - Announce text to the entire server. Ignores groups in the config.");
 		}
 	}
 	protected static String colourizeText(String announce){
@@ -336,13 +326,13 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 		}
 		return (permission != null);
 	}
-	private void setRandom(String[] args, Player player) {
+	private void setRandom(String[] args, Player player){
 		boolean s = (boolean) Boolean.parseBoolean(args[1]);
 		if(s != random){
 			random = s;
 			ConfigurationHandler.Settings.set("Settings.Random", s);
-			if(player != null){
-				if(s == true){
+			if(player!=null){
+				if(s==true){
 					player.sendMessage(igt+green+"Announcer has been successfully changed to announce randomly.");
 					info(player.getName()+" has changed FrogAnnounce's live and saved configuration: now announcing randomly.");
 				}else{
@@ -375,9 +365,9 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 		if(newInterval != interval){
 			interval = newInterval;
 			ConfigurationHandler.Settings.set("Settings.Interval", interval);
-			try {
+			try{
 				ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-			} catch (IOException e) {
+			} catch (IOException e){
 				e.printStackTrace();
 			}
 			if(player != null){
@@ -430,11 +420,11 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			}else{
 				player.sendMessage(igt+red+"You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
-		}else if(otherPlayer != null && otherPlayer != player){
+		}else if(otherPlayer!=null && otherPlayer!=player){
 			if(permission(player, "frogannounce.ignore.other", player.isOp())){
 				if(!ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
-					//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
+					//ignoredPlayers.add(++playersIgnoredCounter, player.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
@@ -451,15 +441,15 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			}
 		}else{
 			player.sendMessage("That player isn't online right now.");
-//			if(permission(player, "frogannounce.ignore", player.isOp())){
-//				ignoredPlayers.add(player.getName()); 
-//				ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-//				try{
-//					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-//				}catch (IOException e){
-//					e.printStackTrace();
-//				}
-//			}
+			//if(permission(player, "frogannounce.ignore", player.isOp())){
+			//	ignoredPlayers.add(player.getName()); 
+			//	ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
+			//	try{
+			//		ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+			//	}catch (IOException e){
+			//		e.printStackTrace();
+			//	}
+			//}
 		}
 	}
 	private void unignorePlayer(Player player, String other){
@@ -513,12 +503,6 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 	}
 	protected void severe(String s){
 		logger.log(Level.SEVERE, pt+s);
-	}
-	protected void debug(String d){
-		if(debugging){
-			logger.log(Level.FINE, pt+d);
-			getServer().getPlayer("TheLunarFrog").sendMessage(pt+"[DEBUG] "+d);
-		}
 	}
 	class Announcer implements Runnable{
 		@Override
