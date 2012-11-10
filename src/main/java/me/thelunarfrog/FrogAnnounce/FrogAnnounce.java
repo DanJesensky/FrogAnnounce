@@ -46,7 +46,6 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 	protected static boolean useChatSuite = false;
 	protected static ArrayList<String> ignoredPlayers = null;
 	protected int playersIgnoredCounter;
-	private String build = "20120922_1200";
 	protected int permissionsSystem;
 	private boolean debugging = false;
 	public static FrogAnnounce plugin;
@@ -161,7 +160,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 						else if(args[0].equalsIgnoreCase("off"))
 							turnOff(false, player);
 						else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v"))
-							sender.sendMessage(igt+green+"Current version: "+pdfFile.getVersion()+"\n"+igt+green+"Build string: "+build);
+							sender.sendMessage(igt+green+"Current version: "+pdfFile.getVersion());
 						else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out"))
 							ignorePlayer(player, args[1]);
 						else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in"))
@@ -176,8 +175,9 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 							reloadPlugin(player);
 							reloadConfig();
 						}else if(args[0].equalsIgnoreCase("list")){
+							player.sendMessage("Loaded announcements:");
 							for(String s: strings)
-								player.sendMessage(colourizeText(""));
+								player.sendMessage(colourizeText(s));
 						}
 						return true;
 					}
@@ -299,32 +299,42 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 	}
 
 	protected void broadcastMessage(String s, Player player){
-		String announce = " ";
-		int _int = Integer.parseInt(s);
-
-		if(_int > strings.size()){
-			if(player != null)player.sendMessage(igt+red+"You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
-			else warning("You specified an announcement index that does not exist. Remember: it starts at 0!");
-		}else{
-			try{
-				announce = strings.get(_int);
-				for(String line: announce.split("&NEW_LINE;")){
-					if(tag.equals("") || tag.isEmpty()){
-						getServer().broadcastMessage(colourizeText(line));
-						info("\""+player+"\""+" has forced an announcement (announcement index: "+_int+").");
-						if(player!=null) player.sendMessage(igt+green+"Successfully forced the announcement.");
-						else info("Successfully forced the announcement.");
-					}else{
-						getServer().broadcastMessage(tag+" "+colourizeText(line));
-						info("\""+player+"\""+" has forced an announcement (announcement index: "+_int+").");
-						if(player!=null) player.sendMessage(igt+green+"Successfully forced the announcement.");
-						else info("Successfully forced the announcement.");
+		String announce = null;
+		int _int = 0;
+		try{
+			Integer.parseInt(s);
+			if(_int > strings.size()){
+				if(player != null)player.sendMessage(igt+red+"You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
+				else warning("You specified an announcement index that does not exist. Remember: it starts at 0!");
+			}else{
+				try{
+					announce = strings.get(_int);
+					for(String line: announce.split("&NEW_LINE;")){
+						if(tag.equals("") || tag.isEmpty()){
+							getServer().broadcastMessage(colourizeText(line));
+							info("\""+player+"\""+" has forced an announcement (announcement index: "+_int+").");
+							if(player!=null) player.sendMessage(igt+green+"Successfully forced the announcement.");
+							else info("Successfully forced the announcement.");
+						}else{
+							getServer().broadcastMessage(tag+" "+colourizeText(line));
+							info("\""+player+"\""+" has forced an announcement (announcement index: "+_int+").");
+							if(player!=null) player.sendMessage(igt+green+"Successfully forced the announcement.");
+							else info("Successfully forced the announcement.");
+						}
 					}
+				}catch(NumberFormatException e){
+					if(player != null) player.sendMessage(red+"Error. No letters or symtbols; only numbers. Try this format: "+darkred+"/fa bc 5 (for more help consult /fa help).");
+					else warning("Error. No letters or symbols; only numbers. Try this format: /fa bc 5 (for more help consult /fa help).");
 				}
-			}catch(NumberFormatException e){
-				if(player != null) player.sendMessage(red+"Error. No letters or symtbols; only numbers. Try this format: "+darkred+"/fa bc 5 (for more help consult /fa help).");
-				else warning("Error. No letters or symbols; only numbers. Try this format: /fa bc 5 (for more help consult /fa help).");
 			}
+		}catch(NumberFormatException e){
+			player.sendMessage(green+"[FrogAnnounce] "+red+"Only numbers can be entered as an index. Remember to start counting at 0.");
+			try{
+				throw new InvalidAnnouncementException(this, player);
+			} catch (InvalidAnnouncementException ex) {
+				ex.printStackTrace();
+			}
+			
 		}
 	}
 	protected Boolean setupPermissions(){
