@@ -209,8 +209,6 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 						setInterval(args, console);
 					else if(args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("rand"))
 						setRandom(args, console);
-					//					else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc"))
-					//						manualBroadcast(args, console);
 					else if(args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")){
 						broadcastMessage(args[1], console);
 					}else if(args[0].equalsIgnoreCase("restart") || args[0].equalsIgnoreCase("reload")){
@@ -329,12 +327,6 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager {
 			}
 		}catch(NumberFormatException e){
 			player.sendMessage(green+"[FrogAnnounce] "+red+"Only numbers can be entered as an index. Remember to start counting at 0.");
-			try{
-				throw new InvalidAnnouncementException(this, player);
-			} catch (InvalidAnnouncementException ex) {
-				ex.printStackTrace();
-			}
-			
 		}
 	}
 	protected Boolean setupPermissions(){
