@@ -140,8 +140,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 		String commandName = cmd.getName();
 		if(sender instanceof Player){
 			Player player=(Player)sender;
-			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce"))
-			{
+			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
 				if(permission(player, "frogannounce.admin", player.isOp()) || permission(player, "frogannounce.*", player.isOp()) || permission(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())){
 					try{
 						if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty())
@@ -183,6 +182,13 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 				else{
 					player.sendMessage(red+"You do not have the permission level required to use this command!");
 					return true;
+				}
+			}else if(cmd.getName().equalsIgnoreCase("fa-add")){
+				strings.add(args.toString());
+				try {
+					ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
+				} catch (IOException e) {
+					player.sendMessage(green+"[FrogAnnounce] "+red+"Could not save to configuration file!");
 				}
 			}
 		}else if(!(sender instanceof Player)){

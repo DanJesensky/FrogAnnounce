@@ -9,6 +9,9 @@ commands:
     frogannounce:
         description: Get help for FrogAnnounce. A shorter version is /fa.
         usage: /<command>
+    fa-add:
+        description: Add the specified announcement to the list.
+        usage: /<command>
 permissions:
     frogannounce.*:
         description: Gives full access
