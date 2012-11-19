@@ -35,6 +35,6 @@ public interface ChatColourManager {
 	public String reset 		= ChatColor.RESET.toString();
 	
 	//Other stuff
-	public String pt			= "[SnowballFightArena] ";
-	public String igt			= darkgreen+"[SnowballFightArena] ";
+	public String pt			= "[FrogAnnounce] ";
+	public String igt			= darkgreen+"[FrogAnnounce] ";
 }
