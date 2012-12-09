@@ -128,7 +128,10 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
 				if(permission(player, "frogannounce.admin", player.isOp()) || permission(player, "frogannounce.*", player.isOp()) || permission(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())){
 					try{
-						if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty() || args == null || args.toString().isEmpty() || args.toString().isEmpty())
+						if(args.length == 0){
+							sendMessage(sender, 0, "FrogAnnounce version: "+pdfFile.getVersion());
+							sendMessage(sender, 0, "For help, use /fa help.");
+						}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty() || args == null || args.toString().isEmpty() || args.toString().isEmpty())
 							returnHelp(player);
 						else if(args[0].equalsIgnoreCase("on"))
 							running = turnOn(player, false);
@@ -161,43 +164,45 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 							strings.add(sb.toString().trim());
 							ConfigurationHandler.Settings.set("Announcer.Strings", strings);
 							ConfigurationHandler.save();
+						}else{
+							sendMessage(sender, 1, "That didn't seem like a valid command. Here's some help...");
+							returnHelp(sender);
 						}
 						return true;
 					}
 					catch(ArrayIndexOutOfBoundsException e){
 						return false;
 					}
+				}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
+					if(permission(player, "frogannounce.optout", player.isOp()))
+						ignorePlayer(player, args[1]);
+					else
+						sendMessage(sender, 1, "You don't have permission to access that command.");
+				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
+					if(permission(player, "frogannounce.optin", player.isOp()))
+						ignorePlayer(player, args[1]);
+					else
+						sendMessage(sender, 1, "You don't have permission to access that command.");
 				}
-				if(permission(player, "frogannounce", player.isOp()) || permission(player, "frogannounce.admin", player.isOp())){
-					if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))
-						returnHelp(player);
-				}
-				else{
-					sendMessage(player, 1, "You do not have the permission level required to use this command!");
-					return true;
-				}
-			}else if(cmd.getName().equalsIgnoreCase("fa-add")){
-				strings.add(args.toString());
-				ConfigurationHandler.save();
 			}
 		}
 		return false;
 	}
-	public void returnHelp(Player player){
+	public void returnHelp(CommandSender sender){
 		String or = white+"|";
 		String auctionStatusColor = darkgreen;
 		String helpMainColor = gold;
 		String helpCommandColor = aqua;
 		String helpObligatoryColor = darkred;
-		sendMessage(player, 0, helpMainColor 	+ " * " 			+ auctionStatusColor 	+ "Help for FrogAnnounce 2.1" 			+ helpMainColor	+ " * ");
-		sendMessage(player, 0, helpCommandColor+"/fa <help" 		+ or+helpCommandColor+"?>" 		+ helpMainColor 		+ " - Show this message.");
-		sendMessage(player, 0, helpCommandColor+"/fa <on" 		+ or+helpCommandColor+"off>" 	+ helpMainColor 		+ " - Start or stop FrogAnnounce.");
-		sendMessage(player, 0, helpCommandColor+"/fa <restart" 	+ or+helpCommandColor+"reload>"+helpMainColor 		+ " - Restart FrogAnnounce.");
-		sendMessage(player, 0, helpCommandColor+"/fa <interval" 	+ or+helpCommandColor+"int>" 	+ helpObligatoryColor 	+ " <minutes>" 	+ helpMainColor			  +" - Set the time between each announcement.");
-		sendMessage(player, 0, helpCommandColor+"/fa <random" 	+ or+helpCommandColor+"rand>"	+ helpObligatoryColor 	+ " <on" 		+ or+helpObligatoryColor+"off>"+helpMainColor+" - Set random or consecutive.");
-		sendMessage(player, 0, helpCommandColor+"/fa <broadcast"	+ or+helpCommandColor+"bc>"		+ helpObligatoryColor	+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
-		sendMessage(player, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"|add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
-		sendMessage(player, 0, helpCommandColor+"/fa <remove "+or+"delete"+or+"rem"+or+"del>"+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
+		sendMessage(sender, 0, helpMainColor 	+ " * " 			+ auctionStatusColor 	+ "Help for FrogAnnounce 2.1" 			+ helpMainColor	+ " * ");
+		sendMessage(sender, 0, helpCommandColor+"/fa <help" 		+ or+helpCommandColor+"?>" 		+ helpMainColor 		+ " - Show this message.");
+		sendMessage(sender, 0, helpCommandColor+"/fa <on" 		+ or+helpCommandColor+"off>" 	+ helpMainColor 		+ " - Start or stop FrogAnnounce.");
+		sendMessage(sender, 0, helpCommandColor+"/fa <restart" 	+ or+helpCommandColor+"reload>"+helpMainColor 		+ " - Restart FrogAnnounce.");
+		sendMessage(sender, 0, helpCommandColor+"/fa <interval" 	+ or+helpCommandColor+"int>" 	+ helpObligatoryColor 	+ " <minutes>" 	+ helpMainColor			  +" - Set the time between each announcement.");
+		sendMessage(sender, 0, helpCommandColor+"/fa <random" 	+ or+helpCommandColor+"rand>"	+ helpObligatoryColor 	+ " <on" 		+ or+helpObligatoryColor+"off>"+helpMainColor+" - Set random or consecutive.");
+		sendMessage(sender, 0, helpCommandColor+"/fa <broadcast"	+ or+helpCommandColor+"bc>"		+ helpObligatoryColor	+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
+		sendMessage(sender, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"|add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
+		sendMessage(sender, 0, helpCommandColor+"/fa <remove "+or+"delete"+or+"rem"+or+"del>"+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
 		//sendMessage(helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
 	}
 	protected static String colourizeText(String announce){

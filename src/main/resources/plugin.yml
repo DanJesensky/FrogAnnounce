@@ -9,16 +9,21 @@ commands:
     frogannounce:
         description: Get help for FrogAnnounce. A shorter version is /fa.
         usage: /<command>
-    fa-add:
-        description: Add the specified announcement to the list.
-        usage: /<command>
 permissions:
     frogannounce.*:
-        description: Gives full access
+        description: Gives full access.
         children:
             frogannounce.admin: true
+            frogannounce.optout: true
+            frogannounce.optin: true
     frogannounce.admin:
-        description: Gives full access
+        description: Gives full access.
+        default: op
+    frogannounce.optout:
+        description: Gives access to the /fa optout command.
+        default: op
+    frogannounce.optin:
+        description: Gives access to the /fa optin command.
         default: op
 categories: [INFO, CHAT]
 required: []
