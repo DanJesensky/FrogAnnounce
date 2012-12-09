@@ -34,7 +34,7 @@ public class FrogAnnounce extends JavaPlugin{
 	private Logger logger = Logger.getLogger("Minecraft");
 	public static Permission permission = null;
 	protected static String tag;
-	protected static int interval, taskId = -1, counter = 0, playersIgnoredCounter, permissionsSystem;
+	protected static int interval, taskId = -1, counter = 0;
 	protected static boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms;
 	protected static List<String> strings, Groups;
 	protected static ArrayList<String> ignoredPlayers = null;
