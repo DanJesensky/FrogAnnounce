@@ -152,7 +152,8 @@ public class FrogAnnounce extends JavaPlugin{
 						strings.add(sb.toString().trim());
 						ConfigurationHandler.Settings.set("Announcer.Strings", strings);
 						ConfigurationHandler.save();
-						sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration.");
+						sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration. Reloading config...");
+						reloadPlugin(sender);
 					}else{
 						sendMessage(sender, 1, "That didn't seem like a valid command. Here's some help...");
 						returnHelp(sender);
