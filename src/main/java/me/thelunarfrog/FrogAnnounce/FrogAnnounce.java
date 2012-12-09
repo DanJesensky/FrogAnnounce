@@ -29,7 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  */
 @SuppressWarnings("unused")
-public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
+public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
 	private Logger logger = Logger.getLogger("Minecraft");
 	public static Permission permission = null;
@@ -98,7 +98,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 				return false;
 			}
 		}else{
-			sendMessage(player, 2, darkred+"Announcer is already running.");
+			sendMessage(player, 2, ChatColor.DARK_RED+"Announcer is already running.");
 			return true;
 		}
 	}
@@ -189,11 +189,11 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 		return false;
 	}
 	public void returnHelp(CommandSender sender){
-		String or = white+"|";
-		String auctionStatusColor = darkgreen;
-		String helpMainColor = gold;
-		String helpCommandColor = aqua;
-		String helpObligatoryColor = darkred;
+		String or = ChatColor.WHITE.toString()+"|";
+		String auctionStatusColor = ChatColor.DARK_GREEN.toString();
+		String helpMainColor = ChatColor.GOLD.toString();
+		String helpCommandColor = ChatColor.AQUA.toString();
+		String helpObligatoryColor = ChatColor.DARK_RED.toString();
 		sendMessage(sender, 0, helpMainColor 	+ " * " 			+ auctionStatusColor 	+ "Help for FrogAnnounce 2.1" 			+ helpMainColor	+ " * ");
 		sendMessage(sender, 0, helpCommandColor+"/fa <help" 		+ or+helpCommandColor+"?>" 		+ helpMainColor 		+ " - Show this message.");
 		sendMessage(sender, 0, helpCommandColor+"/fa <on" 		+ or+helpCommandColor+"off>" 	+ helpMainColor 		+ " - Start or stop FrogAnnounce.");
@@ -206,46 +206,46 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 		//sendMessage(helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
 	}
 	protected static String colourizeText(String announce){
-		announce = announce.replaceAll("&AQUA;",		aqua);
-		announce = announce.replaceAll("&BLACK;",		black);
-		announce = announce.replaceAll("&BLUE;",		blue);
-		announce = announce.replaceAll("&DARK_AQUA;",	darkaqua);
-		announce = announce.replaceAll("&DARK_BLUE;",	darkblue);
-		announce = announce.replaceAll("&DARK_GRAY;",	darkgray);
-		announce = announce.replaceAll("&DARK_GREEN;", 	darkgreen);
-		announce = announce.replaceAll("&DARK_PURPLE;",	darkpurple);
-		announce = announce.replaceAll("&RED;", 		red);
-		announce = announce.replaceAll("&DARK_RED;",	darkred);
-		announce = announce.replaceAll("&GOLD;",		gold);
-		announce = announce.replaceAll("&GRAY;",		gray);
-		announce = announce.replaceAll("&GREEN;",		green);
-		announce = announce.replaceAll("&LIGHT_PURPLE;",purple);
-		announce = announce.replaceAll("&PURPLE;",		purple);
-		announce = announce.replaceAll("&PINK;",		purple);
-		announce = announce.replaceAll("&WHITE;", 		white);
-		announce = announce.replaceAll("&b;",			aqua);
-		announce = announce.replaceAll("&0;",			black);
-		announce = announce.replaceAll("&9;",			blue);
-		announce = announce.replaceAll("&3;",			darkaqua);
-		announce = announce.replaceAll("&1;",			darkblue);
-		announce = announce.replaceAll("&8;",			darkgray);
-		announce = announce.replaceAll("&2;", 			darkgreen);
-		announce = announce.replaceAll("&5;",			darkpurple);
-		announce = announce.replaceAll("&4;",			darkred);
-		announce = announce.replaceAll("&6;",			gold);
-		announce = announce.replaceAll("&7;",			gray);
-		announce = announce.replaceAll("&a;",			green);
-		announce = announce.replaceAll("&d;",			purple);
-		announce = announce.replaceAll("&c;",			red);
-		announce = announce.replaceAll("&f;",			white);
-		announce = announce.replaceAll("&e;",			yellow);
-		announce = announce.replaceAll("&k;",			magic);
-		announce = announce.replaceAll("&MAGIC;",		magic);
-		announce = announce.replaceAll("&BOLD;",		bold);
-		announce = announce.replaceAll("&ITALIC;",		italic);
-		announce = announce.replaceAll("&STRIKE;",		strike);
-		announce = announce.replaceAll("&UNDERLINE;",	underline);
-		announce = announce.replaceAll("&RESET;",		reset);
+		announce = announce.replaceAll("&AQUA;",		ChatColor.AQUA.toString());
+		announce = announce.replaceAll("&BLACK;",		ChatColor.BLACK.toString());
+		announce = announce.replaceAll("&BLUE;",		ChatColor.BLUE.toString());
+		announce = announce.replaceAll("&DARK_AQUA;",	ChatColor.DARK_AQUA.toString());
+		announce = announce.replaceAll("&DARK_BLUE;",	ChatColor.DARK_BLUE.toString());
+		announce = announce.replaceAll("&DARK_GRAY;",	ChatColor.DARK_GRAY.toString());
+		announce = announce.replaceAll("&DARK_GREEN;", 	ChatColor.DARK_GREEN.toString());
+		announce = announce.replaceAll("&DARK_PURPLE;",	ChatColor.DARK_PURPLE.toString());
+		announce = announce.replaceAll("&RED;", 		ChatColor.RED.toString());
+		announce = announce.replaceAll("&DARK_RED;",	ChatColor.DARK_RED.toString());
+		announce = announce.replaceAll("&GOLD;",		ChatColor.GOLD.toString());
+		announce = announce.replaceAll("&GRAY;",		ChatColor.GRAY.toString());
+		announce = announce.replaceAll("&GREEN;",		ChatColor.GREEN.toString());
+		announce = announce.replaceAll("&LIGHT_PURPLE;",ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&PURPLE;",		ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&PINK;",		ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&WHITE;", 		ChatColor.WHITE.toString());
+		announce = announce.replaceAll("&b;",			ChatColor.AQUA.toString());
+		announce = announce.replaceAll("&0;",			ChatColor.BLACK.toString());
+		announce = announce.replaceAll("&9;",			ChatColor.BLUE.toString());
+		announce = announce.replaceAll("&3;",			ChatColor.DARK_AQUA.toString());
+		announce = announce.replaceAll("&1;",			ChatColor.DARK_BLUE.toString());
+		announce = announce.replaceAll("&8;",			ChatColor.DARK_GRAY.toString());
+		announce = announce.replaceAll("&2;", 			ChatColor.DARK_GREEN.toString());
+		announce = announce.replaceAll("&5;",			ChatColor.DARK_PURPLE.toString());
+		announce = announce.replaceAll("&4;",			ChatColor.DARK_RED.toString());
+		announce = announce.replaceAll("&6;",			ChatColor.GOLD.toString());
+		announce = announce.replaceAll("&7;",			ChatColor.GRAY.toString());
+		announce = announce.replaceAll("&a;",			ChatColor.GREEN.toString());
+		announce = announce.replaceAll("&d;",			ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&c;",			ChatColor.RED.toString());
+		announce = announce.replaceAll("&f;",			ChatColor.WHITE.toString());
+		announce = announce.replaceAll("&e;",			ChatColor.YELLOW.toString());
+		announce = announce.replaceAll("&k;",			ChatColor.MAGIC.toString());
+		announce = announce.replaceAll("&MAGIC;",		ChatColor.MAGIC.toString());
+		announce = announce.replaceAll("&BOLD;",		ChatColor.BOLD.toString());
+		announce = announce.replaceAll("&ITALIC;",		ChatColor.ITALIC.toString());
+		announce = announce.replaceAll("&STRIKE;",		ChatColor.STRIKETHROUGH.toString());
+		announce = announce.replaceAll("&UNDERLINE;",	ChatColor.UNDERLINE.toString());
+		announce = announce.replaceAll("&RESET;",		ChatColor.RESET.toString());
 		return announce;
 	}
 
@@ -269,7 +269,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 						}
 					}
 				}catch(NumberFormatException e){
-					sendMessage(player, 1, "Error. No letters or symtbols; only numbers. Try this format: "+darkred+"/fa bc 5 (for more help consult /fa help).");
+					sendMessage(player, 1, "Error. No letters or symtbols; only numbers. Try this format: "+ChatColor.DARK_RED+"/fa bc 5 (for more help consult /fa help).");
 				}
 			}
 		}catch(NumberFormatException e){
@@ -306,7 +306,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 			interval = newInterval;
 			ConfigurationHandler.Settings.set("Settings.Interval", interval);
 			ConfigurationHandler.save();
-			sendMessage(player, 0, "Announcement interval has successfully been changed to "+interval+". Please note that this will "+red+"NOT"+green+" be active until a server/plugin restart/reload.");
+			sendMessage(player, 0, "Announcement interval has successfully been changed to "+interval+". Please note that this will "+ChatColor.RED+"NOT"+ChatColor.GREEN+" be active until a server/plugin restart/reload.");
 		}else{
 			sendMessage(player, 1, "The announcement interval is already set to "+interval+"! There's no need to change it!");
 		}
@@ -341,7 +341,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-						otherPlayer.sendMessage(igt+gray+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 					}catch (IOException e){
 						e.printStackTrace();
 					}
@@ -360,7 +360,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
 						sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
-						otherPlayer.sendMessage(igt+gray+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 					}catch (IOException e){
 						e.printStackTrace();
 					}
@@ -396,7 +396,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-						otherPlayer.sendMessage(igt+gray+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 					}catch(IOException e){
 						e.printStackTrace();
 					}
@@ -414,7 +414,7 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
 						sendMessage(player, 0, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
-						otherPlayer.sendMessage(igt+gray+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 					}catch(IOException e){
 						e.printStackTrace();
 					}
@@ -429,11 +429,11 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 	protected void sendMessage(CommandSender sender, int severity, String message){
 		if(sender instanceof Player){
 			if(severity == 0)
-				sender.sendMessage(darkgreen+"[FrogAnnounce] "+green+message);
+				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
 			else if(severity == 1)
-				sender.sendMessage(darkgreen+"[FrogAnnounce] "+red+message);
+				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+message);
 			else if(severity == 2)
-				sender.sendMessage(darkgreen+"[FrogAnnounce] "+darkred+message);
+				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
 		}else{
 			if(severity == 0)
 				info(message);
@@ -446,11 +446,11 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 	protected void sendMessage(Player player, int severity, String message){
 		if(player != null){
 			if(severity == 0)
-				player.sendMessage(darkgreen+"[FrogAnnounce] "+green+message);
+				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
 			else if(severity == 1)
-				player.sendMessage(darkgreen+"[FrogAnnounce] "+red+message);
+				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+message);
 			else if(severity == 2)
-				player.sendMessage(darkgreen+"[FrogAnnounce] "+darkred+message);
+				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
 		}else{
 			if(severity == 0)
 				info(message);
@@ -461,13 +461,13 @@ public class FrogAnnounce extends JavaPlugin implements ChatColourManager{
 		}
 	}
 	protected void info(String i){
-		logger.log(Level.INFO, darkgreen+"[FrogAnnounce] "+green+i);
+		logger.log(Level.INFO, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+i);
 	}
 	protected void warning(String w){
-		logger.log(Level.WARNING, darkgreen+"[FrogAnnounce] "+red+w);
+		logger.log(Level.WARNING, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+w);
 	}
 	protected void severe(String s){
-		logger.log(Level.SEVERE, darkgreen+"[FrogAnnounce]"+darkred+s);
+		logger.log(Level.SEVERE, ChatColor.DARK_GREEN+"[FrogAnnounce]"+ChatColor.DARK_RED+s);
 	}
 	class Announcer implements Runnable{
 		@Override
