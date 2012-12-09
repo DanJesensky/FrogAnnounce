@@ -311,14 +311,12 @@ public class FrogAnnounce extends JavaPlugin{
 	public void checkPermissionsVaultPlugins(){
 		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if(vault != null){
-			if(vault != null){
 				if(setupPermissions()!=null){
 					info("Vault hooked successfully.");
 					usingPerms = true;
 				}else if(setupPermissions() == null){
 					info("Vault wasn't found. Defaulting to OP/Non-OP system.");
 					usingPerms = false;
-				}
 			}
 		}else{
 			warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
