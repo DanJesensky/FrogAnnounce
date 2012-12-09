@@ -145,8 +145,9 @@ public class FrogAnnounce extends JavaPlugin{
 						reloadConfig();
 					}else if(args[0].equalsIgnoreCase("list")){
 						sendMessage(sender, 0, "Loaded announcements:");
-						for(String s: strings)
+						for(String s: strings){
 							sendMessage(sender, 0, strings.indexOf(s)+". "+colourizeText(s));
+						}
 					}else if(args[0].equalsIgnoreCase("add")){
 						StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
@@ -222,23 +223,23 @@ public class FrogAnnounce extends JavaPlugin{
 		try{
 			int page;
 			page = Integer.parseInt(pageString);
-		if(page == 1 || page == 0){
-		sendMessage(sender, 0, helpMainColor 	+ "*" 			+ auctionStatusColor 	+ "Help for FrogAnnounce "+pdfFile.getVersion()+" (1/2)"			+ helpMainColor	+ "*");
-		sendMessage(sender, 0, helpCommandColor+"/fa <help" 		+ or+helpCommandColor+"?>" 		+ helpMainColor 		+ " - Show this message.");
-		sendMessage(sender, 0, helpCommandColor+"/fa <on" 		+ or+helpCommandColor+"off>" 	+ helpMainColor 		+ " - Start or stop FrogAnnounce.");
-		sendMessage(sender, 0, helpCommandColor+"/fa <restart" 	+ or+helpCommandColor+"reload>"+helpMainColor 		+ " - Restart FrogAnnounce.");
-		sendMessage(sender, 0, helpCommandColor+"/fa <interval" 	+ or+helpCommandColor+"int>" 	+ helpObligatoryColor 	+ " <minutes>" 	+ helpMainColor			  +" - Set the time between each announcement.");
-		sendMessage(sender, 0, helpCommandColor+"/fa <random" 	+ or+helpCommandColor+"rand>"	+ helpObligatoryColor 	+ " <on" 		+ or+helpObligatoryColor+"off>"+helpMainColor+" - Set random or consecutive.");
-		sendMessage(sender, 0, helpCommandColor+"/fa <broadcast"	+ or+helpCommandColor+"bc>"		+ helpObligatoryColor	+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
-		sendMessage(sender, 0, ChatColor.GOLD+"Use /fa help 2 to see the next page.");
-		}else if(page == 2){
-		sendMessage(sender, 0, helpMainColor 	+ "*" 			+ auctionStatusColor 	+ "Help for FrogAnnounce "+pdfFile.getVersion()+" (2/2)"			+ helpMainColor	+ "*");
-		sendMessage(sender, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
-		sendMessage(sender, 0, helpCommandColor+"/fa <remove "+or+helpCommandColor+"delete"+or+helpCommandColor+"rem"+or+helpCommandColor+"del> "+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
-		sendMessage(sender, 0, helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
-		}else{
-			sendMessage(sender, 0, "There's no page "+page+".");
-		}
+			if(page == 1 || page == 0){
+				sendMessage(sender, 0, helpMainColor 	+ "*" 			+ auctionStatusColor 	+ "Help for FrogAnnounce "+pdfFile.getVersion()+" (1/2)"			+ helpMainColor	+ "*");
+				sendMessage(sender, 0, helpCommandColor+"/fa <help" 		+ or+helpCommandColor+"?>" 		+ helpMainColor 		+ " - Show this message.");
+				sendMessage(sender, 0, helpCommandColor+"/fa <on" 		+ or+helpCommandColor+"off>" 	+ helpMainColor 		+ " - Start or stop FrogAnnounce.");
+				sendMessage(sender, 0, helpCommandColor+"/fa <restart" 	+ or+helpCommandColor+"reload>"+helpMainColor 		+ " - Restart FrogAnnounce.");
+				sendMessage(sender, 0, helpCommandColor+"/fa <interval" 	+ or+helpCommandColor+"int>" 	+ helpObligatoryColor 	+ " <minutes>" 	+ helpMainColor			  +" - Set the time between each announcement.");
+				sendMessage(sender, 0, helpCommandColor+"/fa <random" 	+ or+helpCommandColor+"rand>"	+ helpObligatoryColor 	+ " <on" 		+ or+helpObligatoryColor+"off>"+helpMainColor+" - Set random or consecutive.");
+				sendMessage(sender, 0, helpCommandColor+"/fa <broadcast"	+ or+helpCommandColor+"bc>"		+ helpObligatoryColor	+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
+				sendMessage(sender, 0, ChatColor.GOLD+"Use /fa help 2 to see the next page.");
+			}else if(page == 2){
+				sendMessage(sender, 0, helpMainColor 	+ "*" 			+ auctionStatusColor 	+ "Help for FrogAnnounce "+pdfFile.getVersion()+" (2/2)"			+ helpMainColor	+ "*");
+				sendMessage(sender, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
+				sendMessage(sender, 0, helpCommandColor+"/fa <remove "+or+helpCommandColor+"delete"+or+helpCommandColor+"rem"+or+helpCommandColor+"del> "+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
+				sendMessage(sender, 0, helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
+			}else{
+				sendMessage(sender, 0, "There's no page "+page+".");
+			}
 		}catch(NumberFormatException e){
 			sendMessage(sender, 0, "You must specify a page - positive integers only.");
 		}
@@ -287,24 +288,20 @@ public class FrogAnnounce extends JavaPlugin{
 		return announce;
 	}
 	protected void broadcastMessage(String s, CommandSender player){
-		String announce = null;
 		int _int = 0;
 		try{
-			Integer.parseInt(s);
+			_int = Integer.parseInt(s);
 			if(_int > strings.size()){
 				sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			}else{
 				try{
-					announce = strings.get(_int);
-					for(String line: announce.split("&NEW_LINE;")){
-						if(tag.equals("") || tag.isEmpty()){
+					for(String line: strings.get(_int).split("&NEW_LINE;")){
+						if(tag.equals("") || tag.isEmpty())
 							getServer().broadcastMessage(colourizeText(line));
-							sendMessage(player, 0, "Successfully forced the announcement.");
-						}else{
+						else
 							getServer().broadcastMessage(tag+" "+colourizeText(line));
-							sendMessage(player, 0, "Successfully forced the announcement.");
-						}
 					}
+					sendMessage(player, 0, "Successfully forced the announcement.");
 				}catch(NumberFormatException e){
 					sendMessage(player, 1, "Error. No letters or symtbols; only numbers. Try this format: "+ChatColor.DARK_RED+"/fa bc 5 (for more help consult /fa help).");
 				}
