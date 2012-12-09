@@ -35,7 +35,7 @@ public class FrogAnnounce extends JavaPlugin{
 	public static Permission permission = null;
 	protected static String tag;
 	protected static int interval, taskId = -1, counter = 0, playersIgnoredCounter, permissionsSystem;
-	protected static boolean running = false, random, permissionsEnabled = false, toGroups, permissionConfig, usingPerms;
+	protected static boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms;
 	protected static List<String> strings, Groups;
 	protected static ArrayList<String> ignoredPlayers = null;
 	public static FrogAnnounce plugin;
@@ -54,7 +54,8 @@ public class FrogAnnounce extends JavaPlugin{
 		}catch(InvalidConfigurationException e){
 			System.out.println(e.getMessage());
 		}
-		checkPermissionsVaultPlugins();
+		if(usingPerms)
+			checkPermissionsVaultPlugins();
 		info("Settings loaded "+strings.size()+" announcements!");
 		running = turnOn(null);
 		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
@@ -478,7 +479,7 @@ public class FrogAnnounce extends JavaPlugin{
 				if(counter >= strings.size())
 					counter = 0;
 			}
-			if(permissionConfig && toGroups){
+			if(usingPerms && toGroups){
 				Player[] players = getServer().getOnlinePlayers();
 				for(Player p: players){
 					for(String group: Groups){

@@ -51,7 +51,7 @@ public class ConfigurationHandler extends FrogAnnounce{
 				Settings.load(configFile);
 				FrogAnnounce.interval			=							 Settings.getInt(		"Settings.Interval",	5);
 				FrogAnnounce.random				=							 Settings.getBoolean(	"Settings.Random",		false);
-				FrogAnnounce.permissionConfig	=							 Settings.getBoolean(	"Settings.Permission",	true);
+				FrogAnnounce.usingPerms			=							 Settings.getBoolean(	"Settings.Permission",	true);
 				FrogAnnounce.strings			= (ArrayList)(				 Settings.getList(		"Announcer.Strings",	new ArrayList<String>()));
 				FrogAnnounce.tag				= FrogAnnounce.colourizeText(Settings.getString(	"Announcer.Tag",		"&GOLD;[FrogAnnounce]"));
 				FrogAnnounce.toGroups			=							 Settings.getBoolean(	"Announcer.ToGroups",	true);
