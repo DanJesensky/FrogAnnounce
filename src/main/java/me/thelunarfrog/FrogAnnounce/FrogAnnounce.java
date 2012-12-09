@@ -172,11 +172,14 @@ public class FrogAnnounce extends JavaPlugin{
 							try{
 								i = Integer.parseInt(args[1]);
 								try{
+									sendMessage(sender, 0, "Removing announcement "+i+" ("+strings.get(i)+")...");
 									strings.remove(i);
 									ConfigurationHandler.Settings.set("Announcer.Strings", strings);
 									ConfigurationHandler.save();
+									sendMessage(sender, 0, "Announcement "+i+" successfully removed. Reloading configuration...");
+									reloadPlugin(sender);
 								}catch(IndexOutOfBoundsException e){
-									sendMessage(sender, 1, "Error: There are only ");
+									sendMessage(sender, 1, "Error: There are only "+strings.size()+" announcements. You must count from 0!");
 								}
 							}catch(NumberFormatException e){
 								sendMessage(sender, 1, "Please enter an announcement index.");
