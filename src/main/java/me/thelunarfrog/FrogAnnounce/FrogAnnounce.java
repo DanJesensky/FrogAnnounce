@@ -58,14 +58,14 @@ public class FrogAnnounce extends JavaPlugin{
 		turnOff(true, null);
 		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
 	}
-	private boolean permit(Player player, String line, Boolean op){
-		if(permissionsEnabled){
-			return permission.has(player, line);
+	private boolean permit(CommandSender player, String perm){
+		if(usingPerms){
+			return permission.has(player, perm);
 		}else{
-			return op;
+			return player.isOp();
 		}
 	}
-	private void turnOff(boolean disabled, Player player){
+	private void turnOff(boolean disabled, CommandSender player){
 		if(running){
 			getServer().getScheduler().cancelTask(taskId);
 			sendMessage(player, 0, "Announcer disabled!");
@@ -75,7 +75,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 2, "The announcer is not running!");
 		}
 	}
-	private boolean turnOn(Player player){
+	private boolean turnOn(CommandSender player){
 		if(!running){
 			if(strings.size() > 0){
 				taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Announcer(), interval * 1200, interval * 1200);
@@ -96,7 +96,7 @@ public class FrogAnnounce extends JavaPlugin{
 			return true;
 		}
 	}
-	private void reloadPlugin(Player player){
+	private void reloadPlugin(CommandSender player){
 		if(running){
 			turnOff(false, null);
 			try{
@@ -113,68 +113,65 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
-		String commandName = cmd.getName();
-		if(sender instanceof Player){
-			Player player=(Player)sender;
-			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
-				if(permit(player, "frogannounce.admin", player.isOp()) || permit(player, "frogannounce.*", player.isOp()) || permit(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())){
-					try{
-						if(args.length == 0){
-							sendMessage(sender, 0, "FrogAnnounce version: "+pdfFile.getVersion());
-							sendMessage(sender, 0, "For help, use /fa help.");
-						}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty() || args == null || args.toString().isEmpty() || args.toString().isEmpty())
-							returnHelp(player);
-						else if(args[0].equalsIgnoreCase("on"))
-							running = turnOn(player);
-						else if(args[0].equalsIgnoreCase("off"))
-							turnOff(false, player);
-						else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v"))
-							sendMessage(sender, 0, "Current version: "+pdfFile.getVersion());
-						else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out"))
-							ignorePlayer(player, args[1]);
-						else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in"))
-							unignorePlayer(player, args[1]);
-						else if(args[0].equalsIgnoreCase("interval") || args[0].equalsIgnoreCase("int"))
-							setInterval(args, player);
-						else if(args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("rand"))
-							setRandom(args, player);
-						else if(args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")){
-							broadcastMessage(args[1], player);
-						}else if(args[0].equalsIgnoreCase("restart") || args[0].equalsIgnoreCase("reload")){
-							reloadPlugin(player);
-							reloadConfig();
-						}else if(args[0].equalsIgnoreCase("list")){
-							sendMessage(sender, 0, "Loaded announcements:");
-							for(String s: strings)
-								sendMessage(sender, 0, colourizeText(s));
-						}else if(args[0].equalsIgnoreCase("add")){
-							StringBuilder sb = new StringBuilder();
-							for(int i = 1; i < args.length; i++){
-								sb.append(args[i]+" ");
-							}
-							strings.add(sb.toString().trim());
-							ConfigurationHandler.Settings.set("Announcer.Strings", strings);
-							ConfigurationHandler.save();
-						}else{
-							sendMessage(sender, 1, "That didn't seem like a valid command. Here's some help...");
-							returnHelp(sender);
+		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
+			if(permit(sender, "frogannounce.admin") || permit(sender, "frogannounce.*")){
+				try{
+					if(args.length == 0){
+						sendMessage(sender, 0, "FrogAnnounce version: "+pdfFile.getVersion());
+						sendMessage(sender, 0, "For help, use /fa help.");
+					}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty() || args == null || args.toString().isEmpty() || args.toString().isEmpty())
+						returnHelp(sender);
+					else if(args[0].equalsIgnoreCase("on"))
+						running = turnOn(sender);
+					else if(args[0].equalsIgnoreCase("off"))
+						turnOff(false, sender);
+					else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v"))
+						sendMessage(sender, 0, "Current version: "+pdfFile.getVersion());
+					else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out"))
+						ignorePlayer(sender, args[1]);
+					else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in"))
+						unignorePlayer(sender, args[1]);
+					else if(args[0].equalsIgnoreCase("interval") || args[0].equalsIgnoreCase("int"))
+						setInterval(args, sender);
+					else if(args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("rand"))
+						setRandom(args, sender);
+					else if(args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")){
+						broadcastMessage(args[1], sender);
+					}else if(args[0].equalsIgnoreCase("restart") || args[0].equalsIgnoreCase("reload")){
+						reloadPlugin(sender);
+						reloadConfig();
+					}else if(args[0].equalsIgnoreCase("list")){
+						sendMessage(sender, 0, "Loaded announcements:");
+						for(String s: strings)
+							sendMessage(sender, 0, colourizeText(s));
+					}else if(args[0].equalsIgnoreCase("add")){
+						StringBuilder sb = new StringBuilder();
+						for(int i = 1; i < args.length; i++){
+							sb.append(args[i]+" ");
 						}
-						return true;
+						strings.add(sb.toString().trim());
+						ConfigurationHandler.Settings.set("Announcer.Strings", strings);
+						ConfigurationHandler.save();
+						sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration.");
+					}else{
+						sendMessage(sender, 1, "That didn't seem like a valid command. Here's some help...");
+						returnHelp(sender);
 					}
-					catch(ArrayIndexOutOfBoundsException e){
-						return false;
-					}
-				}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
-					if(permit(player, "frogannounce.optout", player.isOp()))
-						ignorePlayer(player, args[1]);
-					else
-						sendMessage(sender, 1, "You don't have permission to access that command.");
-				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
-					if(permit(player, "frogannounce.optin", player.isOp()))
-						ignorePlayer(player, args[1]);
-					else
-						sendMessage(sender, 1, "You don't have permission to access that command.");
+					return true;
 				}
+				catch(ArrayIndexOutOfBoundsException e){
+					return false;
+				}
+			}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
+				if(permit(sender, "frogannounce.optout"))
+					ignorePlayer(sender, args[1]);
+				else
+					sendMessage(sender, 1, "You don't have permission to access that command.");
+			}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
+				if(permit(sender, "frogannounce.optin"))
+					ignorePlayer(sender, args[1]);
+				else
+					sendMessage(sender, 1, "You don't have permission to access that command.");
 			}
 		}
 		return false;
@@ -240,7 +237,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return announce;
 	}
 
-	protected void broadcastMessage(String s, Player player){
+	protected void broadcastMessage(String s, CommandSender player){
 		String announce = null;
 		int _int = 0;
 		try{
@@ -274,7 +271,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 		return (permission != null);
 	}
-	private void setRandom(String[] args, Player player){
+	private void setRandom(String[] args, CommandSender player){
 		boolean s = (boolean) Boolean.parseBoolean(args[1]);
 		if(s != random){
 			random = s;
@@ -291,7 +288,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 1, "The announcer is already set to not announce randomly! There's no need to change it!");
 		}
 	}
-	private void setInterval(String[] cmdArgs, Player player){
+	private void setInterval(String[] cmdArgs, CommandSender player){
 		int newInterval = (int) Integer.parseInt(cmdArgs[1]);
 		if(newInterval != interval){
 			interval = newInterval;
@@ -305,25 +302,25 @@ public class FrogAnnounce extends JavaPlugin{
 	public void checkPermissionsVaultPlugins(){
 		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if(vault != null){
-				if(setupPermissions()!=null){
-					info("Vault hooked successfully.");
-					usingPerms = true;
-				}else if(setupPermissions() == null){
-					info("Vault wasn't found. Defaulting to OP/Non-OP system.");
-					usingPerms = false;
+			if(setupPermissions()!=null){
+				info("Vault hooked successfully.");
+				usingPerms = true;
+			}else if(setupPermissions() == null){
+				info("Vault wasn't found. Defaulting to OP/Non-OP system.");
+				usingPerms = false;
 			}
 		}else{
 			warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
 		}
 	}
-	private void ignorePlayer(Player player, String other){
+	private void ignorePlayer(CommandSender player, String other){
 		Player otherPlayer = getServer().getPlayer(other);
 		if(other.equals(player.getName()))
-			otherPlayer = player;
+			otherPlayer = (Player)player;
 		else
 			otherPlayer = getServer().getPlayer(other);
 		if(otherPlayer != null && otherPlayer == player){
-			if(permit(player, "frogannounce.ignore", player.isOp())){
+			if(permit(player, "frogannounce.ignore")){
 				if(!ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
 					//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
@@ -341,7 +338,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
 		}else if(otherPlayer!=null && otherPlayer!=player){
-			if(permit(player, "frogannounce.ignore.other", player.isOp())){
+			if(permit(player, "frogannounce.ignore.other")){
 				if(!ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
 					//ignoredPlayers.add(++playersIgnoredCounter, player.getName());
@@ -372,14 +369,14 @@ public class FrogAnnounce extends JavaPlugin{
 			//}
 		}
 	}
-	private void unignorePlayer(Player player, String other){
+	private void unignorePlayer(CommandSender player, String other){
 		Player otherPlayer;
 		if(other.isEmpty())
-			otherPlayer = player;
+			otherPlayer = (Player)player;
 		else
 			otherPlayer = getServer().getPlayer(other);
 		if(otherPlayer != null && otherPlayer == player){
-			if(permit(player, "frogannounce.unignore", player.isOp())){
+			if(permit(player, "frogannounce.unignore")){
 				if(ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.remove(otherPlayer.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
@@ -396,7 +393,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 1, "You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
 			}
 		}else if(otherPlayer != null && otherPlayer != player){
-			if(permit(player, "frogannounce.unignore.other", player.isOp())){
+			if(permit(player, "frogannounce.unignore.other")){
 				if(ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.remove(otherPlayer.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
