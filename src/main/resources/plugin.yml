@@ -1,7 +1,7 @@
 name: FrogAnnounce
 main: main.java.me.thelunarfrog.FrogAnnounce.FrogAnnounce
 authors: [TheLunarFrog]
-version: 2.1.0
+version: 2.2.0-SNAPSHOT
 commands:
     fa:
         description: Get help for FrogAnnounce. Short version of /frogannounce
