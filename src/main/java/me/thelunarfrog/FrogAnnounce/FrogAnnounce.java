@@ -291,7 +291,7 @@ public class FrogAnnounce extends JavaPlugin{
 		int _int = 0;
 		try{
 			_int = Integer.parseInt(s);
-			if(_int > strings.size()){
+			if(_int > strings.size()-1){
 				sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			}else{
 				try{
