@@ -58,7 +58,7 @@ public class FrogAnnounce extends JavaPlugin{
 		turnOff(true, null);
 		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
 	}
-	private boolean permission(Player player, String line, Boolean op){
+	private boolean permit(Player player, String line, Boolean op){
 		if(permissionsEnabled){
 			return permission.has(player, line);
 		}else{
@@ -117,7 +117,7 @@ public class FrogAnnounce extends JavaPlugin{
 		if(sender instanceof Player){
 			Player player=(Player)sender;
 			if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
-				if(permission(player, "frogannounce.admin", player.isOp()) || permission(player, "frogannounce.*", player.isOp()) || permission(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())){
+				if(permit(player, "frogannounce.admin", player.isOp()) || permit(player, "frogannounce.*", player.isOp()) || permit(player, "frogannounce.command."+commandName.toLowerCase(), player.isOp())){
 					try{
 						if(args.length == 0){
 							sendMessage(sender, 0, "FrogAnnounce version: "+pdfFile.getVersion());
@@ -165,12 +165,12 @@ public class FrogAnnounce extends JavaPlugin{
 						return false;
 					}
 				}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
-					if(permission(player, "frogannounce.optout", player.isOp()))
+					if(permit(player, "frogannounce.optout", player.isOp()))
 						ignorePlayer(player, args[1]);
 					else
 						sendMessage(sender, 1, "You don't have permission to access that command.");
 				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
-					if(permission(player, "frogannounce.optin", player.isOp()))
+					if(permit(player, "frogannounce.optin", player.isOp()))
 						ignorePlayer(player, args[1]);
 					else
 						sendMessage(sender, 1, "You don't have permission to access that command.");
@@ -323,7 +323,7 @@ public class FrogAnnounce extends JavaPlugin{
 		else
 			otherPlayer = getServer().getPlayer(other);
 		if(otherPlayer != null && otherPlayer == player){
-			if(permission(player, "frogannounce.ignore", player.isOp())){
+			if(permit(player, "frogannounce.ignore", player.isOp())){
 				if(!ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
 					//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
@@ -341,7 +341,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
 		}else if(otherPlayer!=null && otherPlayer!=player){
-			if(permission(player, "frogannounce.ignore.other", player.isOp())){
+			if(permit(player, "frogannounce.ignore.other", player.isOp())){
 				if(!ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
 					//ignoredPlayers.add(++playersIgnoredCounter, player.getName());
@@ -379,7 +379,7 @@ public class FrogAnnounce extends JavaPlugin{
 		else
 			otherPlayer = getServer().getPlayer(other);
 		if(otherPlayer != null && otherPlayer == player){
-			if(permission(player, "frogannounce.unignore", player.isOp())){
+			if(permit(player, "frogannounce.unignore", player.isOp())){
 				if(ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.remove(otherPlayer.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
@@ -396,7 +396,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 1, "You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
 			}
 		}else if(otherPlayer != null && otherPlayer != player){
-			if(permission(player, "frogannounce.unignore.other", player.isOp())){
+			if(permit(player, "frogannounce.unignore.other", player.isOp())){
 				if(ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.remove(otherPlayer.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
