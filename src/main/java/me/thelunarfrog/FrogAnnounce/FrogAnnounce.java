@@ -278,10 +278,11 @@ public class FrogAnnounce extends JavaPlugin{
 			random = s;
 			ConfigurationHandler.Settings.set("Settings.Random", s);
 			if(s==true)
-				sendMessage(player, 0, "Announcer has been successfully changed to announce randomly.");
+				sendMessage(player, 0, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
 			else
-				sendMessage(player, 0, "Announcer has been successfully changed to announce in sequence.");
+				sendMessage(player, 0, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
 			ConfigurationHandler.save();
+			reloadPlugin(player);
 		}else{
 			if(random == true)
 				sendMessage(player, 1, "The announcer is already set to announce randomly! There's no need to change it!");
@@ -295,7 +296,8 @@ public class FrogAnnounce extends JavaPlugin{
 			interval = newInterval;
 			ConfigurationHandler.Settings.set("Settings.Interval", interval);
 			ConfigurationHandler.save();
-			sendMessage(player, 0, "Announcement interval has successfully been changed to "+interval+". Please note that this will "+ChatColor.RED+"NOT"+ChatColor.GREEN+" be active until a server/plugin restart/reload.");
+			sendMessage(player, 0, "Announcement interval has successfully been changed to "+interval+". Reloading configuration...");
+			reloadPlugin(player);
 		}else{
 			sendMessage(player, 1, "The announcement interval is already set to "+interval+"! There's no need to change it!");
 		}
