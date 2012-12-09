@@ -9,7 +9,6 @@ import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,7 +27,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  * @category main
  * 
  */
-@SuppressWarnings("unused")
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
 	private Logger logger = Logger.getLogger("Minecraft");
