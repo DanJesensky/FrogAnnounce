@@ -45,12 +45,7 @@ public class FrogAnnounce extends JavaPlugin{
 		try{
 			ConfigurationHandler.loadConfig();
 		}catch (Exception e){
-			System.out.println(e.getMessage());
-		}
-		try{
-			ConfigurationHandler.loadConfig();
-		}catch(InvalidConfigurationException e){
-			System.out.println(e.getMessage());
+			e.printStackTrace();
 		}
 		if(usingPerms)
 			checkPermissionsVaultPlugins();
