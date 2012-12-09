@@ -56,7 +56,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 		checkPermissionsVaultPlugins();
 		info("Settings loaded "+strings.size()+" announcements!");
-		running = turnOn(null, true);
+		running = turnOn(null);
 		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
 	@Override
@@ -81,7 +81,7 @@ public class FrogAnnounce extends JavaPlugin{
 				sendMessage(player, 2, "The announcer is not running!");
 		}
 	}
-	private boolean turnOn(Player player, boolean startup){
+	private boolean turnOn(Player player){
 		if(!running){
 			if(strings.size() > 0){
 				taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Announcer(), interval * 1200, interval * 1200);
@@ -110,10 +110,7 @@ public class FrogAnnounce extends JavaPlugin{
 			}catch(InvalidConfigurationException e){
 				e.printStackTrace();
 			}
-			if(player!=null)
-				running = turnOn(player, true);
-			else
-				running = turnOn(null, true);
+			running = turnOn(player);
 			sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
 			sendMessage(player, 0, "Settings loaded "+strings.size()+" announcements!");
 		}else{
@@ -134,7 +131,7 @@ public class FrogAnnounce extends JavaPlugin{
 						}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty() || args == null || args.toString().isEmpty() || args.toString().isEmpty())
 							returnHelp(player);
 						else if(args[0].equalsIgnoreCase("on"))
-							running = turnOn(player, false);
+							running = turnOn(player);
 						else if(args[0].equalsIgnoreCase("off"))
 							turnOff(false, player);
 						else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v"))
