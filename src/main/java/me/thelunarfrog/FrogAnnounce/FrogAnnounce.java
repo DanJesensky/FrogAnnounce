@@ -119,9 +119,12 @@ public class FrogAnnounce extends JavaPlugin{
 					if(args.length == 0){
 						sendMessage(sender, 0, "FrogAnnounce version: "+pdfFile.getVersion());
 						sendMessage(sender, 0, "For help, use /fa help.");
-					}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?") || args[0].isEmpty() || args == null || args.toString().isEmpty() || args.toString().isEmpty())
-						returnHelp(sender);
-					else if(args[0].equalsIgnoreCase("on"))
+					}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")){
+						if(args.length == 2)
+							returnHelp(sender, args[1]);
+						else
+							returnHelp(sender, "0");
+					}else if(args[0].equalsIgnoreCase("on"))
 						running = turnOn(sender);
 					else if(args[0].equalsIgnoreCase("off"))
 						turnOff(false, sender);
@@ -143,7 +146,7 @@ public class FrogAnnounce extends JavaPlugin{
 					}else if(args[0].equalsIgnoreCase("list")){
 						sendMessage(sender, 0, "Loaded announcements:");
 						for(String s: strings)
-							sendMessage(sender, 0, colourizeText(s));
+							sendMessage(sender, 0, strings.indexOf(s)+". "+colourizeText(s));
 					}else if(args[0].equalsIgnoreCase("add")){
 						StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
@@ -154,9 +157,39 @@ public class FrogAnnounce extends JavaPlugin{
 						ConfigurationHandler.save();
 						sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration. Reloading config...");
 						reloadPlugin(sender);
+					}else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc")){
+						StringBuilder sb = new StringBuilder();
+						for(int i = 1; i < args.length; i++){
+							sb.append(args[i]+" ");
+						}
+						if(tag.isEmpty())
+							getServer().broadcastMessage(colourizeText(sb.toString().trim()));
+						else
+							getServer().broadcastMessage(tag+" "+colourizeText(sb.toString().trim()));
+					}else if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("rem") || args[0].equalsIgnoreCase("del")){
+						int i = 0;
+						if(args.length == 2){
+							try{
+								i = Integer.parseInt(args[1]);
+								try{
+									strings.remove(i);
+									ConfigurationHandler.Settings.set("Announcer.Strings", strings);
+									ConfigurationHandler.save();
+								}catch(IndexOutOfBoundsException e){
+									sendMessage(sender, 1, "Error: There are only ");
+								}
+							}catch(NumberFormatException e){
+								sendMessage(sender, 1, "Please enter an announcement index.");
+							}
+						}else{
+							sendMessage(sender, 1, "You must specify an index to remove.");
+						}
 					}else{
 						sendMessage(sender, 1, "That didn't seem like a valid command. Here's some help...");
-						returnHelp(sender);
+						if(args.length == 2)
+							returnHelp(sender, args[1]);
+						else
+							returnHelp(sender, "0");
 					}
 					return true;
 				}
@@ -177,22 +210,35 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 		return false;
 	}
-	public void returnHelp(CommandSender sender){
+	public void returnHelp(CommandSender sender, String pageString){
 		String or = ChatColor.WHITE.toString()+"|";
 		String auctionStatusColor = ChatColor.DARK_GREEN.toString();
 		String helpMainColor = ChatColor.GOLD.toString();
 		String helpCommandColor = ChatColor.AQUA.toString();
 		String helpObligatoryColor = ChatColor.DARK_RED.toString();
-		sendMessage(sender, 0, helpMainColor 	+ " * " 			+ auctionStatusColor 	+ "Help for FrogAnnounce 2.1" 			+ helpMainColor	+ " * ");
+		try{
+			int page;
+			page = Integer.parseInt(pageString);
+		if(page == 1 || page == 0){
+		sendMessage(sender, 0, helpMainColor 	+ "*" 			+ auctionStatusColor 	+ "Help for FrogAnnounce "+pdfFile.getVersion()+" (1/2)"			+ helpMainColor	+ "*");
 		sendMessage(sender, 0, helpCommandColor+"/fa <help" 		+ or+helpCommandColor+"?>" 		+ helpMainColor 		+ " - Show this message.");
 		sendMessage(sender, 0, helpCommandColor+"/fa <on" 		+ or+helpCommandColor+"off>" 	+ helpMainColor 		+ " - Start or stop FrogAnnounce.");
 		sendMessage(sender, 0, helpCommandColor+"/fa <restart" 	+ or+helpCommandColor+"reload>"+helpMainColor 		+ " - Restart FrogAnnounce.");
 		sendMessage(sender, 0, helpCommandColor+"/fa <interval" 	+ or+helpCommandColor+"int>" 	+ helpObligatoryColor 	+ " <minutes>" 	+ helpMainColor			  +" - Set the time between each announcement.");
 		sendMessage(sender, 0, helpCommandColor+"/fa <random" 	+ or+helpCommandColor+"rand>"	+ helpObligatoryColor 	+ " <on" 		+ or+helpObligatoryColor+"off>"+helpMainColor+" - Set random or consecutive.");
 		sendMessage(sender, 0, helpCommandColor+"/fa <broadcast"	+ or+helpCommandColor+"bc>"		+ helpObligatoryColor	+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
-		sendMessage(sender, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"|add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
-		sendMessage(sender, 0, helpCommandColor+"/fa <remove "+or+"delete"+or+"rem"+or+"del>"+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
-		//sendMessage(helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
+		sendMessage(sender, 0, ChatColor.GOLD+"Use /fa help 2 to see the next page.");
+		}else if(page == 2){
+		sendMessage(sender, 0, helpMainColor 	+ "*" 			+ auctionStatusColor 	+ "Help for FrogAnnounce "+pdfFile.getVersion()+" (2/2)"			+ helpMainColor	+ "*");
+		sendMessage(sender, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
+		sendMessage(sender, 0, helpCommandColor+"/fa <remove "+or+helpCommandColor+"delete"+or+helpCommandColor+"rem"+or+helpCommandColor+"del> "+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
+		sendMessage(sender, 0, helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+ "mbc"		+ helpObligatoryColor	+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
+		}else{
+			sendMessage(sender, 0, "There's no page "+page+".");
+		}
+		}catch(NumberFormatException e){
+			sendMessage(sender, 0, "You must specify a page - positive integers only.");
+		}
 	}
 	protected static String colourizeText(String announce){
 		announce = announce.replaceAll("&AQUA;",		ChatColor.AQUA.toString());
@@ -237,7 +283,6 @@ public class FrogAnnounce extends JavaPlugin{
 		announce = announce.replaceAll("&RESET;",		ChatColor.RESET.toString());
 		return announce;
 	}
-
 	protected void broadcastMessage(String s, CommandSender player){
 		String announce = null;
 		int _int = 0;
@@ -326,7 +371,6 @@ public class FrogAnnounce extends JavaPlugin{
 			if(permit(player, "frogannounce.ignore")){
 				if(!ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
-					//				ignoredPlayers.add(++playersIgnoredCounter, player.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
@@ -344,7 +388,6 @@ public class FrogAnnounce extends JavaPlugin{
 			if(permit(player, "frogannounce.ignore.other")){
 				if(!ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
-					//ignoredPlayers.add(++playersIgnoredCounter, player.getName());
 					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
 					try{
 						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
@@ -361,15 +404,6 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 		}else{
 			sendMessage(player, 1, "That player isn't online right now.");
-			//if(permission(player, "frogannounce.ignore", player.isOp())){
-			//	ignoredPlayers.add(player.getName()); 
-			//	ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-			//	try{
-			//		ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-			//	}catch (IOException e){
-			//		e.printStackTrace();
-			//	}
-			//}
 		}
 	}
 	private void unignorePlayer(CommandSender player, String other){
