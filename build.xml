@@ -1,0 +1,57 @@
+<project name="FrogAnnounce" default="main" basedir=".">
+  <!-- env variables -->
+  <property name="src" location="src/me/thelunarfrog/FrogAnnounce"/>
+  <property name="target" location="target/"/>
+
+  <target name="main" depends="clean, init, class, compile, jar" description="Main target">
+      <echo>Building the .jar file.</echo>
+  </target>
+  
+  <!-- Cleanup workspace -->
+  <target name="clean" description="Cleans project">
+      <echo>Cleaning</echo>
+	  <delete failonerror="false">
+	  <fileset dir="build" includes="**/*" />
+	  </delete>
+	  <delete file="target/FrogAnnounce.jar" />
+  </target>
+
+  <!-- Initial setup -->
+  <target name="init">
+      <tstamp/>
+  <!-- Create folders -->
+      <mkdir dir="target"/>
+      <mkdir dir="build"/>
+      <mkdir dir="lib"/>
+  </target>
+  
+  <!-- Download libraries -->
+  <target name="class">
+  <get src="http://whiskeycraft.net/repo/org/bukkit/craftbukkit/lastsuccessful/craftbukkit.jar" dest="lib/CraftBukkit.jar"/>
+  <get src="http://whiskeycraft.net/repo/net/milkbowl/vault/lastsuccessful/vault.jar" dest="lib/vault.jar"/>
+  </target>
+  <path id="classpath">
+      <fileset dir="lib" includes="**/*.jar"/>
+  </path>
+  
+  <!-- compile -->
+  <target name="compile">
+      <echo>Compiling</echo>
+      <javac srcdir="src/me/thelunarfrog/FrogAnnounce" destdir="build" debug="true" debuglevel="lines,vars,source" classpathref="classpath" includeantruntime="false"/>
+      <copy file="plugin.yml" tofile="build/plugin.yml"/>
+      <copy file="Configuration.yml" tofile="build/Configuration.yml"/>
+      <replace file="build/plugin.yml" token="b000" value="b${env.BUILD_NUMBER}" />
+  </target>
+  
+  <!-- jar -->
+  <target name="jar">
+	<echo>Making jar</echo>
+        <jar jarfile="target/FrogAnnounce.jar" basedir="build">
+		<manifest>
+			<attribute name="Built-By" value="${user.name}" />
+		</manifest>
+        </jar>
+    	<delete dir="build"/>
+        <delete dir="lib"/>
+  </target>
+</project>
