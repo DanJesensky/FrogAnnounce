@@ -70,16 +70,6 @@
 			<systemPath>C:\Program Files\Jenkins\workspace\Dependencies\Vault.jar</systemPath>
 		<optional>true</optional>
 	</dependency>
-	<!--ChatSuite - Optional, does nothing yet-->
-	<dependency>
-		<groupId>net.krinsoft</groupId>
-		<artifactId>ChatSuite</artifactId>
-		<version>1</version>
-		<type>jar</type>
-		<scope>system</scope>
-			<systemPath>C:\Program Files\Jenkins\workspace\Dependencies\ChatSuite.jar</systemPath>
-		<optional>true</optional>
-	</dependency>
   </dependencies>
 
   <!-- More Project Information -->
