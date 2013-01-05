@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.milkbowl.vault.permission.Permission;
 
@@ -29,7 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
-	private Logger logger = Logger.getLogger("Minecraft");
+	protected FrogLog logger = new FrogLog();
 	public static Permission permission = null;
 	protected static String tag;
 	protected static int interval, taskId = -1, counter = 0;
@@ -49,14 +47,14 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 		if(usingPerms)
 			checkPermissionsVaultPlugins();
-		info("Settings loaded "+strings.size()+" announcements!");
+		logger.info("Settings loaded "+strings.size()+" announcements!");
 		running = turnOn(null);
-		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
+		logger.info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
 	@Override
 	public void onDisable(){
 		turnOff(true, null);
-		info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
+		logger.info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
 	}
 	private boolean permit(CommandSender player, String perm){
 		if(usingPerms){
@@ -351,14 +349,14 @@ public class FrogAnnounce extends JavaPlugin{
 		Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if(vault != null){
 			if(setupPermissions()!=null){
-				info("Vault hooked successfully.");
+				logger.info("Vault hooked successfully.");
 				usingPerms = true;
 			}else if(setupPermissions() == null){
-				info("Vault wasn't found. Defaulting to OP/Non-OP system.");
+				logger.info("Vault wasn't found. Defaulting to OP/Non-OP system.");
 				usingPerms = false;
 			}
 		}else{
-			warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
+			logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
 		}
 	}
 	private void ignorePlayer(CommandSender player, String other){
@@ -459,11 +457,11 @@ public class FrogAnnounce extends JavaPlugin{
 				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
 		}else{
 			if(severity == 0)
-				info(message);
+				logger.info(message);
 			else if(severity == 1)
-				warning(message);
+				logger.warning(message);
 			else if(severity == 2)
-				severe(message);
+				logger.severe(message);
 		}
 	}
 	protected void sendMessage(Player player, int severity, String message){
@@ -476,21 +474,12 @@ public class FrogAnnounce extends JavaPlugin{
 				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
 		}else{
 			if(severity == 0)
-				info(message);
+				logger.info(message);
 			else if(severity == 1)
-				warning(message);
+				logger.warning(message);
 			else if(severity == 2)
-				severe(message);
+				logger.severe(message);
 		}
-	}
-	protected void info(String i){
-		logger.log(Level.INFO, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+i);
-	}
-	protected void warning(String w){
-		logger.log(Level.WARNING, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+w);
-	}
-	protected void severe(String s){
-		logger.log(Level.SEVERE, ChatColor.DARK_GREEN+"[FrogAnnounce]"+ChatColor.DARK_RED+s);
 	}
 	class Announcer implements Runnable{
 		@Override

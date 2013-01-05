@@ -58,13 +58,13 @@ public class ConfigurationHandler extends FrogAnnounce{
 				FrogAnnounce.Groups				= (ArrayList)(				 Settings.getList(		"Announcer.Groups",		new ArrayList<String>()));
 				FrogAnnounce.ignoredPlayers		= (ArrayList<String>)		 Settings.getList(		"ignoredPlayers",		new ArrayList<String>());
 			}catch(FileNotFoundException ex){
-				fa.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}catch(IOException ex){
-				fa.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}catch(InvalidConfigurationException ex){
-				fa.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}
 		}else{
@@ -74,9 +74,9 @@ public class ConfigurationHandler extends FrogAnnounce{
 				copyFile(jarURL, configFile);
 				Settings = new YamlConfiguration();
 				Settings.load(configFile);
-				fa.info("Configuration loaded successfully.");
+				fa.logger.info("Configuration loaded successfully.");
 			}catch(Exception e){
-				fa.severe("Exception occurred while creating a new configuration file!");
+				fa.logger.severe("Exception occurred while creating a new configuration file!");
 				e.printStackTrace();
 			}
 		}
