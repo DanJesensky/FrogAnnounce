@@ -5,8 +5,7 @@ import java.util.logging.Logger;
 
 import org.bukkit.ChatColor;
 
-public class FrogLog {
-	
+public class FrogLog{
 	protected void info(String i){
 		Logger.getLogger("Minecraft").log(Level.INFO, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+i);
 	}

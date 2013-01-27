@@ -15,8 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * Handles the FrogAnnounce configuration.
  * @version 1.3.27.27 (Final? Unless more configuration nodes come to be.)
  * @category Configuration
- * @since 1.0.1.3
- * (Announced as 1.0)
+ * @since 1.0.1.3 (Announced as 1.0)
  * @author Dan | TheLunarFrog
  */
 public class ConfigurationHandler extends FrogAnnounce{
@@ -34,7 +33,7 @@ public class ConfigurationHandler extends FrogAnnounce{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void save(){
 		try{
 			Settings.save(configFile);
@@ -42,21 +41,22 @@ public class ConfigurationHandler extends FrogAnnounce{
 			e.printStackTrace();
 		}
 	}
-	@SuppressWarnings({"rawtypes", "unchecked"})
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected static void loadConfig() throws InvalidConfigurationException{
 		configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
-		if (configFile.exists()) {
+		if(configFile.exists()){
 			Settings = new YamlConfiguration();
 			try{
 				Settings.load(configFile);
-				FrogAnnounce.interval			=							 Settings.getInt(		"Settings.Interval",	5);
-				FrogAnnounce.random				=							 Settings.getBoolean(	"Settings.Random",		false);
-				FrogAnnounce.usingPerms			=							 Settings.getBoolean(	"Settings.Permission",	true);
-				FrogAnnounce.strings			= (ArrayList)(				 Settings.getList(		"Announcer.Strings",	new ArrayList<String>()));
-				FrogAnnounce.tag				= FrogAnnounce.colourizeText(Settings.getString(	"Announcer.Tag",		"&GOLD;[FrogAnnounce]"));
-				FrogAnnounce.toGroups			=							 Settings.getBoolean(	"Announcer.ToGroups",	true);
-				FrogAnnounce.Groups				= (ArrayList)(				 Settings.getList(		"Announcer.Groups",		new ArrayList<String>()));
-				FrogAnnounce.ignoredPlayers		= (ArrayList<String>)		 Settings.getList(		"ignoredPlayers",		new ArrayList<String>());
+				FrogAnnounce.interval = Settings.getInt("Settings.Interval", 5);
+				FrogAnnounce.random = Settings.getBoolean("Settings.Random", false);
+				FrogAnnounce.usingPerms = Settings.getBoolean("Settings.Permission", true);
+				FrogAnnounce.strings =(ArrayList)(Settings.getList("Announcer.Strings", new ArrayList<String>()));
+				FrogAnnounce.tag = FrogAnnounce.colourizeText(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+				FrogAnnounce.toGroups = Settings.getBoolean("Announcer.ToGroups", true);
+				FrogAnnounce.Groups =(ArrayList)(Settings.getList("Announcer.Groups", new ArrayList<String>()));
+				FrogAnnounce.ignoredPlayers =(ArrayList<String>) Settings.getList("ignoredPlayers", new ArrayList<String>());
 			}catch(FileNotFoundException ex){
 				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
@@ -81,10 +81,11 @@ public class ConfigurationHandler extends FrogAnnounce{
 			}
 		}
 	}
+
 	static private void copyFile(InputStream in, File out) throws Exception{
 		InputStream fis = in;
 		FileOutputStream fos = new FileOutputStream(out);
-		try {
+		try{
 			byte[] buf = new byte[1024];
 			int i = 0;
 			while((i = fis.read(buf)) != -1){
@@ -101,6 +102,7 @@ public class ConfigurationHandler extends FrogAnnounce{
 			}
 		}
 	}
+
 	protected ConfigurationHandler(){
 		this.plugin = FrogAnnounce.plugin;
 	}
