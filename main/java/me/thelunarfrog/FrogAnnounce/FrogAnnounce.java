@@ -506,34 +506,39 @@ public class FrogAnnounce extends JavaPlugin{
 				if(counter >= strings.size())
 					counter = 0;
 			}
-			if(usingPerms && toGroups){
-				Player[] players = getServer().getOnlinePlayers();
-				for (Player p: players){
-					for (String group: Groups){
-						if(permission.playerInGroup(p.getWorld().getName(), p.getName(), group) && !ignoredPlayers.contains(p.getName())){
-							for (String line : announce.split("&NEW_LINE;")){
-								if(ignoredPlayers.contains(p.getName())){
-									if(tag.equals("")|| tag.equals(" ") || tag.isEmpty())
-										p.sendMessage(colourizeText(line));
-									else
-										p.sendMessage(tag+" "+colourizeText(line));
+			if(!announce.startsWith("&USE-CMD;")){
+				if(usingPerms && toGroups){
+					Player[] players = getServer().getOnlinePlayers();
+					for (Player p: players){
+						for (String group: Groups){
+							if(permission.playerInGroup(p.getWorld().getName(), p.getName(), group) && !ignoredPlayers.contains(p.getName())){
+								for (String line : announce.split("&NEW_LINE;")){
+									if(ignoredPlayers.contains(p.getName())){
+										if(tag.equals("")|| tag.equals(" ") || tag.isEmpty())
+											p.sendMessage(colourizeText(line));
+										else
+											p.sendMessage(tag+" "+colourizeText(line));
+									}
 								}
+							}
+						}
+					}
+				}else{
+					Player[] onlinePlayers = getServer().getOnlinePlayers();
+					for (Player p : onlinePlayers){
+						for (String line : announce.split("&NEW_LINE;")){
+							if(!ignoredPlayers.contains(p.getName())){
+								if(tag.equals("") || tag.equals(" ") || tag.isEmpty())
+									p.sendMessage(colourizeText(line));
+								else
+									p.sendMessage(tag+" "+colourizeText(line));
 							}
 						}
 					}
 				}
 			}else{
-				Player[] onlinePlayers = getServer().getOnlinePlayers();
-				for (Player p : onlinePlayers){
-					for (String line : announce.split("&NEW_LINE;")){
-						if(!ignoredPlayers.contains(p.getName())){
-							if(tag.equals("") || tag.equals(" ") || tag.isEmpty())
-								p.sendMessage(colourizeText(line));
-							else
-								p.sendMessage(tag+" "+colourizeText(line));
-						}
-					}
-				}
+				announce = announce.replace("&USE-CMD;", "/");
+				getServer().dispatchCommand(getServer().getConsoleSender(), announce);
 			}
 		}
 	}

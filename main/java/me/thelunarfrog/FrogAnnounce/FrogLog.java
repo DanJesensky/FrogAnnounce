@@ -13,6 +13,6 @@ public class FrogLog{
 		Logger.getLogger("Minecraft").log(Level.WARNING, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+w);
 	}
 	protected void severe(String s){
-		Logger.getLogger("Minecraft").log(Level.SEVERE, ChatColor.DARK_GREEN+"[FrogAnnounce]"+ChatColor.DARK_RED+s);
+		Logger.getLogger("Minecraft").log(Level.SEVERE, ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+s);
 	}
 }
