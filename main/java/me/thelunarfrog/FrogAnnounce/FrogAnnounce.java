@@ -203,16 +203,25 @@ public class FrogAnnounce extends JavaPlugin{
 				}catch(ArrayIndexOutOfBoundsException e){
 					return false;
 				}
-			}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
-				if(permit(sender, "frogannounce.optout"))
-					ignorePlayer(sender, args[1]);
-				else
-					sendMessage(sender, 1, "You don't have permission to access that command.");
-			}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
-				if(permit(sender, "frogannounce.optin"))
-					ignorePlayer(sender, args[1]);
-				else
-					sendMessage(sender, 1, "You don't have permission to access that command.");
+			}
+			if(args.length > 1){
+				else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
+					if(permit(sender, "frogannounce.optout")){
+						if(args.length == 2)
+							ignorePlayer(sender, args[1]);
+						else
+							ignorePlayer(sender, sender.getName());
+					}else
+						sendMessage(sender, 1, "You don't have permission to access that command.");
+				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
+					if(permit(sender, "frogannounce.optin")){
+						if(args.length == 2)
+							ignorePlayer(sender, args[1]);
+						else
+							ignorePlayer(sender, sender.getName());
+					}else
+						sendMessage(sender, 1, "You don't have permission to access that command.");
+				}
 			}
 		}
 		return false;
@@ -308,7 +317,7 @@ public class FrogAnnounce extends JavaPlugin{
 					}
 					sendMessage(player, 0, "Successfully forced the announcement.");
 				}catch(NumberFormatException e){
-					sendMessage(player, 1, "Error. No letters or symtbols; only numbers. Try this format: "+ChatColor.DARK_RED+"/fa bc 5 (for more help consult /fa help).");
+					sendMessage(player, 1, "Error. No letters or symtbols; only numbers. Try this format: "+ChatColor.DARK_RED+"/fa bc 5 (for more help, consult /fa help).");
 				}
 			}
 		}catch(NumberFormatException e){
