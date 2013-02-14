@@ -80,7 +80,7 @@ public class FrogAnnounce extends JavaPlugin{
 	private boolean turnOn(CommandSender player){
 		if(!running){
 			if(strings.size()> 0){
-				taskId = getServer().getScheduler().scheduleAsyncRepeatingTask(this, new Announcer(), interval * 1200, interval * 1200);
+				taskId = getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(), interval * 1200, interval * 1200);
 				if(taskId == -1){
 					sendMessage(player, 2, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
 					return false;
