@@ -27,7 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
-	protected FrogLog logger = new FrogLog();
+	protected FrogLog logger;
 	public static Permission permission = null;
 	protected static String tag;
 	protected static int interval, taskId = -1, counter = 0;
@@ -40,6 +40,8 @@ public class FrogAnnounce extends JavaPlugin{
 	public void onEnable(){
 		plugin = this;
 		pdfFile = this.getDescription();
+		logger = new FrogLog();
+		
 		try{
 			ConfigurationHandler.loadConfig();
 		}catch(Exception e){
