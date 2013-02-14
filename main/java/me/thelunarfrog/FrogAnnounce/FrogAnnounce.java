@@ -203,7 +203,8 @@ public class FrogAnnounce extends JavaPlugin{
 				}catch(ArrayIndexOutOfBoundsException e){
 					return false;
 				}
-			}else if(args.length > 1){
+			}
+			else if(args.length > 1){
 				if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
 					if(permit(sender, "frogannounce.optout")){
 						if(args.length == 2)
