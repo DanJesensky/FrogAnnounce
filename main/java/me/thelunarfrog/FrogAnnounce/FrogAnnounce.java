@@ -41,7 +41,7 @@ public class FrogAnnounce extends JavaPlugin{
 		plugin = this;
 		pdfFile = this.getDescription();
 		logger = new FrogLog();
-		
+
 		try{
 			ConfigurationHandler.loadConfig();
 		}catch(Exception e){
@@ -60,12 +60,14 @@ public class FrogAnnounce extends JavaPlugin{
 		logger.info("Version "+pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
 	}
 
-	private boolean permit(CommandSender player, String perm){
-		if(usingPerms){
-			return permission.has(player, perm);
-		}else{
-			return player.isOp();
-		}
+	private boolean permit(CommandSender sender, String perm){
+		if(sender instanceof Player)
+			if(sender.isOp())
+				return true;
+			else
+				return sender.hasPermission(perm);
+		else
+			return true;
 	}
 
 	private void turnOff(boolean disabled, CommandSender player){
@@ -205,26 +207,36 @@ public class FrogAnnounce extends JavaPlugin{
 				}catch(ArrayIndexOutOfBoundsException e){
 					return false;
 				}
-			}
-			else if(args.length > 1){
+			}else if(args.length > 1){
 				if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
-					if(permit(sender, "frogannounce.optout")){
-						if(args.length == 2)
+					if(args.length == 2){
+						if(permit(sender, "frogannounce.optout.other"))
 							ignorePlayer(sender, args[1]);
 						else
+							sendMessage(sender, 1, "You don't have permission to access that command.");
+					}else{
+						if(permit(sender, "frogannounce.optout"))
 							ignorePlayer(sender, sender.getName());
-					}else
-						sendMessage(sender, 1, "You don't have permission to access that command.");
+						else
+							sendMessage(sender, 1, "You don't have permission to access that command.");
+					}
+					return true;
 				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
-					if(permit(sender, "frogannounce.optin")){
-						if(args.length == 2)
-							ignorePlayer(sender, args[1]);
+					if(args.length == 2){
+						if(permit(sender, "frogannounce.optin.other"))
+							unignorePlayer(sender, args[1]);
 						else
-							ignorePlayer(sender, sender.getName());
-					}else
-						sendMessage(sender, 1, "You don't have permission to access that command.");
+							sendMessage(sender, 1, "You don't have permission to access that command.");
+					}else{
+						if(permit(sender, "frogannounce.optin"))
+							unignorePlayer(sender, sender.getName());
+						else
+							sendMessage(sender, 1, "You don't have permission to access that command.");
+					}
+					return true;
 				}
 			}
+			return true;
 		}
 		return false;
 	}
@@ -503,7 +515,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	class Announcer implements Runnable {
+	class Announcer implements Runnable{
 		@Override
 		public void run(){
 			String announce = "";
