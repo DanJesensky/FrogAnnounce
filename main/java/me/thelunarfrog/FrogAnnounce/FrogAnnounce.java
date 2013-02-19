@@ -35,18 +35,15 @@ public class FrogAnnounce extends JavaPlugin{
 	protected static List<String> strings, Groups;
 	protected static ArrayList<String> ignoredPlayers = null;
 	public static FrogAnnounce plugin;
+	private ConfigurationHandler cfg = null;
 
 	@Override
 	public void onEnable(){
 		plugin = this;
 		pdfFile = this.getDescription();
 		logger = new FrogLog();
+		cfg = new ConfigurationHandler(this);
 
-		try{
-			ConfigurationHandler.loadConfig();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
 		if(usingPerms)
 			checkPermissionsVaultPlugins();
 		logger.info("Settings loaded "+strings.size()+" announcements!");
@@ -106,11 +103,7 @@ public class FrogAnnounce extends JavaPlugin{
 	private void reloadPlugin(CommandSender player){
 		if(running){
 			turnOff(false, null);
-			try{
-				ConfigurationHandler.loadConfig();
-			}catch(InvalidConfigurationException e){
-				e.printStackTrace();
-			}
+			cfg.loadConfig();
 			running = turnOn(player);
 			sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
 			sendMessage(player, 0, "Settings loaded "+strings.size()+" announcements!");
@@ -162,8 +155,8 @@ public class FrogAnnounce extends JavaPlugin{
 							sb.append(args[i]+" ");
 						}
 						strings.add(sb.toString().trim());
-						ConfigurationHandler.Settings.set("Announcer.Strings", strings);
-						ConfigurationHandler.save();
+						cfg.Settings.set("Announcer.Strings", strings);
+						cfg.saveConfig();
 						sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration. Reloading config...");
 						reloadPlugin(sender);
 					}else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc")){
@@ -183,8 +176,8 @@ public class FrogAnnounce extends JavaPlugin{
 								try{
 									sendMessage(sender, 0, "Removing announcement "+i+" ("+strings.get(i)+")...");
 									strings.remove(i);
-									ConfigurationHandler.Settings.set("Announcer.Strings", strings);
-									ConfigurationHandler.save();
+									cfg.Settings.set("Announcer.Strings", strings);
+									cfg.saveConfig();
 									sendMessage(sender, 0, "Announcement "+i+" successfully removed. Reloading configuration...");
 									reloadPlugin(sender);
 								}catch(IndexOutOfBoundsException e){
@@ -351,12 +344,12 @@ public class FrogAnnounce extends JavaPlugin{
 		boolean s = (boolean)Boolean.parseBoolean(args[1]);
 		if(s != random){
 			random = s;
-			ConfigurationHandler.Settings.set("Settings.Random", s);
+			cfg.Settings.set("Settings.Random", s);
 			if(s == true)
 				sendMessage(player, 0, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
 			else
 				sendMessage(player, 0, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
-			ConfigurationHandler.save();
+			cfg.saveConfig();
 			reloadPlugin(player);
 		}else{
 			if(random == true)
@@ -370,8 +363,8 @@ public class FrogAnnounce extends JavaPlugin{
 		int newInterval = (int)Integer.parseInt(cmdArgs[1]);
 		if(newInterval != interval){
 			interval = newInterval;
-			ConfigurationHandler.Settings.set("Settings.Interval", interval);
-			ConfigurationHandler.save();
+			cfg.Settings.set("Settings.Interval", interval);
+			cfg.saveConfig();
 			sendMessage(player, 0, "Announcement interval has successfully been changed to "+interval+". Reloading configuration...");
 			reloadPlugin(player);
 		}else
@@ -402,13 +395,9 @@ public class FrogAnnounce extends JavaPlugin{
 			if(permit(player, "frogannounce.ignore")){
 				if(!ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
-					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-					try{
-						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
-					}catch(IOException e){
-						e.printStackTrace();
-					}
+					cfg.Settings.set("ignoredPlayers", ignoredPlayers);
+					cfg.saveConfig();
+					sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else{
 					sendMessage(player, 1, "That player is already being ignored.");
 				}
@@ -419,14 +408,10 @@ public class FrogAnnounce extends JavaPlugin{
 			if(permit(player, "frogannounce.ignore.other")){
 				if(!ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.add(otherPlayer.getName());
-					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-					try{
-						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-						sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
-						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
-					}catch(IOException e){
-						e.printStackTrace();
-					}
+					cfg.Settings.set("ignoredPlayers", ignoredPlayers);
+					cfg.saveConfig();
+					sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
+					sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else{
 					sendMessage(player, 1, "You're already being ignored by FrogAnnounce.");
 				}
@@ -448,14 +433,9 @@ public class FrogAnnounce extends JavaPlugin{
 			if(permit(player, "frogannounce.unignore")){
 				if(ignoredPlayers.contains(player.getName())){
 					ignoredPlayers.remove(otherPlayer.getName());
-					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-					try{
-						ConfigurationHandler.Settings
-						.save(ConfigurationHandler.configFile);
-						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
-					}catch(IOException e){
-						e.printStackTrace();
-					}
+					cfg.Settings.set("ignoredPlayers", ignoredPlayers);
+					cfg.saveConfig();
+					sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else
 					sendMessage(player, 1, "You're already not being ignored.");
 			}else
@@ -464,14 +444,10 @@ public class FrogAnnounce extends JavaPlugin{
 			if(permit(player, "frogannounce.unignore.other")){
 				if(ignoredPlayers.contains(otherPlayer.getName())){
 					ignoredPlayers.remove(otherPlayer.getName());
-					ConfigurationHandler.Settings.set("ignoredPlayers", ignoredPlayers);
-					try{
-						ConfigurationHandler.Settings.save(ConfigurationHandler.configFile);
-						sendMessage(player, 0, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
-						sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
-					}catch(IOException e){
-						e.printStackTrace();
-					}
+					cfg.Settings.set("ignoredPlayers", ignoredPlayers);
+					cfg.saveConfig();
+					sendMessage(player, 0, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
+					sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else
 					sendMessage(player, 1, "That player is already not being ignored.");
 			}

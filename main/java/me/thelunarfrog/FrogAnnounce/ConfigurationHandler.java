@@ -13,16 +13,15 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * Handles the FrogAnnounce configuration.
- * @version 1.3.27.27 (Final? Unless more configuration nodes come to be.)
+ * @version 1.4.0.0 (Final? Unless more configuration nodes come to be.)
  * @category Configuration
  * @since 1.0.1.3 (Announced as 1.0)
  * @author Dan | TheLunarFrog
  */
 public class ConfigurationHandler extends FrogAnnounce{
 
-	protected static YamlConfiguration Settings;
-	protected static File configFile;
-	private static FrogAnnounce fa = new FrogAnnounce();
+	protected YamlConfiguration Settings;
+	protected File configFile;
 	FrogAnnounce plugin;
 
 	@Override
@@ -34,16 +33,8 @@ public class ConfigurationHandler extends FrogAnnounce{
 		}
 	}
 
-	public static void save(){
-		try{
-			Settings.save(configFile);
-		}catch(IOException e){
-			e.printStackTrace();
-		}
-	}
-
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected static void loadConfig() throws InvalidConfigurationException{
+	protected void loadConfig(){
 		configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
 		if(configFile.exists()){
 			Settings = new YamlConfiguration();
@@ -58,13 +49,13 @@ public class ConfigurationHandler extends FrogAnnounce{
 				FrogAnnounce.Groups =(ArrayList)(Settings.getList("Announcer.Groups", new ArrayList<String>()));
 				FrogAnnounce.ignoredPlayers =(ArrayList<String>) Settings.getList("ignoredPlayers", new ArrayList<String>());
 			}catch(FileNotFoundException ex){
-				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}catch(IOException ex){
-				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}catch(InvalidConfigurationException ex){
-				fa.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}
 		}else{
@@ -74,9 +65,9 @@ public class ConfigurationHandler extends FrogAnnounce{
 				copyFile(jarURL, configFile);
 				Settings = new YamlConfiguration();
 				Settings.load(configFile);
-				fa.logger.info("Configuration loaded successfully.");
+				plugin.logger.info("Configuration loaded successfully.");
 			}catch(Exception e){
-				fa.logger.severe("Exception occurred while creating a new configuration file!");
+				plugin.logger.severe("Exception occurred while creating a new configuration file!");
 				e.printStackTrace();
 			}
 		}
@@ -103,7 +94,7 @@ public class ConfigurationHandler extends FrogAnnounce{
 		}
 	}
 
-	protected ConfigurationHandler(){
-		this.plugin = FrogAnnounce.plugin;
+	protected ConfigurationHandler(FrogAnnounce plugin){
+		this.plugin = plugin;
 	}
 }
