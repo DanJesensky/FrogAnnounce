@@ -110,8 +110,7 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd,
-			String commandLabel, String[] args){
+	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args){
 		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
 			if(permit(sender, "frogannounce.admin") || permit(sender, "frogannounce.*")){
 				try{
@@ -194,10 +193,10 @@ public class FrogAnnounce extends JavaPlugin{
 						else
 							returnHelp(sender, "0");
 					}
-					return true;
 				}catch(ArrayIndexOutOfBoundsException e){
 					return false;
 				}
+				return true;
 			}else if(args.length > 1){
 				if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
 					if(args.length == 2){
@@ -226,7 +225,8 @@ public class FrogAnnounce extends JavaPlugin{
 					}
 					return true;
 				}
-			}
+			}else
+				sendMessage(sender, 1, ChatColor.RED+"Sorry, but you don't have access to that command.");
 			return true;
 		}
 		return false;
