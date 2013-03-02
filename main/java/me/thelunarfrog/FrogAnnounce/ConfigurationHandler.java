@@ -40,14 +40,14 @@ public class ConfigurationHandler extends FrogAnnounce{
 			Settings = new YamlConfiguration();
 			try{
 				Settings.load(configFile);
-				FrogAnnounce.interval = Settings.getInt("Settings.Interval", 5);
-				FrogAnnounce.random = Settings.getBoolean("Settings.Random", false);
-				FrogAnnounce.usingPerms = Settings.getBoolean("Settings.Permission", true);
-				FrogAnnounce.strings =(ArrayList)(Settings.getList("Announcer.Strings", new ArrayList<String>()));
-				FrogAnnounce.tag = FrogAnnounce.colourizeText(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-				FrogAnnounce.toGroups = Settings.getBoolean("Announcer.ToGroups", true);
-				FrogAnnounce.Groups =(ArrayList)(Settings.getList("Announcer.Groups", new ArrayList<String>()));
-				FrogAnnounce.ignoredPlayers =(ArrayList<String>) Settings.getList("ignoredPlayers", new ArrayList<String>());
+				plugin.interval = Settings.getInt("Settings.Interval", 5);
+				plugin.random = Settings.getBoolean("Settings.Random", false);
+				plugin.usingPerms = Settings.getBoolean("Settings.Permission", true);
+				plugin.strings =(ArrayList)(Settings.getList("Announcer.Strings", new ArrayList<String>()));
+				plugin.tag = plugin.colourizeText(Settings.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+				plugin.toGroups = Settings.getBoolean("Announcer.ToGroups", true);
+				plugin.Groups =(ArrayList)(Settings.getList("Announcer.Groups", new ArrayList<String>()));
+				plugin.ignoredPlayers =(ArrayList<String>) Settings.getList("ignoredPlayers", new ArrayList<String>());
 			}catch(FileNotFoundException ex){
 				plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();

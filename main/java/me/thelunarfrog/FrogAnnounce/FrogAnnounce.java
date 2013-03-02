@@ -26,13 +26,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
 	protected FrogLog logger;
-	public static Permission permission = null;
-	protected static String tag;
-	protected static int interval, taskId = -1, counter = 0;
-	protected static boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms;
-	protected static List<String> strings, Groups;
-	protected static ArrayList<String> ignoredPlayers = null;
-	public static FrogAnnounce plugin;
+	public Permission permission = null;
+	protected String tag;
+	protected int interval, taskId = -1, counter = 0;
+	protected boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms;
+	protected List<String> strings, Groups;
+	protected ArrayList<String> ignoredPlayers = null;
+	public FrogAnnounce plugin;
 	private ConfigurationHandler cfg = null;
 
 	@Override
@@ -41,6 +41,7 @@ public class FrogAnnounce extends JavaPlugin{
 		pdfFile = this.getDescription();
 		logger = new FrogLog();
 		cfg = new ConfigurationHandler(this);
+		ignoredPlayers = new ArrayList<>();
 
 		if(usingPerms)
 			checkPermissionsVaultPlugins();
@@ -262,7 +263,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	protected static String colourizeText(String announce){
+	protected String colourizeText(String announce){
 		announce = announce.replaceAll("&AQUA;",		ChatColor.AQUA.toString());
 		announce = announce.replaceAll("&BLACK;",		ChatColor.BLACK.toString());
 		announce = announce.replaceAll("&BLUE;",		ChatColor.BLUE.toString());
