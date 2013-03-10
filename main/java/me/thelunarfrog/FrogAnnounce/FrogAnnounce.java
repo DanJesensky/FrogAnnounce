@@ -44,7 +44,6 @@ public class FrogAnnounce extends JavaPlugin{
 		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
-		this.logger.info(this.strings.toArray(new String[0]));
 		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
 		this.running = this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
