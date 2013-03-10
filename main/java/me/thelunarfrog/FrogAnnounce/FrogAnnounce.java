@@ -306,16 +306,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(_int>this.strings.size()-1)
 				this.sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			else
-				try{
-					for(final String line: this.strings.get(_int).split("&NEW_LINE;"))
-						if(this.tag.equals("")||this.tag.isEmpty())
-							this.getServer().broadcastMessage(this.colourizeText(line));
-						else
-							this.getServer().broadcastMessage(this.tag+" "+this.colourizeText(line));
-					this.sendMessage(player, 0, "Successfully forced the announcement.");
-				}catch(final NumberFormatException e){
-					this.sendMessage(player, 1, "Error. No letters or symtbols; only numbers. Try this format: "+ChatColor.DARK_RED+"/fa bc 5 (for more help, consult /fa help).");
-				}
+				this.announce(_int, false);
 		}catch(final NumberFormatException e){
 			this.sendMessage(player, 1, "Only numbers can be entered as an index. Remember to start counting at 0.");
 		}
@@ -483,8 +474,12 @@ public class FrogAnnounce extends JavaPlugin{
 				announce = this.strings.get(index);
 		}
 		if(!announce.startsWith("&USE-CMD;")){
-			if(showConsoleAnnouncements)
-				logger.info("Automatically announcing: "+announce);
+			if(showConsoleAnnouncements){
+				if(automatic)
+					this.logger.info("Automatically announcing: "+announce);
+				else
+					this.logger.info("Manually announcing: "+announce);
+			}
 			if(this.usingPerms){
 				String[] a = announce.split("&GROUPS;");
 				if(this.toGroups || a.length == 1){
@@ -531,8 +526,12 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 		}else{
 			announce = announce.replace("&USE-CMD;", "/");
-			if(this.showConsoleAnnouncements)
-				this.logger.info("Automatically using command: "+announce);
+			if(this.showConsoleAnnouncements){
+				if(automatic)
+					this.logger.info("Automatically using command: "+announce);
+				else
+					this.logger.info("Manually invoking command: "+announce);
+			}
 			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
 		}
 	}
