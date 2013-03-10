@@ -6,6 +6,7 @@ import java.util.Random;
 
 import net.milkbowl.vault.permission.Permission;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -44,7 +45,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.cfg = new ConfigurationHandler(this);
 		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
-		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
+			this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
 		this.running = this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
@@ -77,7 +78,7 @@ public class FrogAnnounce extends JavaPlugin{
 	private boolean turnOn(final CommandSender player){
 		if(!this.running){
 			if(this.strings.size()>0){
-				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(), this.interval*1200, this.interval*1200);
+				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval*1200, this.interval*1200);
 				if(this.taskId==-1){
 					this.sendMessage(player, 2, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
 					return false;
@@ -465,45 +466,74 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	class Announcer implements Runnable{
+		private final FrogAnnounce plugin;
+
 		@Override
 		public void run(){
 			String announce = "";
-			if(FrogAnnounce.this.random){
+			if(this.plugin.random){
 				final Random randomise = new Random();
-				final int selection = randomise.nextInt(FrogAnnounce.this.strings.size());
-				announce = FrogAnnounce.this.strings.get(selection);
+				final int selection = randomise.nextInt(this.plugin.strings.size());
+				announce = this.plugin.strings.get(selection);
 			}else{
-				announce = FrogAnnounce.this.strings.get(FrogAnnounce.this.counter);
-				FrogAnnounce.this.counter++;
-				if(FrogAnnounce.this.counter>=FrogAnnounce.this.strings.size())
-					FrogAnnounce.this.counter = 0;
+				announce = this.plugin.strings.get(this.plugin.counter);
+				this.plugin.counter++;
+				if(this.plugin.counter>=this.plugin.strings.size())
+					this.plugin.counter = 0;
 			}
 			if(!announce.startsWith("&USE-CMD;")){
-				if(FrogAnnounce.this.usingPerms&&FrogAnnounce.this.toGroups){
-					final Player[] players = FrogAnnounce.this.getServer().getOnlinePlayers();
-					for(final Player p: players)
-						for(final String group: FrogAnnounce.this.Groups)
-							if(FrogAnnounce.this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!FrogAnnounce.this.ignoredPlayers.contains(p.getName()))
-								for(final String line: announce.split("&NEW_LINE;"))
-									if(FrogAnnounce.this.ignoredPlayers.contains(p.getName()))
-										if(FrogAnnounce.this.tag.equals("")||FrogAnnounce.this.tag.equals(" ")||FrogAnnounce.this.tag.isEmpty())
-											p.sendMessage(FrogAnnounce.this.colourizeText(line));
+				if(this.plugin.usingPerms){
+					String[] a = announce.split("&GROUPS;");
+					if(this.plugin.toGroups || a.length == 1){
+						final Player[] players = this.plugin.getServer().getOnlinePlayers();
+						for(final Player p: players)
+							for(final String group: this.plugin.Groups)
+								if(this.plugin.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.plugin.ignoredPlayers.contains(p.getName()))
+									for(final String line: announce.split("&NEW_LINE;"))
+										if(this.plugin.ignoredPlayers.contains(p.getName()))
+											if(this.plugin.tag.equals("")||this.plugin.tag.equals(" ")||this.plugin.tag.isEmpty())
+												p.sendMessage(this.plugin.colourizeText(line));
+											else
+												p.sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(line));
+					}else{
+						final Player[] players = Bukkit.getServer().getOnlinePlayers();
+						final List<String> received = new ArrayList<String>();
+						a = a[1].split(",");
+						if(a.length > 1)
+							for(final String group: a)
+								for(final Player p: players)
+									if(this.plugin.permission.playerInGroup(p, group))
+										if(received.contains(p.getName())){
+											p.sendMessage(plugin.colourizeText(announce));
+											received.add(p.getName());
+										}
 										else
-											p.sendMessage(FrogAnnounce.this.tag+" "+FrogAnnounce.this.colourizeText(line));
+											continue;
+									else
+										continue;
+						else
+							for(final Player p: players)
+								if(this.plugin.permission.playerInGroup(p, a[0]))
+									p.sendMessage(plugin.colourizeText(announce));
+					}
 				}else{
-					final Player[] onlinePlayers = FrogAnnounce.this.getServer().getOnlinePlayers();
+					final Player[] onlinePlayers = this.plugin.getServer().getOnlinePlayers();
 					for(final Player p: onlinePlayers)
 						for(final String line: announce.split("&NEW_LINE;"))
-							if(!FrogAnnounce.this.ignoredPlayers.contains(p.getName()))
-								if(FrogAnnounce.this.tag.equals("")||FrogAnnounce.this.tag.equals(" ")||FrogAnnounce.this.tag.isEmpty())
-									p.sendMessage(FrogAnnounce.this.colourizeText(line));
+							if(!this.plugin.ignoredPlayers.contains(p.getName()))
+								if(this.plugin.tag.equals("")||this.plugin.tag.equals(" ")||this.plugin.tag.isEmpty())
+									p.sendMessage(this.plugin.colourizeText(line));
 								else
-									p.sendMessage(FrogAnnounce.this.tag+" "+FrogAnnounce.this.colourizeText(line));
+									p.sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(line));
 				}
 			}else{
 				announce = announce.replace("&USE-CMD;", "/");
-				FrogAnnounce.this.getServer().dispatchCommand(FrogAnnounce.this.getServer().getConsoleSender(), announce);
+				this.plugin.getServer().dispatchCommand(this.plugin.getServer().getConsoleSender(), announce);
 			}
+		}
+
+		protected Announcer(FrogAnnounce plugin){
+			this.plugin = plugin;
 		}
 	}
 }
