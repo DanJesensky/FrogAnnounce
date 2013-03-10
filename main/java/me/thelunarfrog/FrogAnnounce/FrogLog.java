@@ -17,4 +17,7 @@ public class FrogLog{
 	protected void severe(final String s){
 		Logger.getLogger("Minecraft").log(Level.SEVERE, "[FrogAnnounce] "+ChatColor.stripColor(s));
 	}
+
+	public void info(final String[] array){
+	}
 }

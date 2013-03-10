@@ -44,6 +44,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
+		this.logger.info(this.strings.toArray(new String[0]));
 		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
 		this.running = this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
@@ -148,7 +149,7 @@ public class FrogAnnounce extends JavaPlugin{
 						for(int i = 1; i<args.length; i++)
 							sb.append(args[i]+" ");
 						this.strings.add(sb.toString().trim());
-						this.cfg.Settings.set("Announcer.Strings", this.strings);
+						this.cfg.config.set("Announcer.Strings", this.strings);
 						this.cfg.saveConfig();
 						this.sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration. Reloading config...");
 						this.reloadPlugin(sender);
@@ -168,7 +169,7 @@ public class FrogAnnounce extends JavaPlugin{
 								try{
 									this.sendMessage(sender, 0, "Removing announcement "+i+" ("+this.strings.get(i)+")...");
 									this.strings.remove(i);
-									this.cfg.Settings.set("Announcer.Strings", this.strings);
+									this.cfg.config.set("Announcer.Strings", this.strings);
 									this.cfg.saveConfig();
 									this.sendMessage(sender, 0, "Announcement "+i+" successfully removed. Reloading configuration...");
 									this.reloadPlugin(sender);
@@ -329,7 +330,7 @@ public class FrogAnnounce extends JavaPlugin{
 		final boolean s = Boolean.parseBoolean(args[1]);
 		if(s!=this.random){
 			this.random = s;
-			this.cfg.Settings.set("Settings.Random", s);
+			this.cfg.config.set("Settings.Random", s);
 			if(s==true)
 				this.sendMessage(player, 0, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
 			else
@@ -346,7 +347,7 @@ public class FrogAnnounce extends JavaPlugin{
 		final int newInterval = Integer.parseInt(cmdArgs[1]);
 		if(newInterval!=this.interval){
 			this.interval = newInterval;
-			this.cfg.Settings.set("Settings.Interval", this.interval);
+			this.cfg.config.set("Settings.Interval", this.interval);
 			this.cfg.saveConfig();
 			this.sendMessage(player, 0, "Announcement interval has successfully been changed to "+this.interval+". Reloading configuration...");
 			this.reloadPlugin(player);
@@ -378,7 +379,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.ignore")){
 				if(!this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.Settings.set("ignoredPlayers", this.ignoredPlayers);
+					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
 					this.cfg.saveConfig();
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else
@@ -389,7 +390,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.ignore.other")){
 				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.Settings.set("ignoredPlayers", this.ignoredPlayers);
+					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
 					this.cfg.saveConfig();
 					this.sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
@@ -411,7 +412,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.unignore")){
 				if(this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.remove(otherPlayer.getName());
-					this.cfg.Settings.set("ignoredPlayers", this.ignoredPlayers);
+					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
 					this.cfg.saveConfig();
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else
@@ -422,7 +423,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.unignore.other"))
 				if(this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.remove(otherPlayer.getName());
-					this.cfg.Settings.set("ignoredPlayers", this.ignoredPlayers);
+					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
 					this.cfg.saveConfig();
 					this.sendMessage(player, 0, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
