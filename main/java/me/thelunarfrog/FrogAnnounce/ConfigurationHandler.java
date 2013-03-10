@@ -50,6 +50,7 @@ public class ConfigurationHandler extends FrogAnnounce{
 				this.plugin.ignoredPlayers = (ArrayList) this.config.getList("ignoredPlayers", new ArrayList<String>());
 				this.plugin.showJoinMessage = this.config.getBoolean("Settings.displayMessageOnJoin", false);
 				this.plugin.joinMessage = this.config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
+				this.plugin.showConsoleAnnouncements = this.config.getBoolean("Settings.showConsoleAnnouncements", false);
 			}catch(final FileNotFoundException ex){
 				this.plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();

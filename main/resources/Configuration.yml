@@ -15,6 +15,9 @@ Settings:
     #displayMessageOnJoin: Should the plugin display a message to users when they log in? Will not display if they are opted-out of announcements.
     #Default: false
     displayMessageOnJoin: false
+    #showConsoleAnnouncements: Should the plugin display a message saying that it is announcing now, with the announcement?
+    #Default: false
+    showConsoleAnnouncements: false
 Announcer:
     #Tag: This will go in front of every announcement. You may remove it by leaving it blank: ''
     Tag: '&AQUA;[FrogAnnounce]'
