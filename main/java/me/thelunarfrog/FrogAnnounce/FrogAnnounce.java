@@ -43,6 +43,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.pdfFile = this.getDescription();
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
+		cfg.loadConfig();
 		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
