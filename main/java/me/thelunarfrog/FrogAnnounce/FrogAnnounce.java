@@ -27,23 +27,25 @@ public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
 	protected FrogLog logger;
 	public Permission permission = null;
-	protected String tag;
+	protected String tag, joinMessage;
 	protected int interval, taskId = -1, counter = 0;
-	protected boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms;
+	protected boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms, showJoinMessage = false;
 	protected List<String> strings, Groups;
 	protected ArrayList<String> ignoredPlayers = null;
-	public FrogAnnounce plugin;
 	private ConfigurationHandler cfg = null;
+	/** Static accessor */
+	public static FrogAnnounce p;
 
 	@Override
 	public void onEnable(){
-		this.plugin = this;
+		FrogAnnounce.p = this;
 		this.pdfFile = this.getDescription();
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
 		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
+		assert this.strings.size() != 0;
 		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
 		this.running = this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");

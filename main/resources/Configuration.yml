@@ -1,6 +1,6 @@
 #
 #Hey, you! You might want to run this command: /fa off
-#    before configuring. This will stop it from announcing the unnecessary (if you're already configuring it) messages telling you
+#    before configuring. This will stop it from announcing the unnecessary (as you're already configuring it) messages telling you
 #    to configure it.
 #Leave no whitespace, unless the empty line has a # on it somewhere! USE NO TABS. ONLY SPACES.
 #
@@ -12,6 +12,9 @@ Settings:
     Random: false
     #Permission: Use permissions? True/False should be obvious. Requires Vault. If you want a non-OP to be able to administrate FrogAnnounce, give them frogannounce.* or frogannounce.admin.
     Permission: true
+    #displayMessageOnJoin: Should the plugin display a message to users when they log in? Will not display if they are opted-out of announcements.
+    #Default: false
+    displayMessageOnJoin: false
 Announcer:
     #Tag: This will go in front of every announcement. You may remove it by leaving it blank: ''
     Tag: '&AQUA;[FrogAnnounce]'
@@ -60,7 +63,7 @@ Announcer:
         # &DARK_RED;
         # &GOLD;
         # &WHITE;
-        # (New in 2):
+        # (New in 2.0):
         # &MAGIC;
         # &BOLD;
         # &ITALIC;
@@ -70,3 +73,6 @@ Announcer:
         #You may also use use this to split announcements over two (or several) lines:
         #&NEW_LINE;
         #Note that this will also repeat the Tag (The thing that defaults to "&AQUA;[FrogAnnounce]"). Also, colours work on that second line.
+    #joinMessage: A message you want to display the users when they log in.
+    #Default: Welcome to the server! Use /help for assistance.
+    joinMessage: Welcome to the server! Use /help for assistance.
