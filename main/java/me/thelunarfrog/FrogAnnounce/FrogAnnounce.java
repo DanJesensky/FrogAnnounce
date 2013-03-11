@@ -43,7 +43,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.pdfFile = this.getDescription();
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
-		cfg.loadConfig();
+		this.cfg.loadConfig();
 		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
@@ -466,32 +466,25 @@ public class FrogAnnounce extends JavaPlugin{
 			this.logger.severe(message);
 	}
 
-	protected void announce(int index, boolean automatic){
-
-
+	protected void announce(final int index, final boolean automatic){
 		String announce = "";
 		if(automatic&&this.random){
 			final Random randomise = new Random();
 			final int selection = randomise.nextInt(this.strings.size());
 			announce = this.strings.get(selection);
-		}else{
-			if(automatic){
-				announce = this.strings.get(this.counter);
-				this.counter++;
-				if(this.counter>=this.strings.size())
-					this.counter = 0;
-			}else
-				announce = this.strings.get(index);
-		}
-
+		}else if(automatic){
+			announce = this.strings.get(this.counter);
+			this.counter++;
+			if(this.counter>=this.strings.size())
+				this.counter = 0;
+		}else
+			announce = this.strings.get(index);
 		if(!announce.startsWith("&USE-CMD;")){
-			if(showConsoleAnnouncements){
+			if(this.showConsoleAnnouncements)
 				if(automatic)
 					this.logger.info("Automatically announcing: "+announce);
 				else
 					this.logger.info("Manually announcing: "+announce);
-			}
-
 			String[] a = announce.split("&GROUPS;");
 			if(this.usingPerms){
 				if(this.toGroups){
@@ -505,46 +498,41 @@ public class FrogAnnounce extends JavaPlugin{
 											p.sendMessage(this.colourizeText(line));
 										else
 											p.sendMessage(this.tag+" "+this.colourizeText(line));
-
-				}else if(a.length > 1){
+				}else if(a.length>1){
 					final Player[] players = Bukkit.getServer().getOnlinePlayers();
 					final List<String> received = new ArrayList<String>();
 					a = a[1].split(",");
-					if(a.length > 1)
+					if(a.length>1)
 						for(final String group: a)
 							for(final Player p: players)
 								if(this.permission.playerInGroup(p, group))
 									if(received.contains(p.getName())){
-										p.sendMessage(colourizeText(announce));
+										p.sendMessage(this.colourizeText(announce));
 										received.add(p.getName());
-									}
-									else
+									}else
 										continue;
 								else
 									continue;
 					else
 						for(final Player p: players)
 							if(this.permission.playerInGroup(p, a[0]))
-								p.sendMessage(colourizeText(announce));
+								p.sendMessage(this.colourizeText(announce));
 				}else
-					normalAnnouncement(announce);
-			}else{
-				normalAnnouncement(announce);
-			}
-
+					this.normalAnnouncement(announce);
+			}else
+				this.normalAnnouncement(announce);
 		}else{
 			announce = announce.replace("&USE-CMD;", "/");
-			if(this.showConsoleAnnouncements){
+			if(this.showConsoleAnnouncements)
 				if(automatic)
 					this.logger.info("Automatically using command: "+announce);
 				else
 					this.logger.info("Manually invoking command: "+announce);
-			}
 			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
 		}
 	}
 
-	protected void normalAnnouncement(String announce){
+	protected void normalAnnouncement(final String announce){
 		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
 		for(final Player p: onlinePlayers)
 			for(final String line: announce.split("&NEW_LINE;"))
@@ -563,7 +551,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.plugin.announce(-1, true);
 		}
 
-		protected Announcer(FrogAnnounce plugin){
+		protected Announcer(final FrogAnnounce plugin){
 			this.plugin = plugin;
 		}
 	}
