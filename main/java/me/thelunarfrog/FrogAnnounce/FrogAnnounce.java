@@ -131,11 +131,17 @@ public class FrogAnnounce extends JavaPlugin{
 						this.turnOff(false, sender);
 					else if(args[0].equalsIgnoreCase("version")||args[0].equalsIgnoreCase("v"))
 						this.sendMessage(sender, 0, "Current version: "+this.pdfFile.getVersion());
-					else if(args[0].equalsIgnoreCase("ignore")||args[0].equalsIgnoreCase("optout")||args[0].equalsIgnoreCase("opt-out"))
-						this.ignorePlayer(sender, args[1]);
-					else if(args[0].equalsIgnoreCase("unignore")||args[0].equalsIgnoreCase("optin")||args[0].equalsIgnoreCase("opt-in"))
-						this.unignorePlayer(sender, args[1]);
-					else if(args[0].equalsIgnoreCase("interval")||args[0].equalsIgnoreCase("int"))
+					else if(args[0].equalsIgnoreCase("ignore")||args[0].equalsIgnoreCase("optout")||args[0].equalsIgnoreCase("opt-out")){
+						if(args.length==2)
+							this.ignorePlayer(sender, args[1]);
+						else
+							this.ignorePlayer(sender, sender.getName());
+					}else if(args[0].equalsIgnoreCase("unignore")||args[0].equalsIgnoreCase("optin")||args[0].equalsIgnoreCase("opt-in")){
+						if(args.length==2)
+							this.unignorePlayer(sender, args[1]);
+						else
+							this.unignorePlayer(sender, sender.getName());
+					}else if(args[0].equalsIgnoreCase("interval")||args[0].equalsIgnoreCase("int"))
 						this.setInterval(args, sender);
 					else if(args[0].equalsIgnoreCase("random")||args[0].equalsIgnoreCase("rand"))
 						this.setRandom(args, sender);
@@ -196,7 +202,7 @@ public class FrogAnnounce extends JavaPlugin{
 					return false;
 				}
 				return true;
-			}else if(args.length>1){
+			}else if(args.length>=1){
 				if(args[0].equalsIgnoreCase("ignore")||args[0].equalsIgnoreCase("optout")||args[0].equalsIgnoreCase("opt-out")){
 					if(args.length==2){
 						if(this.permit(sender, "frogannounce.optout.other"))
