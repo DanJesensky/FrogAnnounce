@@ -495,16 +495,20 @@ public class FrogAnnounce extends JavaPlugin{
 					this.logger.info("Manually announcing: "+announce);
 			if(this.usingPerms){
 				if(this.toGroups){
+					final List<String> received = new ArrayList<String>();
 					final Player[] players = this.getServer().getOnlinePlayers();
 					for(final Player p: players)
-						for(final String group: this.Groups)
-							if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
-								for(final String line: announce.split("&NEW_LINE;"))
-									if(this.ignoredPlayers.contains(p.getName()))
-										if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-											p.sendMessage(this.colourizeText(line));
-										else
-											p.sendMessage(this.tag+" "+this.colourizeText(line));
+						if(!received.contains(p.getName())){
+							for(final String group: this.Groups)
+								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
+									for(final String line: announce.split("&NEW_LINE;"))
+										if(!this.ignoredPlayers.contains(p.getName()))
+											if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
+												p.sendMessage(this.colourizeText(line));
+											else
+												p.sendMessage(this.tag+" "+this.colourizeText(line));
+							received.add(p.getName());
+						}
 				}else if(a.length>1){
 					final Player[] players = Bukkit.getServer().getOnlinePlayers();
 					final List<String> received = new ArrayList<String>();
@@ -513,15 +517,16 @@ public class FrogAnnounce extends JavaPlugin{
 					if(a.length>1){
 						for(final String group: a)
 							for(final Player p: players)
-								if(this.permission.playerInGroup(p, group)){
-									if(!received.contains(p.getName())){
-										for(String s: announce.split("&NEW_LINE;"))
-											p.sendMessage(this.colourizeText(s));
-										received.add(p.getName());
-									}else
+								if(!this.ignoredPlayers.contains(p.getName()))
+									if(this.permission.playerInGroup(p, group))
+										if(!received.contains(p.getName())){
+											for(String s: announce.split("&NEW_LINE;"))
+												p.sendMessage(this.colourizeText(s));
+											received.add(p.getName());
+										}else
+											continue;
+									else
 										continue;
-								}else
-									continue;
 					}else
 						for(final Player p: players)
 							if(this.permission.playerInGroup(p, a[0]))
