@@ -235,27 +235,34 @@ public class FrogAnnounce extends JavaPlugin{
 
 	public void returnHelp(final CommandSender sender, final String pageString){
 		final String or = ChatColor.WHITE.toString()+"|";
-		final String auctionStatusColor = ChatColor.DARK_GREEN.toString();
-		final String helpMainColor = ChatColor.GOLD.toString();
-		final String helpCommandColor = ChatColor.AQUA.toString();
-		final String helpObligatoryColor = ChatColor.DARK_RED.toString();
+		final String heading = ChatColor.DARK_GREEN.toString();
+		final String main = ChatColor.GOLD.toString();
+		final String command = ChatColor.AQUA.toString();
+		final String obligatory = ChatColor.DARK_RED.toString();
+		final String optional = ChatColor.GRAY.toString();
 		try{
 			int page;
 			page = Integer.parseInt(pageString);
 			if(page==1||page==0){
-				this.sendMessage(sender, 0, helpMainColor+"*"+auctionStatusColor+"Help for FrogAnnounce "+this.pdfFile.getVersion()+" (1/2)"+helpMainColor+"*");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <help"+or+helpCommandColor+"?>"+helpMainColor+" - Show this message.");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <on"+or+helpCommandColor+"off>"+helpMainColor+" - Start or stop FrogAnnounce.");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <restart"+or+helpCommandColor+"reload>"+helpMainColor+" - Restart FrogAnnounce.");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <interval"+or+helpCommandColor+"int>"+helpObligatoryColor+" <minutes>"+helpMainColor+" - Set the time between each announcement.");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <random"+or+helpCommandColor+"rand>"+helpObligatoryColor+" <on"+or+helpObligatoryColor+"off>"+helpMainColor+" - Set random or consecutive.");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <broadcast"+or+helpCommandColor+"bc>"+helpObligatoryColor+"<AnnouncementIndex>"+helpMainColor+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
+				this.sendMessage(sender, 0, main+"*"+heading+"Help for FrogAnnounce "+this.pdfFile.getVersion()+" (1/3)"+main+"*");
+				this.sendMessage(sender, 0, command+"/fa <help"+or+command+"?>"+main+" - Show this message.");
+				this.sendMessage(sender, 0, command+"/fa <on"+or+command+"off>"+main+" - Start or stop FrogAnnounce.");
+				this.sendMessage(sender, 0, command+"/fa <restart"+or+command+"reload>"+main+" - Restart FrogAnnounce.");
+				this.sendMessage(sender, 0, command+"/fa <interval"+or+command+"int>"+obligatory+" <minutes>"+main+" - Set the time between each announcement.");
+				this.sendMessage(sender, 0, command+"/fa <random"+or+command+"rand>"+obligatory+" <on"+or+obligatory+"off>"+main+" - Set random or consecutive.");
+				this.sendMessage(sender, 0, command+"/fa <broadcast"+or+command+"bc>"+obligatory+" <AnnouncementIndex>"+main+" - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
 				this.sendMessage(sender, 0, ChatColor.GOLD+"Use /fa help 2 to see the next page.");
 			}else if(page==2){
-				this.sendMessage(sender, 0, helpMainColor+"*"+auctionStatusColor+"Help for FrogAnnounce "+this.pdfFile.getVersion()+" (2/2)"+helpMainColor+"*");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <add "+or+helpCommandColor+"add> "+helpObligatoryColor+"<announcement message>"+helpMainColor+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <remove "+or+helpCommandColor+"delete"+or+helpCommandColor+"rem"+or+helpCommandColor+"del> "+helpObligatoryColor+"<announcementIndex>"+helpMainColor+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
-				this.sendMessage(sender, 0, helpCommandColor+"/fa <manualbroadcast"+or+helpCommandColor+"mbc"+helpObligatoryColor+"<Message>"+helpMainColor+" - Announces a message to the entire server. Ignores groups in the config.");
+				this.sendMessage(sender, 0, main+"*"+heading+"Help for FrogAnnounce "+this.pdfFile.getVersion()+" (2/3)"+main+"*");
+				this.sendMessage(sender, 0, command+"/fa <add "+or+command+"add> "+obligatory+"<announcement message>"+main+" - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
+				this.sendMessage(sender, 0, command+"/fa <remove "+or+command+"delete"+or+command+"rem"+or+command+"del> "+obligatory+"<announcementIndex>"+main+" - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
+				this.sendMessage(sender, 0, command+"/fa <manualbroadcast"+or+command+"mbc"+obligatory+"<Message>"+main+" - Announces a message to the entire server. Ignores groups in the config.");
+				this.sendMessage(sender, 0, ChatColor.GOLD+"Use /fa help 3 to see the next page.");
+			}else if(page==3){
+				this.sendMessage(sender, 0, main+"*"+heading+"Help for FrogAnnounce "+this.pdfFile.getVersion()+" (3/3)"+main+"*");
+				this.sendMessage(sender, 0, command+"/fa <ignore"+or+command+"optout> "+optional+"[playerName] "+main+" - Ignore announcements. As long as you are ignored, you will not receive announcements. Specifying another player's name will force them to ignore announcements. Saves through disconnect.");
+				this.sendMessage(sender, 0, command+"/fa <unignore"+or+command+"optin> "+optional+"[playerName] "+main+" - Unignore announcements. You will receive announcements as normal again. Specifying another player's name will force them to see announcements again. Saves through disconnect.");
+				this.sendMessage(sender, 0, ChatColor.GRAY+"There are no more pages of help.");
 			}else
 				this.sendMessage(sender, 0, "There's no page "+page+".");
 		}catch(final NumberFormatException e){
@@ -480,12 +487,12 @@ public class FrogAnnounce extends JavaPlugin{
 		}else
 			announce = this.strings.get(index);
 		if(!announce.startsWith("&USE-CMD;")){
+			String[] a = announce.split("&GROUPS;");
 			if(this.showConsoleAnnouncements)
 				if(automatic)
 					this.logger.info("Automatically announcing: "+announce);
 				else
 					this.logger.info("Manually announcing: "+announce);
-			String[] a = announce.split("&GROUPS;");
 			if(this.usingPerms){
 				if(this.toGroups){
 					final Player[] players = this.getServer().getOnlinePlayers();
