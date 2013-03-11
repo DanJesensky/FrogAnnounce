@@ -11,7 +11,7 @@ public class PlayerJoinListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent evt){
 		if(this.plugin.showJoinMessage)
-			if(this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
+			if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
 				evt.getPlayer().sendMessage(this.plugin.colourizeText(this.plugin.joinMessage));
 	}
 
