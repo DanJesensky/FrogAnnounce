@@ -461,6 +461,8 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	protected void announce(int index, boolean automatic){
+
+
 		String announce = "";
 		if(automatic&&this.random){
 			final Random randomise = new Random();
@@ -475,6 +477,7 @@ public class FrogAnnounce extends JavaPlugin{
 			}else
 				announce = this.strings.get(index);
 		}
+
 		if(!announce.startsWith("&USE-CMD;")){
 			if(showConsoleAnnouncements){
 				if(automatic)
@@ -482,9 +485,10 @@ public class FrogAnnounce extends JavaPlugin{
 				else
 					this.logger.info("Manually announcing: "+announce);
 			}
+
+			String[] a = announce.split("&GROUPS;");
 			if(this.usingPerms){
-				String[] a = announce.split("&GROUPS;");
-				if(this.toGroups || a.length == 1){
+				if(this.toGroups){
 					final Player[] players = this.getServer().getOnlinePlayers();
 					for(final Player p: players)
 						for(final String group: this.Groups)
@@ -495,7 +499,8 @@ public class FrogAnnounce extends JavaPlugin{
 											p.sendMessage(this.colourizeText(line));
 										else
 											p.sendMessage(this.tag+" "+this.colourizeText(line));
-				}else{
+
+				}else if(a.length > 1){
 					final Player[] players = Bukkit.getServer().getOnlinePlayers();
 					final List<String> received = new ArrayList<String>();
 					a = a[1].split(",");
@@ -515,17 +520,12 @@ public class FrogAnnounce extends JavaPlugin{
 						for(final Player p: players)
 							if(this.permission.playerInGroup(p, a[0]))
 								p.sendMessage(colourizeText(announce));
-				}
+				}else
+					normalAnnouncement(announce);
 			}else{
-				final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
-				for(final Player p: onlinePlayers)
-					for(final String line: announce.split("&NEW_LINE;"))
-						if(!this.ignoredPlayers.contains(p.getName()))
-							if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-								p.sendMessage(this.colourizeText(line));
-							else
-								p.sendMessage(this.tag+" "+this.colourizeText(line));
+				normalAnnouncement(announce);
 			}
+
 		}else{
 			announce = announce.replace("&USE-CMD;", "/");
 			if(this.showConsoleAnnouncements){
@@ -536,6 +536,17 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
 		}
+	}
+
+	protected void normalAnnouncement(String announce){
+		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
+		for(final Player p: onlinePlayers)
+			for(final String line: announce.split("&NEW_LINE;"))
+				if(!this.ignoredPlayers.contains(p.getName()))
+					if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
+						p.sendMessage(this.colourizeText(line));
+					else
+						p.sendMessage(this.tag+" "+this.colourizeText(line));
 	}
 
 	class Announcer implements Runnable{
