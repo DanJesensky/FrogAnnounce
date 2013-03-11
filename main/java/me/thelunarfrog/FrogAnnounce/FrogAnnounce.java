@@ -508,22 +508,25 @@ public class FrogAnnounce extends JavaPlugin{
 				}else if(a.length>1){
 					final Player[] players = Bukkit.getServer().getOnlinePlayers();
 					final List<String> received = new ArrayList<String>();
+					announce = a[0];
 					a = a[1].split(",");
-					if(a.length>1)
+					if(a.length>1){
 						for(final String group: a)
 							for(final Player p: players)
-								if(this.permission.playerInGroup(p, group))
-									if(received.contains(p.getName())){
-										p.sendMessage(this.colourizeText(announce));
+								if(this.permission.playerInGroup(p, group)){
+									if(!received.contains(p.getName())){
+										for(String s: announce.split("&NEW_LINE;"))
+											p.sendMessage(this.colourizeText(s));
 										received.add(p.getName());
 									}else
 										continue;
-								else
+								}else
 									continue;
-					else
+					}else
 						for(final Player p: players)
 							if(this.permission.playerInGroup(p, a[0]))
-								p.sendMessage(this.colourizeText(announce));
+								for(String s: announce.split("&NEW_LINE;"))
+									p.sendMessage(this.colourizeText(s));
 				}else
 					this.normalAnnouncement(announce);
 			}else
