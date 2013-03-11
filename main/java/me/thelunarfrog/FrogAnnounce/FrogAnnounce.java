@@ -520,7 +520,7 @@ public class FrogAnnounce extends JavaPlugin{
 								if(!this.ignoredPlayers.contains(p.getName()))
 									if(this.permission.playerInGroup(p, group))
 										if(!received.contains(p.getName())){
-											for(String s: announce.split("&NEW_LINE;"))
+											for(final String s: announce.split("&NEW_LINE;"))
 												p.sendMessage(this.colourizeText(s));
 											received.add(p.getName());
 										}else
@@ -530,7 +530,7 @@ public class FrogAnnounce extends JavaPlugin{
 					}else
 						for(final Player p: players)
 							if(this.permission.playerInGroup(p, a[0]))
-								for(String s: announce.split("&NEW_LINE;"))
+								for(final String s: announce.split("&NEW_LINE;"))
 									p.sendMessage(this.colourizeText(s));
 				}else
 					this.normalAnnouncement(announce);
