@@ -44,7 +44,6 @@ public class FrogAnnounce extends JavaPlugin{
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
 		this.cfg.loadConfig();
-		this.ignoredPlayers = new ArrayList<>();
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
 		if(this.showJoinMessage)
