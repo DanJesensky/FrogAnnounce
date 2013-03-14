@@ -80,7 +80,7 @@ Announcer:
         #Note that this will also repeat the Tag (The thing that defaults to "&AQUA;[FrogAnnounce]"). Also, colours work on that second line.
     #joinMessage: A message you want to display the users when they log in.
     #Default: Welcome to the server! Use /help for assistance.
-    joinMessage: &GREEN;Welcome to the server! Use /help for assistance.
+    joinMessage: "&GREEN;Welcome to the server! Use /help for assistance."
 #Players who are ignoring announcements.
 ignoredPlayers:
 - TheLunarFrog
