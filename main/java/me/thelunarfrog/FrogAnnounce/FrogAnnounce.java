@@ -500,12 +500,17 @@ public class FrogAnnounce extends JavaPlugin{
 						if(!received.contains(p.getName())){
 							for(final String group: this.Groups)
 								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
-									for(final String line: announce.split("&NEW_LINE;"))
+									for(String line: announce.split("&NEW_LINE;")){
+										if(this.tag.equals("") || this.tag.equals(" ") || this.tag.isEmpty())
+											line = this.colourizeText(line);
+										else
+											line = this.tag+" "+this.colourizeText(line);
 										if(!this.ignoredPlayers.contains(p.getName()))
 											if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-												p.sendMessage(this.colourizeText(line));
+												p.sendMessage(line);
 											else
-												p.sendMessage(this.tag+" "+this.colourizeText(line));
+												p.sendMessage(line);
+									}
 							received.add(p.getName());
 						}
 				}else if(a.length>1){
