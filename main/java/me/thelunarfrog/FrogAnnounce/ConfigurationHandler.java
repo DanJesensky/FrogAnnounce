@@ -76,7 +76,9 @@ public class ConfigurationHandler extends FrogAnnounce{
 	}
 
 	private static void copyFile(final InputStream fis, final File out) throws Exception{
-		try(FileOutputStream fos = new FileOutputStream(out)){
+		FileOutputStream fos = null;
+		try{
+			fos = new FileOutputStream(out);
 			final byte[] buf = new byte[1024];
 			int i = 0;
 			while((i = fis.read(buf))!=-1)
@@ -87,6 +89,9 @@ public class ConfigurationHandler extends FrogAnnounce{
 				fos.close();
 		}catch(final Exception e){
 			throw e;
+		}finally{
+			if(fos != null)
+				fos.close();
 		}
 	}
 
