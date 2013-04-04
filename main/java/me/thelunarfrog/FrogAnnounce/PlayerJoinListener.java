@@ -13,7 +13,10 @@ public class PlayerJoinListener implements Listener{
 		if(this.plugin.showJoinMessage)
 			if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
 				for(String s: this.plugin.joinMessage.split("&NEW_LINE;"))
-				evt.getPlayer().sendMessage(this.plugin.colourizeText(s));
+					if(this.plugin.tag == "")
+						evt.getPlayer().sendMessage(this.plugin.colourizeText(s));
+					else
+						evt.getPlayer().sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(s));
 	}
 
 	protected PlayerJoinListener(final FrogAnnounce plugin){
