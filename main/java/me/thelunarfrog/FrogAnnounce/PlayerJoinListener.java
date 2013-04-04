@@ -10,7 +10,6 @@ public class PlayerJoinListener implements Listener{
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent evt){
-		if(this.plugin.showJoinMessage)
 			if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
 				for(String s: this.plugin.joinMessage.split("&NEW_LINE;"))
 					if(this.plugin.tag == "")

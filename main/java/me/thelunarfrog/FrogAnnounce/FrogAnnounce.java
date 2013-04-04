@@ -56,7 +56,7 @@ public class FrogAnnounce extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		this.turnOff(true, null);
-		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been disabled!");
+		this.logger.info("Version "+this.pdfFile.getVersion()+" has been disabled.");
 	}
 
 	private boolean permit(final CommandSender sender, final String perm){
