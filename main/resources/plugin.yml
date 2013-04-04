@@ -1,7 +1,7 @@
 name: FrogAnnounce
 main: main.java.me.thelunarfrog.FrogAnnounce.FrogAnnounce
 authors: [TheLunarFrog]
-version: 2.2.1
+version: 2.3.0-SNAPSHOT
 dev-url: http://dev.bukkit.org/server-mods/frogannounce/
 commands:
     fa:
