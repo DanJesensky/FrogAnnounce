@@ -10,12 +10,12 @@ public class PlayerJoinListener implements Listener{
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent evt){
-			if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
-				for(String s: this.plugin.joinMessage.split("&NEW_LINE;"))
-					if(this.plugin.tag == "")
-						evt.getPlayer().sendMessage(this.plugin.colourizeText(s));
-					else
-						evt.getPlayer().sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(s));
+		if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
+			for(final String s: this.plugin.joinMessage.split("&NEW_LINE;"))
+				if(this.plugin.tag=="")
+					evt.getPlayer().sendMessage(this.plugin.colourizeText(s));
+				else
+					evt.getPlayer().sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(s));
 	}
 
 	protected PlayerJoinListener(final FrogAnnounce plugin){

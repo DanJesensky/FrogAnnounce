@@ -90,7 +90,7 @@ public class ConfigurationHandler extends FrogAnnounce{
 		}catch(final Exception e){
 			throw e;
 		}finally{
-			if(fos != null)
+			if(fos!=null)
 				fos.close();
 		}
 	}
