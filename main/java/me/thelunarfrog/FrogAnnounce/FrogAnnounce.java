@@ -44,6 +44,11 @@ public class FrogAnnounce extends JavaPlugin{
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
 		this.cfg.loadConfig();
+		if(this.strings==null){
+			this.strings = new ArrayList<String>();
+			this.strings.add("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.");
+			this.interval = 5;
+		}
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
 		if(this.showJoinMessage)
@@ -501,7 +506,7 @@ public class FrogAnnounce extends JavaPlugin{
 							for(final String group: this.Groups)
 								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
 									for(String line: announce.split("&NEW_LINE;")){
-										if(this.tag.equals("") || this.tag.equals(" ") || this.tag.isEmpty())
+										if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
 											line = this.colourizeText(line);
 										else
 											line = this.tag+" "+this.colourizeText(line);
