@@ -12,7 +12,7 @@ public class PlayerJoinListener implements Listener{
 	public void onPlayerJoin(final PlayerJoinEvent evt){
 		if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
 			for(final String s: this.plugin.joinMessage.split("&NEW_LINE;"))
-				if(this.plugin.tag=="")
+				if(this.plugin.tag==""||this.plugin.tag==null)
 					evt.getPlayer().sendMessage(this.plugin.colourizeText(s));
 				else
 					evt.getPlayer().sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(s));
