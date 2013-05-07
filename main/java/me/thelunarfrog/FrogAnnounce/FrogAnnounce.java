@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javax.swing.JOptionPane;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -62,6 +66,23 @@ public class FrogAnnounce extends JavaPlugin{
 	public void onDisable(){
 		this.turnOff(true, null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" has been disabled.");
+	}
+
+	public static void main(String[] args){
+		try{
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		}catch(final ClassNotFoundException e){
+			e.printStackTrace();
+		}catch(final InstantiationException e){
+			e.printStackTrace();
+		}catch(final IllegalAccessException e){
+			e.printStackTrace();
+		}catch(final UnsupportedLookAndFeelException e){
+			e.printStackTrace();
+		}finally{
+			JOptionPane.showMessageDialog(null, "Sorry, but FrogAnnounce is a Bukkit plugin, and cannot be run directly like you've attempted.\nTo use the plugin, download and set up a Bukkit Minecraft server, and in the root directory, create a folder called\n\"plugins\" (no quotes, and assuming it hasn't already been created for you), and put this JAR file (FrogAnnounce.jar) there.\nWhen you've done that, start the Bukkit server using the command line java -jar \"path to Bukkit.jar\",\nor if it's already running, type \"reload\" (no quotes) into the command-line.", "FrogAnnounce", JOptionPane.OK_OPTION);
+			System.exit(0);
+		}
 	}
 
 	private boolean permit(final CommandSender sender, final String perm){
