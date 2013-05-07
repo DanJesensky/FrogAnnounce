@@ -43,11 +43,15 @@ Announcer:
         #You must keep the dash (-) and the quotation marks ("").
         #You can specify what groups you want each announcement to go to - see the third announcement down or see this webpage, detailing how to do it:
         # http://dev.bukkit.org/server-mods/frogannounce/pages/miscellaneous-explanations/#w-announcement-specific-group-filters
+        #
+        #If you want the message to contain a quotation mark or apostrophe, you should put a backslash (\) before it
+        #   so that it will read \" or \'. This is not something I've done. This is what is required by Java.
+        #   Putting quotations in without the backslash will result in the line being invalid and therein unreadable by the plugin, meaning the plugin won't run.
+        #   More information is available on the page in the link above, just scroll up some.
         - "&RED;You have yet to configure &GREEN;FrogAnnounce!&NEW_LINE;&DARK_GREEN;Please configure it soon."
         - "&DARK_PURPLE;No, seriously. Configure me."
         - "&DARK_RED;Y U NO CONFIGURE PLUGINS, SERVER OWNER?"
         - "&LIGHT_PURPLE;Moo. Anyone there?"
-        #Oh, did you just configure it? I see. Okay, that works then.
         #
         #You can use either /fa reload, /frogannounce reload, or just use Bukkit's built-in reload (/reload) to reload this configuration.
         #And yes, /fa reload will load the new announcements.

@@ -19,7 +19,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @since 1.0.1.3 (Announced as 1.0)
  * @author Dan | TheLunarFrog
  */
-public class ConfigurationHandler extends FrogAnnounce{
+public final class ConfigurationHandler extends FrogAnnounce{
 	protected YamlConfiguration config;
 	protected File configFile;
 	private final FrogAnnounce plugin;
