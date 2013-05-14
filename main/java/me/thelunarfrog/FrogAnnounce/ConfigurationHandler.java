@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -14,15 +14,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 /**
  * Handles the FrogAnnounce configuration.
  * 
- * @version 1.4.0.0 (Final? Unless more configuration nodes come to be.)
+ * @version 1.5.0.0 (Final? Unless more configuration nodes come to be.)
  * @category Configuration
  * @since 1.0.1.3 (Announced as 1.0)
  * @author Dan | TheLunarFrog
  */
 public final class ConfigurationHandler extends FrogAnnounce{
-	protected YamlConfiguration config;
-	protected File configFile;
-	private final FrogAnnounce plugin;
+	private YamlConfiguration config = null;
+	private final File configFile;
 
 	@Override
 	public void saveConfig(){
@@ -33,32 +32,31 @@ public final class ConfigurationHandler extends FrogAnnounce{
 		}
 	}
 
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	protected void loadConfig(){
-		this.configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
+	@Override
+	public YamlConfiguration getConfig(){
+		return (this.config = this.loadConfig());
+	}
+
+	protected void updateConfiguration(String path, Object newValue){
+		if(this.config==null)
+			this.config = this.getConfig();
+		this.config.set(path, newValue);
+		this.saveConfig();
+	}
+
+	private YamlConfiguration loadConfig(){
 		if(this.configFile.exists()){
 			this.config = new YamlConfiguration();
 			try{
 				this.config.load(this.configFile);
-				this.plugin.interval = this.config.getInt("Settings.Interval", 5);
-				this.plugin.random = this.config.getBoolean("Settings.Random", false);
-				this.plugin.usingPerms = this.config.getBoolean("Settings.Permission", true);
-				this.plugin.strings = (ArrayList) this.config.getList("Announcer.Strings", new ArrayList<String>());
-				this.plugin.tag = this.plugin.colourizeText(this.config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-				this.plugin.toGroups = this.config.getBoolean("Announcer.ToGroups", true);
-				this.plugin.Groups = (ArrayList) this.config.getList("Announcer.Groups", new ArrayList<String>());
-				this.plugin.ignoredPlayers = (ArrayList) this.config.getList("ignoredPlayers", new ArrayList<String>());
-				this.plugin.showJoinMessage = this.config.getBoolean("Settings.displayMessageOnJoin", false);
-				this.plugin.joinMessage = this.config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
-				this.plugin.showConsoleAnnouncements = this.config.getBoolean("Settings.showConsoleAnnouncements", false);
 			}catch(final FileNotFoundException ex){
-				this.plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				this.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}catch(final IOException ex){
-				this.plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				this.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}catch(final InvalidConfigurationException ex){
-				this.plugin.logger.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
+				this.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}
 		}else
@@ -68,11 +66,12 @@ public final class ConfigurationHandler extends FrogAnnounce{
 				ConfigurationHandler.copyFile(jarURL, this.configFile);
 				this.config = new YamlConfiguration();
 				this.config.load(this.configFile);
-				this.plugin.logger.info("Configuration loaded successfully.");
+				this.info("Configuration loaded successfully.");
 			}catch(final Exception e){
-				this.plugin.logger.severe("Exception occurred while creating a new configuration file!");
+				this.severe("Exception occurred while creating a new configuration file!");
 				e.printStackTrace();
 			}
+		return this.config;
 	}
 
 	private static void copyFile(final InputStream fis, final File out) throws Exception{
@@ -95,7 +94,15 @@ public final class ConfigurationHandler extends FrogAnnounce{
 		}
 	}
 
+	private void severe(String s){
+		Logger.getLogger("Minecraft").severe("[FrogAnnounce] "+s);
+	}
+
+	private void info(String s){
+		Logger.getLogger("Minecraft").info("[FrogAnnounce] "+s);
+	}
+
 	protected ConfigurationHandler(final FrogAnnounce plugin){
-		this.plugin = plugin;
+		this.configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
 	}
 }

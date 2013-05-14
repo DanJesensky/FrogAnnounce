@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -21,10 +22,10 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * The FrogAnnounce core. Handles loops, grabbing configuration values from ConfigurationManager, commands, and all announcements. API will be found here, too.
+ * The FrogAnnounce core. Handles loops, grabbing configuration values from ConfigurationManager, commands, and all announcements. API, such as AnnouncementListener registration, will be found here, too.
  * 
  * @author Dan | TheLunarFrog
- * @version 2.0.10.13
+ * @version 2..0.0
  * @category main
  * 
  */
@@ -48,7 +49,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.pdfFile = this.getDescription();
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
-		this.cfg.loadConfig();
+		this.updateConfiguration();
 		this.listeners = new ArrayList<AnnouncementListener>();
 		if(this.strings==null){
 			this.strings = new ArrayList<String>();
@@ -60,13 +61,13 @@ public class FrogAnnounce extends JavaPlugin{
 		if(this.showJoinMessage)
 			super.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
-		this.running = this.turnOn(null);
+		this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
 
 	@Override
 	public void onDisable(){
-		this.turnOff(true, null);
+		this.turnOff(null);
 		this.unregisterAllAnnouncementListeners();
 		this.logger.info("Version "+this.pdfFile.getVersion()+" has been disabled.");
 	}
@@ -98,16 +99,31 @@ public class FrogAnnounce extends JavaPlugin{
 			return true;
 	}
 
-	private void turnOff(final boolean disabled, final CommandSender player){
+	/**
+	 * This method disables the announcement module of FrogAnnounce. It will stop any further announcements for occurring.
+	 * 
+	 * @param player The CommandSender object to send result messages to.
+	 * @return Whether or not the announcer core was successfully disabled. Will return false if already disabled.
+	 */
+	public boolean turnOff(final CommandSender player){
 		if(this.running){
 			this.getServer().getScheduler().cancelTask(this.taskId);
 			this.sendMessage(player, 0, "Announcer disabled!");
 			this.running = false;
-		}else if(!disabled)
+			return true;
+		}else{
 			this.sendMessage(player, 2, "The announcer is not running!");
+			return false;
+		}
 	}
 
-	private boolean turnOn(final CommandSender player){
+	/**
+	 * This method enables the announcement module of FrogAnnounce when it is disabled.
+	 * 
+	 * @param player The CommandSender object to send result messages to.
+	 * @return Whether or not the announcer was able to start. Will not automatically restart the announcer. Will return false if it was already running.
+	 */
+	public boolean turnOn(final CommandSender player){
 		if(!this.running){
 			if(this.strings.size()>0){
 				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval*1200, this.interval*1200);
@@ -117,6 +133,7 @@ public class FrogAnnounce extends JavaPlugin{
 				}else{
 					this.counter = 0;
 					this.sendMessage(player, 0, "Success! Now announcing every "+this.interval+" minute(s)!");
+					this.running = true;
 					return true;
 				}
 			}else{
@@ -125,15 +142,19 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 		}else{
 			this.sendMessage(player, 2, ChatColor.DARK_RED+"Announcer is already running.");
-			return true;
+			return false;
 		}
 	}
 
-	private void reloadPlugin(final CommandSender player){
+	/**
+	 * 
+	 * @param player
+	 */
+	public void reloadPlugin(final CommandSender player){
 		if(this.running){
-			this.turnOff(false, null);
-			this.cfg.loadConfig();
-			this.running = this.turnOn(player);
+			this.turnOff(null);
+			this.updateConfiguration();
+			this.turnOn(player);
 			this.sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
 			this.sendMessage(player, 0, "Settings loaded "+this.strings.size()+" announcements!");
 		}else
@@ -154,9 +175,9 @@ public class FrogAnnounce extends JavaPlugin{
 						else
 							this.returnHelp(sender, "0");
 					}else if(args[0].equalsIgnoreCase("on"))
-						this.running = this.turnOn(sender);
+						this.turnOn(sender);
 					else if(args[0].equalsIgnoreCase("off"))
-						this.turnOff(false, sender);
+						this.turnOff(sender);
 					else if(args[0].equalsIgnoreCase("version")||args[0].equalsIgnoreCase("v"))
 						this.sendMessage(sender, 0, "Current version: "+this.pdfFile.getVersion());
 					else if(args[0].equalsIgnoreCase("ignore")||args[0].equalsIgnoreCase("optout")||args[0].equalsIgnoreCase("opt-out")){
@@ -187,8 +208,7 @@ public class FrogAnnounce extends JavaPlugin{
 						for(int i = 1; i<args.length; i++)
 							sb.append(args[i]+" ");
 						this.strings.add(sb.toString().trim());
-						this.cfg.config.set("Announcer.Strings", this.strings);
-						this.cfg.saveConfig();
+						this.cfg.updateConfiguration("Announcer.Strings", this.strings);
 						this.sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration. Reloading config...");
 						this.reloadPlugin(sender);
 					}else if(args[0].equalsIgnoreCase("manualbroadcast")||args[0].equalsIgnoreCase("mbc")){
@@ -207,8 +227,7 @@ public class FrogAnnounce extends JavaPlugin{
 								try{
 									this.sendMessage(sender, 0, "Removing announcement "+i+" ("+this.strings.get(i)+")...");
 									this.strings.remove(i);
-									this.cfg.config.set("Announcer.Strings", this.strings);
-									this.cfg.saveConfig();
+									this.cfg.updateConfiguration("Announcer.Strings", this.strings);
 									this.sendMessage(sender, 0, "Announcement "+i+" successfully removed. Reloading configuration...");
 									this.reloadPlugin(sender);
 								}catch(final IndexOutOfBoundsException e){
@@ -261,6 +280,12 @@ public class FrogAnnounce extends JavaPlugin{
 		return false;
 	}
 
+	/**
+	 * This method shows the FrogAnnounce specified help page to the specified CommandSender.
+	 * 
+	 * @param sender The CommandSender object to send the help to.
+	 * @param pageString The page to send.
+	 */
 	public void returnHelp(final CommandSender sender, final String pageString){
 		final String or = ChatColor.WHITE.toString()+"|";
 		final String heading = ChatColor.DARK_GREEN.toString();
@@ -342,7 +367,13 @@ public class FrogAnnounce extends JavaPlugin{
 		return announce;
 	}
 
-	protected void broadcastMessage(final String s, final CommandSender player){
+	/**
+	 * This method broadcasts a message to the players applicable to such an announcement. Only announces the announcements in FrogAnnounce's configuration. If you have the index of the announcement you want to force, use <b>FrogAnnounce.announce(int, boolean)</b> instead.
+	 * 
+	 * @param s - The index of the announcement, as a string.
+	 * @param player - The CommandSender to display the result to.
+	 */
+	public void broadcastMessage(final String s, final CommandSender player){
 		int _int = 0;
 		try{
 			_int = Integer.parseInt(s);
@@ -362,11 +393,17 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.permission!=null;
 	}
 
-	private void setRandom(final String[] args, final CommandSender player){
+	/**
+	 * This method sets whether or not FrogAnnounce is announcing in random order. Will take effect immediately.
+	 * 
+	 * @param args - Command arguments. To set it without a command base, you should pass new String[]{<b>null</b>, <b>"true"</b> (for random order) <i>or</i> <b>"false"</b> (for sequential order)}.
+	 * @param player - The CommandSender object to send output results to.
+	 */
+	public void setRandom(final String[] args, final CommandSender player){
 		final boolean s = Boolean.parseBoolean(args[1]);
 		if(s!=this.random){
 			this.random = s;
-			this.cfg.config.set("Settings.Random", s);
+			this.cfg.updateConfiguration("Settings.Random", s);
 			if(s==true)
 				this.sendMessage(player, 0, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
 			else
@@ -379,19 +416,24 @@ public class FrogAnnounce extends JavaPlugin{
 			this.sendMessage(player, 1, "The announcer is already set to not announce randomly! There's no need to change it!");
 	}
 
-	private void setInterval(final String[] cmdArgs, final CommandSender player){
+	/**
+	 * This method sets the announcement interval of FrogAnnounce. Will take effect immediately.
+	 * 
+	 * @param cmdArgs - Based on command structure. To set the interval without the base of /fa interval, you should pass new String[]{<b>null</b>, <b>"new interval"</b>}.
+	 * @param player - The CommandSender object to send output to.
+	 */
+	public void setInterval(final String[] cmdArgs, final CommandSender player){
 		final int newInterval = Integer.parseInt(cmdArgs[1]);
 		if(newInterval!=this.interval){
 			this.interval = newInterval;
-			this.cfg.config.set("Settings.Interval", this.interval);
-			this.cfg.saveConfig();
+			this.cfg.updateConfiguration("Settings.Interval", this.interval);
 			this.sendMessage(player, 0, "Announcement interval has successfully been changed to "+this.interval+". Reloading configuration...");
 			this.reloadPlugin(player);
 		}else
 			this.sendMessage(player, 1, "The announcement interval is already set to "+this.interval+"! There's no need to change it!");
 	}
 
-	public void checkPermissionsVaultPlugins(){
+	private void checkPermissionsVaultPlugins(){
 		final Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if(vault!=null){
 			if(this.setupPermissions()!=null){
@@ -405,7 +447,13 @@ public class FrogAnnounce extends JavaPlugin{
 			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
 	}
 
-	private void ignorePlayer(final CommandSender player, final String other){
+	/**
+	 * Makes FrogAnnounce not announce to a certain player.
+	 * 
+	 * @param player - The player to relay output, as if they had done this to their target.
+	 * @param other - The target player for FrogAnnounce to no longer announce to.
+	 */
+	public void ignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer = this.getServer().getPlayer(other);
 		if(other.equals(player.getName()))
 			otherPlayer = (Player) player;
@@ -415,8 +463,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.ignore")){
 				if(!this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
-					this.cfg.saveConfig();
+					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else
 					this.sendMessage(player, 1, "That player is already being ignored.");
@@ -426,8 +473,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.ignore.other")){
 				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
-					this.cfg.saveConfig();
+					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 					this.sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else
@@ -438,7 +484,22 @@ public class FrogAnnounce extends JavaPlugin{
 			this.sendMessage(player, 1, "That player isn't online right now.");
 	}
 
-	private void unignorePlayer(final CommandSender player, final String other){
+	/**
+	 * Makes FrogAnnounce ignore the specified player when announcing. Overload of <b>ignorePlayer(CommandSender, String)</b>.
+	 * 
+	 * @param player - The CommandSender to ignore.
+	 */
+	public void ignorePlayer(final CommandSender player){
+		this.ignorePlayer(player, player.getName());
+	}
+
+	/**
+	 * Makes FrogAnnounce announce to a certain player after they were ignored.
+	 * 
+	 * @param player - The player to relay output, as if they had done this to their target.
+	 * @param other - The target player for FrogAnnounce to once again announce to.
+	 */
+	public void unignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer;
 		if(other.isEmpty())
 			otherPlayer = (Player) player;
@@ -448,8 +509,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.unignore")){
 				if(this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.remove(otherPlayer.getName());
-					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
-					this.cfg.saveConfig();
+					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else
 					this.sendMessage(player, 1, "You're already not being ignored.");
@@ -459,8 +519,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.unignore.other"))
 				if(this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.remove(otherPlayer.getName());
-					this.cfg.config.set("ignoredPlayers", this.ignoredPlayers);
-					this.cfg.saveConfig();
+					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 					this.sendMessage(player, 0, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
 					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else
@@ -469,7 +528,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.sendMessage(player, 1, "That player isn't online right now!");
 	}
 
-	protected void sendMessage(final CommandSender sender, final int severity, final String message){
+	private void sendMessage(final CommandSender sender, final int severity, final String message){
 		if(sender instanceof Player){
 			if(severity==0)
 				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
@@ -485,7 +544,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.logger.severe(message);
 	}
 
-	protected void sendMessage(final Player player, final int severity, final String message){
+	private void sendMessage(final Player player, final int severity, final String message){
 		if(player!=null){
 			if(severity==0)
 				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
@@ -501,7 +560,16 @@ public class FrogAnnounce extends JavaPlugin{
 			this.logger.severe(message);
 	}
 
-	protected void announce(final int index, final boolean automatic){
+	/**
+	 * Announces one of the announcements from FrogAnnounce's configuration. Overload of a private method.
+	 * 
+	 * @param index - The index of the announcement to announce.
+	 */
+	public void announce(final int index){
+		this.announce(index, false);
+	}
+
+	private void announce(final int index, final boolean automatic){
 		String announce = "";
 		final int selection;
 		if(automatic&&this.random){
@@ -606,12 +674,23 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.listeners;
 	}
 
+	/**
+	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface.
+	 * 
+	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
+	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
+	 */
 	public int registerAnnouncementListener(AnnouncementListener listener){
 		if(!this.getAnnouncementListeners().contains(listener))
 			this.listeners.add(listener);
 		return this.getAnnouncementListeners().indexOf(listener);
 	}
 
+	/**
+	 * This method unregisters an announcement listener from FrogAnnounce's observer list, making your AnnouncementListener-implementing child no longer be notified of AnnouncementEvents.
+	 * 
+	 * @param id The id of the AnnouncementListener in FrogAnnounce's observer list to remove. This is returned by the registration method.
+	 */
 	public void unregisterAnnouncementListener(int id){
 		this.listeners.set(id, null);
 	}
@@ -621,7 +700,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.listeners.remove(i);
 	}
 
-	protected void normalAnnouncement(final String announce){
+	private void normalAnnouncement(final String announce){
 		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
 		for(final Player p: onlinePlayers)
 			for(final String line: announce.split("&NEW_LINE;"))
@@ -630,6 +709,21 @@ public class FrogAnnounce extends JavaPlugin{
 						p.sendMessage(this.colourizeText(line));
 					else
 						p.sendMessage(this.tag+" "+this.colourizeText(line));
+	}
+
+	private void updateConfiguration(){
+		final YamlConfiguration config = new ConfigurationHandler(this).getConfig();
+		this.interval = config.getInt("Settings.Interval", 5);
+		this.random = config.getBoolean("Settings.Random", false);
+		this.usingPerms = config.getBoolean("Settings.Permission", true);
+		this.strings = config.getStringList("Announcer.Strings");
+		this.tag = this.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+		this.toGroups = config.getBoolean("Announcer.ToGroups", true);
+		this.Groups = config.getStringList("Announcer.Groups");
+		this.ignoredPlayers = (ArrayList<String>) config.getStringList("ignoredPlayers");
+		this.showJoinMessage = config.getBoolean("Settings.displayMessageOnJoin", false);
+		this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
+		this.showConsoleAnnouncements = config.getBoolean("Settings.showConsoleAnnouncements", false);
 	}
 
 	class Announcer implements Runnable{
