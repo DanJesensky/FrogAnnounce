@@ -36,12 +36,12 @@ public class FrogAnnounce extends JavaPlugin{
 	protected String tag, joinMessage;
 	protected int interval, taskId = -1, counter = 0;
 	protected boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
-	protected List<String> strings, Groups;
+	protected List<String> strings, groups;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
 	private ArrayList<AnnouncementListener> listeners;
 	/** Static accessor */
-	public static FrogAnnounce p;
+	private static FrogAnnounce p;
 
 	@Override
 	public void onEnable(){
@@ -386,7 +386,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	protected Boolean setupPermissions(){
+	private Boolean setupPermissions(){
 		final RegisteredServiceProvider<Permission> permissionProvider = super.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
 		if(permissionProvider!=null)
 			this.permission = permissionProvider.getProvider();
@@ -599,7 +599,7 @@ public class FrogAnnounce extends JavaPlugin{
 					final Player[] players = this.getServer().getOnlinePlayers();
 					for(final Player p: players)
 						if(!received.contains(p.getName())){
-							for(final String group: this.Groups)
+							for(final String group: this.groups)
 								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
 									for(String line: announce.split("&NEW_LINE;")){
 										if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
@@ -700,6 +700,105 @@ public class FrogAnnounce extends JavaPlugin{
 			this.listeners.remove(i);
 	}
 
+	/**
+	 * Gets the current instance of FrogAnnounce.
+	 * 
+	 * @return The running instance of this plugin.
+	 */
+	public static FrogAnnounce getInstance(){
+		return FrogAnnounce.p;
+	}
+
+	/**
+	 * Gets the array of Strings that the announcer is announcing to players.
+	 * 
+	 * @return The messages that players will see, in form of an array.
+	 */
+	public String[] getAnnouncements(){
+		return this.strings.toArray(new String[this.strings.size()]);
+	}
+
+	/**
+	 * Gets whether or not the plugin's announcer module is running.
+	 * 
+	 * @return Whether or not the plugin is announcing.
+	 */
+	public boolean isRunning(){
+		return this.running;
+	}
+
+	/**
+	 * Whether or not the plugin is announcing restrictively by group
+	 * 
+	 * @return Whether or not the ToGroups option is enabled.
+	 */
+	public boolean isAnnouncingRestrictivelyByGroup(){
+		return this.toGroups;
+	}
+
+	/**
+	 * Whether FrogAnnounce is using OP/Non-OP or permissions.
+	 * 
+	 * @return True if using permissions, false if non-op/op
+	 */
+	public boolean isUsingPermissions(){
+		return this.usingPerms;
+	}
+
+	/**
+	 * Gets the return message for this instance of FrogAnnounce. Will return null if the plugin isn't even showing the join message.
+	 * 
+	 * @return The join message, or null, if this instance isn't showing it.
+	 */
+	public String getJoinMessage(){
+		return this.isShowingJoinMessage() ? this.joinMessage : null;
+	}
+
+	/**
+	 * Gets the tag for this instance of FrogAnnounce.
+	 * 
+	 * @return The tag which appears in front of every announcement.
+	 */
+	public String getTag(){
+		return this.tag;
+	}
+
+	/**
+	 * Gets whether or not the plugin is announcing in a random order.
+	 * 
+	 * @return Whether or not the plugin is announcing randomly.
+	 */
+	public boolean isRandom(){
+		return this.random;
+	}
+
+	/**
+	 * Gets whether or not the plugin is displaying the joinMessage to players when they join the server.
+	 * 
+	 * @return The setting of showMessageOnJoin in the configuration.
+	 */
+	public boolean isShowingJoinMessage(){
+		return this.showJoinMessage;
+	}
+
+	/**
+	 * Gets thr groups to which the plugin is announcing. May be null.
+	 * 
+	 * @return Null if the plugin has ToGroups set to false; otherwise, the groups to which the plugin is announcing.
+	 */
+	public List<String> getRestrictiveGroups(){
+		return this.isAnnouncingRestrictivelyByGroup() ? this.groups : null;
+	}
+
+	/**
+	 * Gets an array of player names of the players who are not receiving announcements.
+	 * 
+	 * @return The names of players who aren't getting announcements, as a String array.
+	 */
+	public String[] getIgnoredPlayers(){
+		return this.ignoredPlayers.toArray(new String[this.ignoredPlayers.size()]);
+	}
+
 	private void normalAnnouncement(final String announce){
 		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
 		for(final Player p: onlinePlayers)
@@ -719,7 +818,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.strings = config.getStringList("Announcer.Strings");
 		this.tag = this.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
 		this.toGroups = config.getBoolean("Announcer.ToGroups", true);
-		this.Groups = config.getStringList("Announcer.Groups");
+		this.groups = config.getStringList("Announcer.Groups");
 		this.ignoredPlayers = (ArrayList<String>) config.getStringList("ignoredPlayers");
 		this.showJoinMessage = config.getBoolean("Settings.displayMessageOnJoin", false);
 		this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
