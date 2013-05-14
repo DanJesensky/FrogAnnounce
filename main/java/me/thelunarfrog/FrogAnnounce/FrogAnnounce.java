@@ -38,6 +38,7 @@ public class FrogAnnounce extends JavaPlugin{
 	protected List<String> strings, Groups;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
+	private ArrayList<AnnouncementListener> listeners;
 	/** Static accessor */
 	public static FrogAnnounce p;
 
@@ -48,6 +49,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
 		this.cfg.loadConfig();
+		this.listeners = new ArrayList<AnnouncementListener>();
 		if(this.strings==null){
 			this.strings = new ArrayList<String>();
 			this.strings.add("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.");
@@ -65,6 +67,7 @@ public class FrogAnnounce extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		this.turnOff(true, null);
+		this.unregisterAllAnnouncementListeners();
 		this.logger.info("Version "+this.pdfFile.getVersion()+" has been disabled.");
 	}
 
@@ -500,17 +503,21 @@ public class FrogAnnounce extends JavaPlugin{
 
 	protected void announce(final int index, final boolean automatic){
 		String announce = "";
+		final int selection;
 		if(automatic&&this.random){
 			final Random randomise = new Random();
-			final int selection = randomise.nextInt(this.strings.size());
+			selection = randomise.nextInt(this.strings.size());
 			announce = this.strings.get(selection);
 		}else if(automatic){
 			announce = this.strings.get(this.counter);
+			selection = this.counter;
 			this.counter++;
 			if(this.counter>=this.strings.size())
 				this.counter = 0;
-		}else
+		}else{
 			announce = this.strings.get(index);
+			selection = index;
+		}
 		if(!announce.startsWith("&USE-CMD;")){
 			String[] a = announce.split("&GROUPS;");
 			if(this.showConsoleAnnouncements)
@@ -575,6 +582,43 @@ public class FrogAnnounce extends JavaPlugin{
 					this.logger.info("Manually invoking command: "+announce);
 			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
 		}
+		this.notifyAnnouncementListeners(announce, automatic, selection);
+	}
+
+	private void notifyAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+		new Thread(new Runnable(){
+			@Override
+			public void run(){
+				final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
+				for(final AnnouncementListener listener: FrogAnnounce.this.getAnnouncementListeners())
+					if(listener!=null)
+						new Thread(new Runnable(){
+							@Override
+							public void run(){
+								listener.onAnnounceEvent(evt);
+							}
+						}).start();
+			}
+		}).start();
+	}
+
+	private ArrayList<AnnouncementListener> getAnnouncementListeners(){
+		return this.listeners;
+	}
+
+	public int registerAnnouncementListener(AnnouncementListener listener){
+		if(!this.getAnnouncementListeners().contains(listener))
+			this.listeners.add(listener);
+		return this.getAnnouncementListeners().indexOf(listener);
+	}
+
+	public void unregisterAnnouncementListener(int id){
+		this.listeners.set(id, null);
+	}
+
+	private void unregisterAllAnnouncementListeners(){
+		for(int i = 0; i<this.getAnnouncementListeners().size(); i++)
+			this.listeners.remove(i);
 	}
 
 	protected void normalAnnouncement(final String announce){
