@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * The FrogAnnounce core. Handles loops, grabbing configuration values from ConfigurationManager, commands, and all announcements. API, such as AnnouncementListener registration, will be found here, too.
  * 
  * @author Dan | TheLunarFrog
- * @version 2..0.0
+ * @version 2.2.0.0
  * @category main
  * 
  */
