@@ -8,6 +8,9 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import main.java.me.thelunarfrog.FrogAnnounce.eventhandlers.PlayerJoinListener;
+import main.java.me.thelunarfrog.FrogAnnounce.events.AnnouncementEvent;
+import main.java.me.thelunarfrog.FrogAnnounce.listeners.AnnouncementListener;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -195,7 +198,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
 	}
 
-	protected String colourizeText(String announce){
+	public String colourizeText(String announce){
 		announce = announce.replaceAll("&AQUA;", ChatColor.AQUA.toString());
 		announce = announce.replaceAll("&BLACK;", ChatColor.BLACK.toString());
 		announce = announce.replaceAll("&BLUE;", ChatColor.BLUE.toString());
@@ -253,12 +256,12 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 * Gets an array of player names of the players who are not receiving announcements.
+	 * Gets an arraylist of player names of the players who are not receiving announcements.
 	 * 
-	 * @return The names of players who aren't getting announcements, as a String array.
+	 * @return The names of players who aren't getting announcements, as a String arraylist.
 	 */
-	public String[] getIgnoredPlayers(){
-		return this.ignoredPlayers.toArray(new String[this.ignoredPlayers.size()]);
+	public ArrayList<String> getIgnoredPlayers(){
+		return this.ignoredPlayers;
 	}
 
 	/**

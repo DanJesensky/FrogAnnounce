@@ -1,4 +1,4 @@
-package main.java.me.thelunarfrog.FrogAnnounce;
+package main.java.me.thelunarfrog.FrogAnnounce.events;
 
 public class AnnouncementEvent{
 	private final String announcement;

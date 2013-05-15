@@ -1,4 +1,6 @@
-package main.java.me.thelunarfrog.FrogAnnounce;
+package main.java.me.thelunarfrog.FrogAnnounce.eventhandlers;
+
+import main.java.me.thelunarfrog.FrogAnnounce.FrogAnnounce;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,15 +12,15 @@ public class PlayerJoinListener implements Listener{
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerJoin(final PlayerJoinEvent evt){
-		if(!this.plugin.ignoredPlayers.contains(evt.getPlayer().getName()))
-			for(final String s: this.plugin.joinMessage.split("&NEW_LINE;"))
-				if(this.plugin.tag==""||this.plugin.tag==null)
+		if(!this.plugin.getIgnoredPlayers().contains(evt.getPlayer().getName()))
+			for(final String s: this.plugin.getJoinMessage().split("&NEW_LINE;"))
+				if(this.plugin.getTag()==""||this.plugin.getTag()==null)
 					evt.getPlayer().sendMessage(this.plugin.colourizeText(s));
 				else
-					evt.getPlayer().sendMessage(this.plugin.tag+" "+this.plugin.colourizeText(s));
+					evt.getPlayer().sendMessage(this.plugin.getTag()+" "+this.plugin.colourizeText(s));
 	}
 
-	protected PlayerJoinListener(final FrogAnnounce plugin){
+	public PlayerJoinListener(final FrogAnnounce plugin){
 		this.plugin = plugin;
 	}
 }
