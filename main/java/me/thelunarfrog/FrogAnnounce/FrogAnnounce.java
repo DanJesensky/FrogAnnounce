@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * The FrogAnnounce core. Handles loops, grabbing configuration values from ConfigurationManager, commands, and all announcements. API, such as AnnouncementListener registration, will be found here, too.
  * 
  * @author Dan | TheLunarFrog
- * @version 2.2.0.0
+ * @version 2.3.0.0
  * @category main
  * 
  */
@@ -43,36 +43,16 @@ public class FrogAnnounce extends JavaPlugin{
 	/** Static accessor */
 	private static FrogAnnounce p;
 
-	@Override
-	public void onEnable(){
-		FrogAnnounce.p = this;
-		this.pdfFile = this.getDescription();
-		this.logger = new FrogLog();
-		this.cfg = new ConfigurationHandler(this);
-		this.updateConfiguration();
-		this.listeners = new ArrayList<AnnouncementListener>();
-		if(this.strings==null){
-			this.strings = new ArrayList<String>();
-			this.strings.add("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.");
-			this.interval = 5;
-		}
-		if(this.usingPerms)
-			this.checkPermissionsVaultPlugins();
-		if(this.showJoinMessage)
-			super.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
-		this.turnOn(null);
-		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
+	/**
+	 * Gets the current instance of FrogAnnounce.
+	 * 
+	 * @return The running instance of this plugin.
+	 */
+	public static FrogAnnounce getInstance(){
+		return FrogAnnounce.p;
 	}
 
-	@Override
-	public void onDisable(){
-		this.turnOff(null);
-		this.unregisterAllAnnouncementListeners();
-		this.logger.info("Version "+this.pdfFile.getVersion()+" has been disabled.");
-	}
-
-	public static void main(String[] args){
+	public static void main(final String[] args){
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		}catch(final ClassNotFoundException e){
@@ -89,76 +69,342 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	private boolean permit(final CommandSender sender, final String perm){
-		if(sender instanceof Player)
-			if(sender.isOp())
-				return true;
+	/**
+	 * Announces one of the announcements from FrogAnnounce's configuration. Overload of a private method.
+	 * 
+	 * @param index - The index of the announcement to announce.
+	 */
+	public void announce(final int index){
+		this.announce(index, false);
+	}
+
+	private void announce(final int index, final boolean automatic){
+		String announce = "";
+		final int selection;
+		if(automatic&&this.random){
+			final Random randomise = new Random();
+			selection = randomise.nextInt(this.strings.size());
+			announce = this.strings.get(selection);
+		}else if(automatic){
+			announce = this.strings.get(this.counter);
+			selection = this.counter;
+			this.counter++;
+			if(this.counter>=this.strings.size())
+				this.counter = 0;
+		}else{
+			announce = this.strings.get(index);
+			selection = index;
+		}
+		if(!announce.startsWith("&USE-CMD;")){
+			String[] a = announce.split("&GROUPS;");
+			if(this.showConsoleAnnouncements)
+				if(automatic)
+					this.logger.info("Automatically announcing: "+announce);
+				else
+					this.logger.info("Manually announcing: "+announce);
+			if(this.usingPerms){
+				if(this.toGroups){
+					final List<String> received = new ArrayList<String>();
+					final Player[] players = this.getServer().getOnlinePlayers();
+					for(final Player p: players)
+						if(!received.contains(p.getName())){
+							for(final String group: this.groups)
+								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
+									for(String line: announce.split("&NEW_LINE;")){
+										if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
+											line = this.colourizeText(line);
+										else
+											line = this.tag+" "+this.colourizeText(line);
+										if(!this.ignoredPlayers.contains(p.getName()))
+											if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
+												p.sendMessage(line);
+											else
+												p.sendMessage(line);
+									}
+							received.add(p.getName());
+						}
+				}else if(a.length>1){
+					final Player[] players = Bukkit.getServer().getOnlinePlayers();
+					final List<String> received = new ArrayList<String>();
+					announce = a[0];
+					a = a[1].split(",");
+					if(a.length>1){
+						for(final String group: a)
+							for(final Player p: players)
+								if(!this.ignoredPlayers.contains(p.getName()))
+									if(this.permission.playerInGroup(p, group))
+										if(!received.contains(p.getName())){
+											for(final String s: announce.split("&NEW_LINE;"))
+												p.sendMessage(this.colourizeText(s));
+											received.add(p.getName());
+										}else
+											continue;
+									else
+										continue;
+					}else
+						for(final Player p: players)
+							if(this.permission.playerInGroup(p, a[0]))
+								for(final String s: announce.split("&NEW_LINE;"))
+									p.sendMessage(this.colourizeText(s));
+				}else
+					this.normalAnnouncement(announce);
+			}else
+				this.normalAnnouncement(announce);
+		}else{
+			announce = announce.replace("&USE-CMD;", "/");
+			if(this.showConsoleAnnouncements)
+				if(automatic)
+					this.logger.info("Automatically using command: "+announce);
+				else
+					this.logger.info("Manually invoking command: "+announce);
+			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
+		}
+		this.notifyAnnouncementListeners(announce, automatic, selection);
+	}
+
+	/**
+	 * This method broadcasts a message to the players applicable to such an announcement. Only announces the announcements in FrogAnnounce's configuration. If you have the index of the announcement you want to force, use <b>FrogAnnounce.announce(int, boolean)</b> instead.
+	 * 
+	 * @param s - The index of the announcement, as a string.
+	 * @param player - The CommandSender to display the result to.
+	 */
+	public void broadcastMessage(final String s, final CommandSender player){
+		int _int = 0;
+		try{
+			_int = Integer.parseInt(s);
+			if(_int>this.strings.size()-1)
+				this.sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			else
-				return sender.hasPermission(perm);
-		else
-			return true;
-	}
-
-	/**
-	 * This method disables the announcement module of FrogAnnounce. It will stop any further announcements for occurring.
-	 * 
-	 * @param player The CommandSender object to send result messages to.
-	 * @return Whether or not the announcer core was successfully disabled. Will return false if already disabled.
-	 */
-	public boolean turnOff(final CommandSender player){
-		if(this.running){
-			this.getServer().getScheduler().cancelTask(this.taskId);
-			this.sendMessage(player, 0, "Announcer disabled!");
-			this.running = false;
-			return true;
-		}else{
-			this.sendMessage(player, 2, "The announcer is not running!");
-			return false;
+				this.announce(_int, false);
+		}catch(final NumberFormatException e){
+			this.sendMessage(player, 1, "Only numbers can be entered as an index. Remember to start counting at 0.");
 		}
 	}
 
-	/**
-	 * This method enables the announcement module of FrogAnnounce when it is disabled.
-	 * 
-	 * @param player The CommandSender object to send result messages to.
-	 * @return Whether or not the announcer was able to start. Will not automatically restart the announcer. Will return false if it was already running.
-	 */
-	public boolean turnOn(final CommandSender player){
-		if(!this.running){
-			if(this.strings.size()>0){
-				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval*1200, this.interval*1200);
-				if(this.taskId==-1){
-					this.sendMessage(player, 2, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
-					return false;
-				}else{
-					this.counter = 0;
-					this.sendMessage(player, 0, "Success! Now announcing every "+this.interval+" minute(s)!");
-					this.running = true;
-					return true;
-				}
-			}else{
-				this.sendMessage(player, 2, "The announcer failed to start! There are no announcements!");
-				return false;
+	private void checkPermissionsVaultPlugins(){
+		final Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
+		if(vault!=null){
+			if(this.setupPermissions()!=null){
+				this.logger.info("Vault hooked successfully.");
+				this.usingPerms = true;
+			}else if(this.setupPermissions()==null){
+				this.logger.info("Vault wasn't found. Defaulting to OP/Non-OP system.");
+				this.usingPerms = false;
 			}
-		}else{
-			this.sendMessage(player, 2, ChatColor.DARK_RED+"Announcer is already running.");
-			return false;
-		}
+		}else
+			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
+	}
+
+	protected String colourizeText(String announce){
+		announce = announce.replaceAll("&AQUA;", ChatColor.AQUA.toString());
+		announce = announce.replaceAll("&BLACK;", ChatColor.BLACK.toString());
+		announce = announce.replaceAll("&BLUE;", ChatColor.BLUE.toString());
+		announce = announce.replaceAll("&DARK_AQUA;", ChatColor.DARK_AQUA.toString());
+		announce = announce.replaceAll("&DARK_BLUE;", ChatColor.DARK_BLUE.toString());
+		announce = announce.replaceAll("&DARK_GRAY;", ChatColor.DARK_GRAY.toString());
+		announce = announce.replaceAll("&DARK_GREEN;", ChatColor.DARK_GREEN.toString());
+		announce = announce.replaceAll("&DARK_PURPLE;", ChatColor.DARK_PURPLE.toString());
+		announce = announce.replaceAll("&RED;", ChatColor.RED.toString());
+		announce = announce.replaceAll("&DARK_RED;", ChatColor.DARK_RED.toString());
+		announce = announce.replaceAll("&GOLD;", ChatColor.GOLD.toString());
+		announce = announce.replaceAll("&GRAY;", ChatColor.GRAY.toString());
+		announce = announce.replaceAll("&GREEN;", ChatColor.GREEN.toString());
+		announce = announce.replaceAll("&LIGHT_PURPLE;", ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&PURPLE;", ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&PINK;", ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&WHITE;", ChatColor.WHITE.toString());
+		announce = announce.replaceAll("&b;", ChatColor.AQUA.toString());
+		announce = announce.replaceAll("&0;", ChatColor.BLACK.toString());
+		announce = announce.replaceAll("&9;", ChatColor.BLUE.toString());
+		announce = announce.replaceAll("&3;", ChatColor.DARK_AQUA.toString());
+		announce = announce.replaceAll("&1;", ChatColor.DARK_BLUE.toString());
+		announce = announce.replaceAll("&8;", ChatColor.DARK_GRAY.toString());
+		announce = announce.replaceAll("&2;", ChatColor.DARK_GREEN.toString());
+		announce = announce.replaceAll("&5;", ChatColor.DARK_PURPLE.toString());
+		announce = announce.replaceAll("&4;", ChatColor.DARK_RED.toString());
+		announce = announce.replaceAll("&6;", ChatColor.GOLD.toString());
+		announce = announce.replaceAll("&7;", ChatColor.GRAY.toString());
+		announce = announce.replaceAll("&a;", ChatColor.GREEN.toString());
+		announce = announce.replaceAll("&d;", ChatColor.LIGHT_PURPLE.toString());
+		announce = announce.replaceAll("&c;", ChatColor.RED.toString());
+		announce = announce.replaceAll("&f;", ChatColor.WHITE.toString());
+		announce = announce.replaceAll("&e;", ChatColor.YELLOW.toString());
+		announce = announce.replaceAll("&k;", ChatColor.MAGIC.toString());
+		announce = announce.replaceAll("&MAGIC;", ChatColor.MAGIC.toString());
+		announce = announce.replaceAll("&BOLD;", ChatColor.BOLD.toString());
+		announce = announce.replaceAll("&ITALIC;", ChatColor.ITALIC.toString());
+		announce = announce.replaceAll("&STRIKE;", ChatColor.STRIKETHROUGH.toString());
+		announce = announce.replaceAll("&UNDERLINE;", ChatColor.UNDERLINE.toString());
+		announce = announce.replaceAll("&RESET;", ChatColor.RESET.toString());
+		return announce;
+	}
+
+	private ArrayList<AnnouncementListener> getAnnouncementListeners(){
+		return this.listeners;
 	}
 
 	/**
+	 * Gets the array of Strings that the announcer is announcing to players.
 	 * 
-	 * @param player
+	 * @return The messages that players will see, in form of an array.
 	 */
-	public void reloadPlugin(final CommandSender player){
-		if(this.running){
-			this.turnOff(null);
-			this.updateConfiguration();
-			this.turnOn(player);
-			this.sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
-			this.sendMessage(player, 0, "Settings loaded "+this.strings.size()+" announcements!");
+	public String[] getAnnouncements(){
+		return this.strings.toArray(new String[this.strings.size()]);
+	}
+
+	/**
+	 * Gets an array of player names of the players who are not receiving announcements.
+	 * 
+	 * @return The names of players who aren't getting announcements, as a String array.
+	 */
+	public String[] getIgnoredPlayers(){
+		return this.ignoredPlayers.toArray(new String[this.ignoredPlayers.size()]);
+	}
+
+	/**
+	 * Gets the return message for this instance of FrogAnnounce. Will return null if the plugin isn't even showing the join message.
+	 * 
+	 * @return The join message, or null, if this instance isn't showing it.
+	 */
+	public String getJoinMessage(){
+		return this.isShowingJoinMessage() ? this.joinMessage : null;
+	}
+
+	/**
+	 * Gets thr groups to which the plugin is announcing. May be null.
+	 * 
+	 * @return Null if the plugin has ToGroups set to false; otherwise, the groups to which the plugin is announcing.
+	 */
+	public List<String> getRestrictiveGroups(){
+		return this.isAnnouncingRestrictivelyByGroup() ? this.groups : null;
+	}
+
+	/**
+	 * Gets the tag for this instance of FrogAnnounce.
+	 * 
+	 * @return The tag which appears in front of every announcement.
+	 */
+	public String getTag(){
+		return this.tag;
+	}
+
+	/**
+	 * Makes FrogAnnounce ignore the specified player when announcing. Overload of <b>ignorePlayer(CommandSender, String)</b>.
+	 * 
+	 * @param player - The CommandSender to ignore.
+	 */
+	public void ignorePlayer(final CommandSender player){
+		this.ignorePlayer(player, player.getName());
+	}
+
+	/**
+	 * Makes FrogAnnounce not announce to a certain player.
+	 * 
+	 * @param player - The player to relay output, as if they had done this to their target.
+	 * @param other - The target player for FrogAnnounce to no longer announce to.
+	 */
+	public void ignorePlayer(final CommandSender player, final String other){
+		Player otherPlayer = this.getServer().getPlayer(other);
+		if(other.equals(player.getName()))
+			otherPlayer = (Player) player;
+		else
+			otherPlayer = this.getServer().getPlayer(other);
+		if(otherPlayer!=null&&otherPlayer==player){
+			if(this.permit(player, "frogannounce.ignore")){
+				if(!this.ignoredPlayers.contains(player.getName())){
+					this.ignoredPlayers.add(otherPlayer.getName());
+					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
+					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+				}else
+					this.sendMessage(player, 1, "That player is already being ignored.");
+			}else
+				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
+		}else if(otherPlayer!=null&&otherPlayer!=player){
+			if(this.permit(player, "frogannounce.ignore.other")){
+				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
+					this.ignoredPlayers.add(otherPlayer.getName());
+					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
+					this.sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
+					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+				}else
+					this.sendMessage(player, 1, "You're already being ignored by FrogAnnounce.");
+			}else
+				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 		}else
-			this.sendMessage(player, 2, "No announcements running!");
+			this.sendMessage(player, 1, "That player isn't online right now.");
+	}
+
+	/**
+	 * Whether or not the plugin is announcing restrictively by group
+	 * 
+	 * @return Whether or not the ToGroups option is enabled.
+	 */
+	public boolean isAnnouncingRestrictivelyByGroup(){
+		return this.toGroups;
+	}
+
+	/**
+	 * Gets whether or not the plugin is announcing in a random order.
+	 * 
+	 * @return Whether or not the plugin is announcing randomly.
+	 */
+	public boolean isRandom(){
+		return this.random;
+	}
+
+	/**
+	 * Gets whether or not the plugin's announcer module is running.
+	 * 
+	 * @return Whether or not the plugin is announcing.
+	 */
+	public boolean isRunning(){
+		return this.running;
+	}
+
+	/**
+	 * Gets whether or not the plugin is displaying the joinMessage to players when they join the server.
+	 * 
+	 * @return The setting of showMessageOnJoin in the configuration.
+	 */
+	public boolean isShowingJoinMessage(){
+		return this.showJoinMessage;
+	}
+
+	/**
+	 * Whether FrogAnnounce is using OP/Non-OP or permissions.
+	 * 
+	 * @return True if using permissions, false if non-op/op
+	 */
+	public boolean isUsingPermissions(){
+		return this.usingPerms;
+	}
+
+	private void normalAnnouncement(final String announce){
+		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
+		for(final Player p: onlinePlayers)
+			for(final String line: announce.split("&NEW_LINE;"))
+				if(!this.ignoredPlayers.contains(p.getName()))
+					if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
+						p.sendMessage(this.colourizeText(line));
+					else
+						p.sendMessage(this.tag+" "+this.colourizeText(line));
+	}
+
+	private void notifyAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+		new Thread(new Runnable(){
+			@Override
+			public void run(){
+				final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
+				for(final AnnouncementListener listener: FrogAnnounce.this.getAnnouncementListeners())
+					if(listener!=null)
+						new Thread(new Runnable(){
+							@Override
+							public void run(){
+								listener.onAnnounceEvent(evt);
+							}
+						}).start();
+			}
+		}).start();
 	}
 
 	@Override
@@ -280,6 +526,72 @@ public class FrogAnnounce extends JavaPlugin{
 		return false;
 	}
 
+	@Override
+	public void onDisable(){
+		this.turnOff(null);
+		this.unregisterAllAnnouncementListeners();
+		this.logger.info("Version "+this.pdfFile.getVersion()+" has been disabled.");
+	}
+
+	@Override
+	public void onEnable(){
+		FrogAnnounce.p = this;
+		this.pdfFile = this.getDescription();
+		this.logger = new FrogLog();
+		this.cfg = new ConfigurationHandler(this);
+		this.updateConfiguration();
+		this.listeners = new ArrayList<AnnouncementListener>();
+		if(this.strings==null){
+			this.strings = new ArrayList<String>();
+			this.strings.add("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.");
+			this.interval = 5;
+		}
+		if(this.usingPerms)
+			this.checkPermissionsVaultPlugins();
+		if(this.showJoinMessage)
+			super.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
+		this.turnOn(null);
+		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
+	}
+
+	private boolean permit(final CommandSender sender, final String perm){
+		if(sender instanceof Player)
+			if(sender.isOp())
+				return true;
+			else
+				return sender.hasPermission(perm);
+		else
+			return true;
+	}
+
+	/**
+	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface.
+	 * 
+	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
+	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
+	 */
+	public int registerAnnouncementListener(final AnnouncementListener listener){
+		if(!this.getAnnouncementListeners().contains(listener))
+			this.listeners.add(listener);
+		return this.getAnnouncementListeners().indexOf(listener);
+	}
+
+	/**
+	 * 
+	 * @param player
+	 */
+	public void reloadPlugin(final CommandSender player){
+		if(this.running){
+			this.turnOff(null);
+			this.updateConfiguration();
+			this.turnOn(player);
+			this.sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
+			this.sendMessage(player, 0, "Settings loaded "+this.strings.size()+" announcements!");
+		}else
+			this.sendMessage(player, 2, "No announcements running!");
+	}
+
 	/**
 	 * This method shows the FrogAnnounce specified help page to the specified CommandSender.
 	 * 
@@ -323,74 +635,53 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	protected String colourizeText(String announce){
-		announce = announce.replaceAll("&AQUA;", ChatColor.AQUA.toString());
-		announce = announce.replaceAll("&BLACK;", ChatColor.BLACK.toString());
-		announce = announce.replaceAll("&BLUE;", ChatColor.BLUE.toString());
-		announce = announce.replaceAll("&DARK_AQUA;", ChatColor.DARK_AQUA.toString());
-		announce = announce.replaceAll("&DARK_BLUE;", ChatColor.DARK_BLUE.toString());
-		announce = announce.replaceAll("&DARK_GRAY;", ChatColor.DARK_GRAY.toString());
-		announce = announce.replaceAll("&DARK_GREEN;", ChatColor.DARK_GREEN.toString());
-		announce = announce.replaceAll("&DARK_PURPLE;", ChatColor.DARK_PURPLE.toString());
-		announce = announce.replaceAll("&RED;", ChatColor.RED.toString());
-		announce = announce.replaceAll("&DARK_RED;", ChatColor.DARK_RED.toString());
-		announce = announce.replaceAll("&GOLD;", ChatColor.GOLD.toString());
-		announce = announce.replaceAll("&GRAY;", ChatColor.GRAY.toString());
-		announce = announce.replaceAll("&GREEN;", ChatColor.GREEN.toString());
-		announce = announce.replaceAll("&LIGHT_PURPLE;", ChatColor.LIGHT_PURPLE.toString());
-		announce = announce.replaceAll("&PURPLE;", ChatColor.LIGHT_PURPLE.toString());
-		announce = announce.replaceAll("&PINK;", ChatColor.LIGHT_PURPLE.toString());
-		announce = announce.replaceAll("&WHITE;", ChatColor.WHITE.toString());
-		announce = announce.replaceAll("&b;", ChatColor.AQUA.toString());
-		announce = announce.replaceAll("&0;", ChatColor.BLACK.toString());
-		announce = announce.replaceAll("&9;", ChatColor.BLUE.toString());
-		announce = announce.replaceAll("&3;", ChatColor.DARK_AQUA.toString());
-		announce = announce.replaceAll("&1;", ChatColor.DARK_BLUE.toString());
-		announce = announce.replaceAll("&8;", ChatColor.DARK_GRAY.toString());
-		announce = announce.replaceAll("&2;", ChatColor.DARK_GREEN.toString());
-		announce = announce.replaceAll("&5;", ChatColor.DARK_PURPLE.toString());
-		announce = announce.replaceAll("&4;", ChatColor.DARK_RED.toString());
-		announce = announce.replaceAll("&6;", ChatColor.GOLD.toString());
-		announce = announce.replaceAll("&7;", ChatColor.GRAY.toString());
-		announce = announce.replaceAll("&a;", ChatColor.GREEN.toString());
-		announce = announce.replaceAll("&d;", ChatColor.LIGHT_PURPLE.toString());
-		announce = announce.replaceAll("&c;", ChatColor.RED.toString());
-		announce = announce.replaceAll("&f;", ChatColor.WHITE.toString());
-		announce = announce.replaceAll("&e;", ChatColor.YELLOW.toString());
-		announce = announce.replaceAll("&k;", ChatColor.MAGIC.toString());
-		announce = announce.replaceAll("&MAGIC;", ChatColor.MAGIC.toString());
-		announce = announce.replaceAll("&BOLD;", ChatColor.BOLD.toString());
-		announce = announce.replaceAll("&ITALIC;", ChatColor.ITALIC.toString());
-		announce = announce.replaceAll("&STRIKE;", ChatColor.STRIKETHROUGH.toString());
-		announce = announce.replaceAll("&UNDERLINE;", ChatColor.UNDERLINE.toString());
-		announce = announce.replaceAll("&RESET;", ChatColor.RESET.toString());
-		return announce;
+	private void sendMessage(final CommandSender sender, final int severity, final String message){
+		if(sender instanceof Player){
+			if(severity==0)
+				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
+			else if(severity==1)
+				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+message);
+			else if(severity==2)
+				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
+		}else if(severity==0)
+			this.logger.info(message);
+		else if(severity==1)
+			this.logger.warning(message);
+		else if(severity==2)
+			this.logger.severe(message);
+	}
+
+	private void sendMessage(final Player player, final int severity, final String message){
+		if(player!=null){
+			if(severity==0)
+				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
+			else if(severity==1)
+				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+message);
+			else if(severity==2)
+				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
+		}else if(severity==0)
+			this.logger.info(message);
+		else if(severity==1)
+			this.logger.warning(message);
+		else if(severity==2)
+			this.logger.severe(message);
 	}
 
 	/**
-	 * This method broadcasts a message to the players applicable to such an announcement. Only announces the announcements in FrogAnnounce's configuration. If you have the index of the announcement you want to force, use <b>FrogAnnounce.announce(int, boolean)</b> instead.
+	 * This method sets the announcement interval of FrogAnnounce. Will take effect immediately.
 	 * 
-	 * @param s - The index of the announcement, as a string.
-	 * @param player - The CommandSender to display the result to.
+	 * @param cmdArgs - Based on command structure. To set the interval without the base of /fa interval, you should pass new String[]{<b>null</b>, <b>"new interval"</b>}.
+	 * @param player - The CommandSender object to send output to.
 	 */
-	public void broadcastMessage(final String s, final CommandSender player){
-		int _int = 0;
-		try{
-			_int = Integer.parseInt(s);
-			if(_int>this.strings.size()-1)
-				this.sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
-			else
-				this.announce(_int, false);
-		}catch(final NumberFormatException e){
-			this.sendMessage(player, 1, "Only numbers can be entered as an index. Remember to start counting at 0.");
-		}
-	}
-
-	private Boolean setupPermissions(){
-		final RegisteredServiceProvider<Permission> permissionProvider = super.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-		if(permissionProvider!=null)
-			this.permission = permissionProvider.getProvider();
-		return this.permission!=null;
+	public void setInterval(final String[] cmdArgs, final CommandSender player){
+		final int newInterval = Integer.parseInt(cmdArgs[1]);
+		if(newInterval!=this.interval){
+			this.interval = newInterval;
+			this.cfg.updateConfiguration("Settings.Interval", this.interval);
+			this.sendMessage(player, 0, "Announcement interval has successfully been changed to "+this.interval+". Reloading configuration...");
+			this.reloadPlugin(player);
+		}else
+			this.sendMessage(player, 1, "The announcement interval is already set to "+this.interval+"! There's no need to change it!");
 	}
 
 	/**
@@ -416,81 +707,58 @@ public class FrogAnnounce extends JavaPlugin{
 			this.sendMessage(player, 1, "The announcer is already set to not announce randomly! There's no need to change it!");
 	}
 
-	/**
-	 * This method sets the announcement interval of FrogAnnounce. Will take effect immediately.
-	 * 
-	 * @param cmdArgs - Based on command structure. To set the interval without the base of /fa interval, you should pass new String[]{<b>null</b>, <b>"new interval"</b>}.
-	 * @param player - The CommandSender object to send output to.
-	 */
-	public void setInterval(final String[] cmdArgs, final CommandSender player){
-		final int newInterval = Integer.parseInt(cmdArgs[1]);
-		if(newInterval!=this.interval){
-			this.interval = newInterval;
-			this.cfg.updateConfiguration("Settings.Interval", this.interval);
-			this.sendMessage(player, 0, "Announcement interval has successfully been changed to "+this.interval+". Reloading configuration...");
-			this.reloadPlugin(player);
-		}else
-			this.sendMessage(player, 1, "The announcement interval is already set to "+this.interval+"! There's no need to change it!");
+	private Boolean setupPermissions(){
+		final RegisteredServiceProvider<Permission> permissionProvider = super.getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+		if(permissionProvider!=null)
+			this.permission = permissionProvider.getProvider();
+		return this.permission!=null;
 	}
 
-	private void checkPermissionsVaultPlugins(){
-		final Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
-		if(vault!=null){
-			if(this.setupPermissions()!=null){
-				this.logger.info("Vault hooked successfully.");
-				this.usingPerms = true;
-			}else if(this.setupPermissions()==null){
-				this.logger.info("Vault wasn't found. Defaulting to OP/Non-OP system.");
-				this.usingPerms = false;
+	/**
+	 * This method disables the announcement module of FrogAnnounce. It will stop any further announcements for occurring.
+	 * 
+	 * @param player The CommandSender object to send result messages to.
+	 * @return Whether or not the announcer core was successfully disabled. Will return false if already disabled.
+	 */
+	public boolean turnOff(final CommandSender player){
+		if(this.running){
+			this.getServer().getScheduler().cancelTask(this.taskId);
+			this.sendMessage(player, 0, "Announcer disabled!");
+			this.running = false;
+			return true;
+		}else{
+			this.sendMessage(player, 2, "The announcer is not running!");
+			return false;
+		}
+	}
+
+	/**
+	 * This method enables the announcement module of FrogAnnounce when it is disabled.
+	 * 
+	 * @param player The CommandSender object to send result messages to.
+	 * @return Whether or not the announcer was able to start. Will not automatically restart the announcer. Will return false if it was already running.
+	 */
+	public boolean turnOn(final CommandSender player){
+		if(!this.running){
+			if(this.strings.size()>0){
+				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval*1200, this.interval*1200);
+				if(this.taskId==-1){
+					this.sendMessage(player, 2, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
+					return false;
+				}else{
+					this.counter = 0;
+					this.sendMessage(player, 0, "Success! Now announcing every "+this.interval+" minute(s)!");
+					this.running = true;
+					return true;
+				}
+			}else{
+				this.sendMessage(player, 2, "The announcer failed to start! There are no announcements!");
+				return false;
 			}
-		}else
-			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
-	}
-
-	/**
-	 * Makes FrogAnnounce not announce to a certain player.
-	 * 
-	 * @param player - The player to relay output, as if they had done this to their target.
-	 * @param other - The target player for FrogAnnounce to no longer announce to.
-	 */
-	public void ignorePlayer(final CommandSender player, final String other){
-		Player otherPlayer = this.getServer().getPlayer(other);
-		if(other.equals(player.getName()))
-			otherPlayer = (Player) player;
-		else
-			otherPlayer = this.getServer().getPlayer(other);
-		if(otherPlayer!=null&&otherPlayer==player){
-			if(this.permit(player, "frogannounce.ignore")){
-				if(!this.ignoredPlayers.contains(player.getName())){
-					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
-				}else
-					this.sendMessage(player, 1, "That player is already being ignored.");
-			}else
-				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
-		}else if(otherPlayer!=null&&otherPlayer!=player){
-			if(this.permit(player, "frogannounce.ignore.other")){
-				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
-					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
-					this.sendMessage(otherPlayer, 0, ChatColor.GRAY+"You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
-				}else
-					this.sendMessage(player, 1, "You're already being ignored by FrogAnnounce.");
-			}else
-				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
-		}else
-			this.sendMessage(player, 1, "That player isn't online right now.");
-	}
-
-	/**
-	 * Makes FrogAnnounce ignore the specified player when announcing. Overload of <b>ignorePlayer(CommandSender, String)</b>.
-	 * 
-	 * @param player - The CommandSender to ignore.
-	 */
-	public void ignorePlayer(final CommandSender player){
-		this.ignorePlayer(player, player.getName());
+		}else{
+			this.sendMessage(player, 2, ChatColor.DARK_RED+"Announcer is already running.");
+			return false;
+		}
 	}
 
 	/**
@@ -528,162 +796,9 @@ public class FrogAnnounce extends JavaPlugin{
 			this.sendMessage(player, 1, "That player isn't online right now!");
 	}
 
-	private void sendMessage(final CommandSender sender, final int severity, final String message){
-		if(sender instanceof Player){
-			if(severity==0)
-				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
-			else if(severity==1)
-				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+message);
-			else if(severity==2)
-				sender.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
-		}else if(severity==0)
-			this.logger.info(message);
-		else if(severity==1)
-			this.logger.warning(message);
-		else if(severity==2)
-			this.logger.severe(message);
-	}
-
-	private void sendMessage(final Player player, final int severity, final String message){
-		if(player!=null){
-			if(severity==0)
-				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.GREEN+message);
-			else if(severity==1)
-				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.RED+message);
-			else if(severity==2)
-				player.sendMessage(ChatColor.DARK_GREEN+"[FrogAnnounce] "+ChatColor.DARK_RED+message);
-		}else if(severity==0)
-			this.logger.info(message);
-		else if(severity==1)
-			this.logger.warning(message);
-		else if(severity==2)
-			this.logger.severe(message);
-	}
-
-	/**
-	 * Announces one of the announcements from FrogAnnounce's configuration. Overload of a private method.
-	 * 
-	 * @param index - The index of the announcement to announce.
-	 */
-	public void announce(final int index){
-		this.announce(index, false);
-	}
-
-	private void announce(final int index, final boolean automatic){
-		String announce = "";
-		final int selection;
-		if(automatic&&this.random){
-			final Random randomise = new Random();
-			selection = randomise.nextInt(this.strings.size());
-			announce = this.strings.get(selection);
-		}else if(automatic){
-			announce = this.strings.get(this.counter);
-			selection = this.counter;
-			this.counter++;
-			if(this.counter>=this.strings.size())
-				this.counter = 0;
-		}else{
-			announce = this.strings.get(index);
-			selection = index;
-		}
-		if(!announce.startsWith("&USE-CMD;")){
-			String[] a = announce.split("&GROUPS;");
-			if(this.showConsoleAnnouncements)
-				if(automatic)
-					this.logger.info("Automatically announcing: "+announce);
-				else
-					this.logger.info("Manually announcing: "+announce);
-			if(this.usingPerms){
-				if(this.toGroups){
-					final List<String> received = new ArrayList<String>();
-					final Player[] players = this.getServer().getOnlinePlayers();
-					for(final Player p: players)
-						if(!received.contains(p.getName())){
-							for(final String group: this.groups)
-								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
-									for(String line: announce.split("&NEW_LINE;")){
-										if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-											line = this.colourizeText(line);
-										else
-											line = this.tag+" "+this.colourizeText(line);
-										if(!this.ignoredPlayers.contains(p.getName()))
-											if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-												p.sendMessage(line);
-											else
-												p.sendMessage(line);
-									}
-							received.add(p.getName());
-						}
-				}else if(a.length>1){
-					final Player[] players = Bukkit.getServer().getOnlinePlayers();
-					final List<String> received = new ArrayList<String>();
-					announce = a[0];
-					a = a[1].split(",");
-					if(a.length>1){
-						for(final String group: a)
-							for(final Player p: players)
-								if(!this.ignoredPlayers.contains(p.getName()))
-									if(this.permission.playerInGroup(p, group))
-										if(!received.contains(p.getName())){
-											for(final String s: announce.split("&NEW_LINE;"))
-												p.sendMessage(this.colourizeText(s));
-											received.add(p.getName());
-										}else
-											continue;
-									else
-										continue;
-					}else
-						for(final Player p: players)
-							if(this.permission.playerInGroup(p, a[0]))
-								for(final String s: announce.split("&NEW_LINE;"))
-									p.sendMessage(this.colourizeText(s));
-				}else
-					this.normalAnnouncement(announce);
-			}else
-				this.normalAnnouncement(announce);
-		}else{
-			announce = announce.replace("&USE-CMD;", "/");
-			if(this.showConsoleAnnouncements)
-				if(automatic)
-					this.logger.info("Automatically using command: "+announce);
-				else
-					this.logger.info("Manually invoking command: "+announce);
-			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
-		}
-		this.notifyAnnouncementListeners(announce, automatic, selection);
-	}
-
-	private void notifyAnnouncementListeners(final String announcement, final boolean automatic, final int index){
-		new Thread(new Runnable(){
-			@Override
-			public void run(){
-				final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
-				for(final AnnouncementListener listener: FrogAnnounce.this.getAnnouncementListeners())
-					if(listener!=null)
-						new Thread(new Runnable(){
-							@Override
-							public void run(){
-								listener.onAnnounceEvent(evt);
-							}
-						}).start();
-			}
-		}).start();
-	}
-
-	private ArrayList<AnnouncementListener> getAnnouncementListeners(){
-		return this.listeners;
-	}
-
-	/**
-	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface.
-	 * 
-	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
-	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
-	 */
-	public int registerAnnouncementListener(AnnouncementListener listener){
-		if(!this.getAnnouncementListeners().contains(listener))
-			this.listeners.add(listener);
-		return this.getAnnouncementListeners().indexOf(listener);
+	private void unregisterAllAnnouncementListeners(){
+		for(int i = 0; i<this.getAnnouncementListeners().size(); i++)
+			this.listeners.remove(i);
 	}
 
 	/**
@@ -691,123 +806,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * 
 	 * @param id The id of the AnnouncementListener in FrogAnnounce's observer list to remove. This is returned by the registration method.
 	 */
-	public void unregisterAnnouncementListener(int id){
+	public void unregisterAnnouncementListener(final int id){
 		this.listeners.set(id, null);
-	}
-
-	private void unregisterAllAnnouncementListeners(){
-		for(int i = 0; i<this.getAnnouncementListeners().size(); i++)
-			this.listeners.remove(i);
-	}
-
-	/**
-	 * Gets the current instance of FrogAnnounce.
-	 * 
-	 * @return The running instance of this plugin.
-	 */
-	public static FrogAnnounce getInstance(){
-		return FrogAnnounce.p;
-	}
-
-	/**
-	 * Gets the array of Strings that the announcer is announcing to players.
-	 * 
-	 * @return The messages that players will see, in form of an array.
-	 */
-	public String[] getAnnouncements(){
-		return this.strings.toArray(new String[this.strings.size()]);
-	}
-
-	/**
-	 * Gets whether or not the plugin's announcer module is running.
-	 * 
-	 * @return Whether or not the plugin is announcing.
-	 */
-	public boolean isRunning(){
-		return this.running;
-	}
-
-	/**
-	 * Whether or not the plugin is announcing restrictively by group
-	 * 
-	 * @return Whether or not the ToGroups option is enabled.
-	 */
-	public boolean isAnnouncingRestrictivelyByGroup(){
-		return this.toGroups;
-	}
-
-	/**
-	 * Whether FrogAnnounce is using OP/Non-OP or permissions.
-	 * 
-	 * @return True if using permissions, false if non-op/op
-	 */
-	public boolean isUsingPermissions(){
-		return this.usingPerms;
-	}
-
-	/**
-	 * Gets the return message for this instance of FrogAnnounce. Will return null if the plugin isn't even showing the join message.
-	 * 
-	 * @return The join message, or null, if this instance isn't showing it.
-	 */
-	public String getJoinMessage(){
-		return this.isShowingJoinMessage() ? this.joinMessage : null;
-	}
-
-	/**
-	 * Gets the tag for this instance of FrogAnnounce.
-	 * 
-	 * @return The tag which appears in front of every announcement.
-	 */
-	public String getTag(){
-		return this.tag;
-	}
-
-	/**
-	 * Gets whether or not the plugin is announcing in a random order.
-	 * 
-	 * @return Whether or not the plugin is announcing randomly.
-	 */
-	public boolean isRandom(){
-		return this.random;
-	}
-
-	/**
-	 * Gets whether or not the plugin is displaying the joinMessage to players when they join the server.
-	 * 
-	 * @return The setting of showMessageOnJoin in the configuration.
-	 */
-	public boolean isShowingJoinMessage(){
-		return this.showJoinMessage;
-	}
-
-	/**
-	 * Gets thr groups to which the plugin is announcing. May be null.
-	 * 
-	 * @return Null if the plugin has ToGroups set to false; otherwise, the groups to which the plugin is announcing.
-	 */
-	public List<String> getRestrictiveGroups(){
-		return this.isAnnouncingRestrictivelyByGroup() ? this.groups : null;
-	}
-
-	/**
-	 * Gets an array of player names of the players who are not receiving announcements.
-	 * 
-	 * @return The names of players who aren't getting announcements, as a String array.
-	 */
-	public String[] getIgnoredPlayers(){
-		return this.ignoredPlayers.toArray(new String[this.ignoredPlayers.size()]);
-	}
-
-	private void normalAnnouncement(final String announce){
-		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
-		for(final Player p: onlinePlayers)
-			for(final String line: announce.split("&NEW_LINE;"))
-				if(!this.ignoredPlayers.contains(p.getName()))
-					if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-						p.sendMessage(this.colourizeText(line));
-					else
-						p.sendMessage(this.tag+" "+this.colourizeText(line));
 	}
 
 	private void updateConfiguration(){

@@ -23,25 +23,33 @@ public final class ConfigurationHandler extends FrogAnnounce{
 	private YamlConfiguration config = null;
 	private final File configFile;
 
-	@Override
-	public void saveConfig(){
+	private static void copyFile(final InputStream fis, final File out) throws Exception{
+		FileOutputStream fos = null;
 		try{
-			this.config.save(this.configFile);
-		}catch(final IOException e){
-			e.printStackTrace();
+			fos = new FileOutputStream(out);
+			final byte[] buf = new byte[1024];
+			int i = 0;
+			while((i = fis.read(buf))!=-1)
+				fos.write(buf, 0, i);
+			if(fis!=null)
+				fis.close();
+			if(fos!=null)
+				fos.close();
+		}catch(final Exception e){
+			throw e;
+		}finally{
+			if(fos!=null)
+				fos.close();
 		}
 	}
 
 	@Override
 	public YamlConfiguration getConfig(){
-		return (this.config = this.loadConfig());
+		return this.config = this.loadConfig();
 	}
 
-	protected void updateConfiguration(String path, Object newValue){
-		if(this.config==null)
-			this.config = this.getConfig();
-		this.config.set(path, newValue);
-		this.saveConfig();
+	private void info(final String s){
+		Logger.getLogger("Minecraft").info("[FrogAnnounce] "+s);
 	}
 
 	private YamlConfiguration loadConfig(){
@@ -74,32 +82,24 @@ public final class ConfigurationHandler extends FrogAnnounce{
 		return this.config;
 	}
 
-	private static void copyFile(final InputStream fis, final File out) throws Exception{
-		FileOutputStream fos = null;
+	@Override
+	public void saveConfig(){
 		try{
-			fos = new FileOutputStream(out);
-			final byte[] buf = new byte[1024];
-			int i = 0;
-			while((i = fis.read(buf))!=-1)
-				fos.write(buf, 0, i);
-			if(fis!=null)
-				fis.close();
-			if(fos!=null)
-				fos.close();
-		}catch(final Exception e){
-			throw e;
-		}finally{
-			if(fos!=null)
-				fos.close();
+			this.config.save(this.configFile);
+		}catch(final IOException e){
+			e.printStackTrace();
 		}
 	}
 
-	private void severe(String s){
+	private void severe(final String s){
 		Logger.getLogger("Minecraft").severe("[FrogAnnounce] "+s);
 	}
 
-	private void info(String s){
-		Logger.getLogger("Minecraft").info("[FrogAnnounce] "+s);
+	protected void updateConfiguration(final String path, final Object newValue){
+		if(this.config==null)
+			this.config = this.getConfig();
+		this.config.set(path, newValue);
+		this.saveConfig();
 	}
 
 	protected ConfigurationHandler(final FrogAnnounce plugin){
