@@ -42,7 +42,7 @@ public class FrogAnnounce extends JavaPlugin{
 	protected List<String> strings, groups;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
-	private ArrayList<AnnouncementListener> listeners;
+	private ArrayList<AnnouncementListener> asyncListeners, syncListeners;
 	/** Static accessor */
 	private static FrogAnnounce p;
 
@@ -162,7 +162,8 @@ public class FrogAnnounce extends JavaPlugin{
 					this.logger.info("Manually invoking command: "+announce);
 			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
 		}
-		this.notifyAnnouncementListeners(announce, automatic, selection);
+		this.notifyAsyncAnnouncementListeners(announce, automatic, selection);
+		this.notifySyncAnnouncementListeners(announce, automatic, selection);
 	}
 
 	/**
@@ -195,7 +196,7 @@ public class FrogAnnounce extends JavaPlugin{
 				this.usingPerms = false;
 			}
 		}else
-			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, but if you don't have it, this will still work (you just can't use permission-based stuff).");
+			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, so if you don't have it, this will still work (you just can't use permission-based stuff).");
 	}
 
 	public String colourizeText(String announce){
@@ -242,8 +243,12 @@ public class FrogAnnounce extends JavaPlugin{
 		return announce;
 	}
 
-	private ArrayList<AnnouncementListener> getAnnouncementListeners(){
-		return this.listeners;
+	private ArrayList<AnnouncementListener> getAsyncAnnouncementListeners(){
+		return this.asyncListeners;
+	}
+
+	private ArrayList<AnnouncementListener> getSyncAnnouncementListeners(){
+		return this.syncListeners;
 	}
 
 	/**
@@ -393,21 +398,25 @@ public class FrogAnnounce extends JavaPlugin{
 						p.sendMessage(this.tag+" "+this.colourizeText(line));
 	}
 
-	private void notifyAnnouncementListeners(final String announcement, final boolean automatic, final int index){
-		new Thread(new Runnable(){
-			@Override
-			public void run(){
-				final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
-				for(final AnnouncementListener listener: FrogAnnounce.this.getAnnouncementListeners())
-					if(listener!=null)
-						new Thread(new Runnable(){
-							@Override
-							public void run(){
-								listener.onAnnounceEvent(evt);
-							}
-						}).start();
-			}
-		}).start();
+	private void notifyAsyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+		Bukkit.getPlayer("TheLunarFrog");
+		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
+		for(final AnnouncementListener listener: FrogAnnounce.this.getAsyncAnnouncementListeners())
+			if(listener!=null)
+				new Thread(new Runnable(){
+					@Override
+					public void run(){
+						listener.onAnnounceEvent(evt);
+					}
+				}).start();
+	}
+
+	private void notifySyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+		Bukkit.getPlayer("TheLunarFrog");
+		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
+		for(final AnnouncementListener listener: FrogAnnounce.this.getSyncAnnouncementListeners())
+			if(listener!=null)
+				listener.onAnnounceEvent(evt);
 	}
 
 	@Override
@@ -543,7 +552,8 @@ public class FrogAnnounce extends JavaPlugin{
 		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler(this);
 		this.updateConfiguration();
-		this.listeners = new ArrayList<AnnouncementListener>();
+		this.asyncListeners = new ArrayList<AnnouncementListener>();
+		this.syncListeners = new ArrayList<AnnouncementListener>();
 		if(this.strings==null){
 			this.strings = new ArrayList<String>();
 			this.strings.add("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.");
@@ -569,15 +579,28 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface.
+	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface. <br/><br/>This method will register the listener asynchronously, meaning any thread-unsafe calls should <b>NOT</b> be used within the listener being registered. For thread-unsafe calls, use registerSyncAnnouncementListener instead.
+	 * 
+	 * @see registerAsyncAnnouncementListener
+	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
+	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
+	 */
+	public int registerAsyncAnnouncementListener(final AnnouncementListener listener){
+		if(!this.getAsyncAnnouncementListeners().contains(listener))
+			this.asyncListeners.add(listener);
+		return this.getAsyncAnnouncementListeners().indexOf(listener);
+	}
+
+	/**
+	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface. <br/><br/>This method will register the listener synchronously, meaning any thread-unsafe calls can be used in the listener, as everything will be executed from the main thread.
 	 * 
 	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
 	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
 	 */
-	public int registerAnnouncementListener(final AnnouncementListener listener){
-		if(!this.getAnnouncementListeners().contains(listener))
-			this.listeners.add(listener);
-		return this.getAnnouncementListeners().indexOf(listener);
+	public int registerSyncAnnouncementListener(final AnnouncementListener listener){
+		if(!this.getAsyncAnnouncementListeners().contains(listener))
+			this.syncListeners.add(listener);
+		return this.getSyncAnnouncementListeners().indexOf(listener);
 	}
 
 	/**
@@ -800,17 +823,36 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	private void unregisterAllAnnouncementListeners(){
-		for(int i = 0; i<this.getAnnouncementListeners().size(); i++)
-			this.listeners.remove(i);
+		this.unregisterAllAsyncAnnouncementListeners();
+		this.unregisterAllSyncAnnouncementListeners();
+	}
+
+	private void unregisterAllAsyncAnnouncementListeners(){
+		for(int i = 0; i<this.getAsyncAnnouncementListeners().size(); i++)
+			this.asyncListeners.remove(i);
+	}
+
+	private void unregisterAllSyncAnnouncementListeners(){
+		for(int i = 0; i<this.getSyncAnnouncementListeners().size(); i++)
+			this.syncListeners.remove(i);
 	}
 
 	/**
-	 * This method unregisters an announcement listener from FrogAnnounce's observer list, making your AnnouncementListener-implementing child no longer be notified of AnnouncementEvents.
+	 * This method unregisters an asynchronous announcement listener from FrogAnnounce's observer list, making your AnnouncementListener-implementing child no longer be notified of AnnouncementEvents.
 	 * 
 	 * @param id The id of the AnnouncementListener in FrogAnnounce's observer list to remove. This is returned by the registration method.
 	 */
-	public void unregisterAnnouncementListener(final int id){
-		this.listeners.set(id, null);
+	public void unregisterSyncAnnouncementListener(final int id){
+		this.syncListeners.set(id, null);
+	}
+
+	/**
+	 * This method unregisters a synchronous announcement listener from FrogAnnounce's observer list, making your AnnouncementListener-implementing child no longer be notified of AnnouncementEvents. Any code currently running will continue to run until it reaches the end of its execution path, as this method does <b>NOT</b> destroy the thread.
+	 * 
+	 * @param id The id of the AnnouncementListener in FrogAnnounce's observer list to remove. This is returned by the registration method.
+	 */
+	public void unregisterAsyncAnnouncementListener(final int id){
+		this.asyncListeners.set(id, null);
 	}
 
 	private void updateConfiguration(){
