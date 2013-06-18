@@ -76,7 +76,7 @@ public class Announcement{
 			for(final String command: this.commands){
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replaceFirst("/", ""));
 				if(FrogAnnounce.getInstance().showConsoleAnnouncements)
-					System.out.println("Running console command as part of announcement: "+command);
+					Bukkit.getConsoleSender().sendMessage("Running console command as part of announcement: "+command);
 			}
 	}
 }
