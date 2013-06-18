@@ -1,0 +1,82 @@
+package main.java.me.thelunarfrog.FrogAnnounce;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
+public class Announcement{
+	private final String text;
+	private final List<String> groups;
+	private final List<String> worlds;
+	private final List<String> commands;
+
+	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
+		this.text = FrogAnnounce.colourizeText(text);
+		if(groups!=null)
+			this.groups = groups;
+		else
+			this.groups = new ArrayList<String>();
+		if(worlds!=null)
+			this.worlds = worlds;
+		else
+			this.worlds = new ArrayList<String>();
+		if(commands!=null)
+			this.commands = commands;
+		else
+			this.commands = new ArrayList<String>();
+	}
+
+	public String getText(){
+		return this.text;
+	}
+
+	public void execute(){
+		final List<Player> players = new ArrayList<Player>();
+		final List<String> ignored = FrogAnnounce.getInstance().getIgnoredPlayers();
+		if(!this.worlds.isEmpty())
+			for(final String world: this.worlds){
+				World w;
+				if((w = Bukkit.getServer().getWorld(world))!=null){
+					for(final Player p: w.getPlayers())
+						if(!ignored.contains(p.getName()))
+							if(this.groups.isEmpty())
+								players.add(p);
+							else if(!players.contains(p))
+								for(final String group: FrogAnnounce.getInstance().permission.getPlayerGroups(p))
+									if(this.groups.contains(group)){
+										players.add(p);
+										break;
+									}
+				}else
+					System.err.println("World \""+world+"\" isn't a valid world, so it couldn't be used in restriction for announcing...");
+			}
+		else if(!this.groups.isEmpty()){
+			for(final Player p: Bukkit.getServer().getOnlinePlayers())
+				if(!ignored.contains(p.getName()))
+					for(final String group: FrogAnnounce.getInstance().permission.getPlayerGroups(p))
+						if(this.groups.contains(group)){
+							players.add(p);
+							break;
+						}
+		}else
+			for(final Player p: Bukkit.getServer().getOnlinePlayers())
+				if(!ignored.contains(p.getName()))
+					players.add(p);
+		final String tag = FrogAnnounce.getInstance().getTag();
+		for(final Player p: players)
+			for(final String s: this.text.split("&NEW_LINE;"))
+				p.sendMessage(tag+(tag.isEmpty() ? "" : " ")+s);
+		if(FrogAnnounce.getInstance().showConsoleAnnouncements)
+			for(final String s: this.text.split("&NEW_LINE;"))
+				System.out.println(tag+(tag.isEmpty() ? "" : " ")+s);
+		if(!this.commands.isEmpty())
+			for(final String command: this.commands){
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replaceFirst("/", ""));
+				if(FrogAnnounce.getInstance().showConsoleAnnouncements)
+					System.out.println("Running console command as part of announcement: "+command);
+			}
+	}
+}

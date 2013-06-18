@@ -38,8 +38,8 @@ public class FrogAnnounce extends JavaPlugin{
 	public Permission permission = null;
 	protected String tag, joinMessage;
 	protected int interval, taskId = -1, counter = 0;
-	protected boolean running = false, random, permissionsEnabled = false, toGroups, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
-	protected List<String> strings, groups;
+	protected boolean running = false, random, permissionsEnabled = false, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
+	protected List<Announcement> announcements;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
 	private ArrayList<AnnouncementListener> asyncListeners, syncListeners;
@@ -81,89 +81,19 @@ public class FrogAnnounce extends JavaPlugin{
 		this.announce(index, false);
 	}
 
-	private void announce(final int index, final boolean automatic){
-		String announce = "";
-		final int selection;
-		if(automatic&&this.random){
-			final Random randomise = new Random();
-			selection = randomise.nextInt(this.strings.size());
-			announce = this.strings.get(selection);
-		}else if(automatic){
-			announce = this.strings.get(this.counter);
-			selection = this.counter;
-			this.counter++;
-			if(this.counter>=this.strings.size())
-				this.counter = 0;
-		}else{
-			announce = this.strings.get(index);
-			selection = index;
-		}
-		if(!announce.startsWith("&USE-CMD;")){
-			String[] a = announce.split("&GROUPS;");
-			if(this.showConsoleAnnouncements)
-				if(automatic)
-					this.logger.info("Automatically announcing: "+announce);
-				else
-					this.logger.info("Manually announcing: "+announce);
-			if(this.usingPerms){
-				if(this.toGroups){
-					final List<String> received = new ArrayList<String>();
-					final Player[] players = this.getServer().getOnlinePlayers();
-					for(final Player p: players)
-						if(!received.contains(p.getName())){
-							for(final String group: this.groups)
-								if(this.permission.playerInGroup(p.getWorld().getName(), p.getName(), group)&&!this.ignoredPlayers.contains(p.getName()))
-									for(String line: announce.split("&NEW_LINE;")){
-										if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-											line = this.colourizeText(line);
-										else
-											line = this.tag+" "+this.colourizeText(line);
-										if(!this.ignoredPlayers.contains(p.getName()))
-											if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-												p.sendMessage(line);
-											else
-												p.sendMessage(line);
-									}
-							received.add(p.getName());
-						}
-				}else if(a.length>1){
-					final Player[] players = Bukkit.getServer().getOnlinePlayers();
-					final List<String> received = new ArrayList<String>();
-					announce = a[0];
-					a = a[1].split(",");
-					if(a.length>1){
-						for(final String group: a)
-							for(final Player p: players)
-								if(!this.ignoredPlayers.contains(p.getName()))
-									if(this.permission.playerInGroup(p, group))
-										if(!received.contains(p.getName())){
-											for(final String s: announce.split("&NEW_LINE;"))
-												p.sendMessage(this.colourizeText(s));
-											received.add(p.getName());
-										}else
-											continue;
-									else
-										continue;
-					}else
-						for(final Player p: players)
-							if(this.permission.playerInGroup(p, a[0]))
-								for(final String s: announce.split("&NEW_LINE;"))
-									p.sendMessage(this.colourizeText(s));
-				}else
-					this.normalAnnouncement(announce);
-			}else
-				this.normalAnnouncement(announce);
-		}else{
-			announce = announce.replace("&USE-CMD;", "/");
-			if(this.showConsoleAnnouncements)
-				if(automatic)
-					this.logger.info("Automatically using command: "+announce);
-				else
-					this.logger.info("Manually invoking command: "+announce);
-			this.getServer().dispatchCommand(this.getServer().getConsoleSender(), announce);
-		}
-		this.notifyAsyncAnnouncementListeners(announce, automatic, selection);
-		this.notifySyncAnnouncementListeners(announce, automatic, selection);
+	private void announce(int index, final boolean auto){
+		if(auto){
+			if(this.random)
+				this.announcements.get((index = new Random().nextInt())).execute();
+			else{
+				this.announcements.get((index = this.counter++)).execute();
+				if(this.counter>=this.announcements.size())
+					this.counter = 0;
+			}
+		}else
+			this.announcements.get(index).execute();
+		this.notifySyncAnnouncementListeners(this.announcements.get(index).getText(), auto, index);
+		this.notifyAsyncAnnouncementListeners(this.announcements.get(index).getText(), auto, index);
 	}
 
 	/**
@@ -176,7 +106,7 @@ public class FrogAnnounce extends JavaPlugin{
 		int _int = 0;
 		try{
 			_int = Integer.parseInt(s);
-			if(_int>this.strings.size()-1)
+			if(_int>this.announcements.size()-1)
 				this.sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			else
 				this.announce(_int, false);
@@ -199,7 +129,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, so if you don't have it, this will still work (you just can't use permission-based stuff).");
 	}
 
-	public String colourizeText(String announce){
+	public static String colourizeText(String announce){
 		announce = announce.replaceAll("&AQUA;", ChatColor.AQUA.toString());
 		announce = announce.replaceAll("&BLACK;", ChatColor.BLACK.toString());
 		announce = announce.replaceAll("&BLUE;", ChatColor.BLUE.toString());
@@ -257,7 +187,10 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @return The messages that players will see, in form of an array.
 	 */
 	public String[] getAnnouncements(){
-		return this.strings.toArray(new String[this.strings.size()]);
+		final String[] announcements = new String[this.announcements.size()];
+		for(int i = 0; i<this.announcements.size(); i++)
+			announcements[i] = this.announcements.get(i).getText();
+		return announcements;
 	}
 
 	/**
@@ -276,15 +209,6 @@ public class FrogAnnounce extends JavaPlugin{
 	 */
 	public String getJoinMessage(){
 		return this.isShowingJoinMessage() ? this.joinMessage : null;
-	}
-
-	/**
-	 * Gets thr groups to which the plugin is announcing. May be null.
-	 * 
-	 * @return Null if the plugin has ToGroups set to false; otherwise, the groups to which the plugin is announcing.
-	 */
-	public List<String> getRestrictiveGroups(){
-		return this.isAnnouncingRestrictivelyByGroup() ? this.groups : null;
 	}
 
 	/**
@@ -343,15 +267,6 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 * Whether or not the plugin is announcing restrictively by group
-	 * 
-	 * @return Whether or not the ToGroups option is enabled.
-	 */
-	public boolean isAnnouncingRestrictivelyByGroup(){
-		return this.toGroups;
-	}
-
-	/**
 	 * Gets whether or not the plugin is announcing in a random order.
 	 * 
 	 * @return Whether or not the plugin is announcing randomly.
@@ -387,18 +302,17 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.usingPerms;
 	}
 
-	private void normalAnnouncement(final String announce){
-		final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
-		for(final Player p: onlinePlayers)
-			for(final String line: announce.split("&NEW_LINE;"))
-				if(!this.ignoredPlayers.contains(p.getName()))
-					if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-						p.sendMessage(this.colourizeText(line));
-					else
-						p.sendMessage(this.tag+" "+this.colourizeText(line));
-	}
-
-	private void notifyAsyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+	// private void normalAnnouncement(final String announce){
+	// final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
+	// for(final Player p: onlinePlayers)
+	// for(final String line: announce.split("&NEW_LINE;"))
+	// if(!this.ignoredPlayers.contains(p.getName()))
+	// if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
+	// p.sendMessage(this.colourizeText(line));
+	// else
+	// p.sendMessage(this.tag+" "+this.colourizeText(line));
+	// }
+	protected void notifyAsyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
 		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener: FrogAnnounce.this.getAsyncAnnouncementListeners())
@@ -411,7 +325,7 @@ public class FrogAnnounce extends JavaPlugin{
 				}).start();
 	}
 
-	private void notifySyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+	protected void notifySyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
 		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener: FrogAnnounce.this.getSyncAnnouncementListeners())
@@ -459,14 +373,14 @@ public class FrogAnnounce extends JavaPlugin{
 						this.reloadConfig();
 					}else if(args[0].equalsIgnoreCase("list")){
 						this.sendMessage(sender, 0, "Loaded announcements:");
-						for(final String s: this.strings)
-							this.sendMessage(sender, 0, this.strings.indexOf(s)+". "+this.colourizeText(s));
+						for(final Announcement a: this.announcements)
+							this.sendMessage(sender, 0, this.announcements.indexOf(a.getText())+". "+FrogAnnounce.colourizeText(a.getText()));
 					}else if(args[0].equalsIgnoreCase("add")){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i<args.length; i++)
 							sb.append(args[i]+" ");
-						this.strings.add(sb.toString().trim());
-						this.cfg.updateConfiguration("Announcer.Strings", this.strings);
+						this.announcements.add(new Announcement(sb.toString().trim(), null, null, null));
+						this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
 						this.sendMessage(sender, 0, "Successfully added the announcement \""+sb.toString().trim()+"\" to the configuration. Reloading config...");
 						this.reloadPlugin(sender);
 					}else if(args[0].equalsIgnoreCase("manualbroadcast")||args[0].equalsIgnoreCase("mbc")){
@@ -474,22 +388,22 @@ public class FrogAnnounce extends JavaPlugin{
 						for(int i = 1; i<args.length; i++)
 							sb.append(args[i]+" ");
 						if(this.tag.isEmpty())
-							this.getServer().broadcastMessage(this.colourizeText(sb.toString().trim()));
+							this.getServer().broadcastMessage(FrogAnnounce.colourizeText(sb.toString().trim()));
 						else
-							this.getServer().broadcastMessage(this.tag+" "+this.colourizeText(sb.toString().trim()));
+							this.getServer().broadcastMessage(this.tag+" "+FrogAnnounce.colourizeText(sb.toString().trim()));
 					}else if(args[0].equalsIgnoreCase("remove")||args[0].equalsIgnoreCase("delete")||args[0].equalsIgnoreCase("rem")||args[0].equalsIgnoreCase("del")){
 						int i = 0;
 						if(args.length==2)
 							try{
 								i = Integer.parseInt(args[1]);
 								try{
-									this.sendMessage(sender, 0, "Removing announcement "+i+" ("+this.strings.get(i)+")...");
-									this.strings.remove(i);
-									this.cfg.updateConfiguration("Announcer.Strings", this.strings);
+									this.sendMessage(sender, 0, "Removing announcement "+i+" ("+this.announcements.get(i)+")...");
+									this.announcements.remove(i);
+									this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
 									this.sendMessage(sender, 0, "Announcement "+i+" successfully removed. Reloading configuration...");
 									this.reloadPlugin(sender);
 								}catch(final IndexOutOfBoundsException e){
-									this.sendMessage(sender, 1, "Error: There are only "+this.strings.size()+" announcements. You must count from 0!");
+									this.sendMessage(sender, 1, "Error: There are only "+this.announcements.size()+" announcements. You must count from 0!");
 								}
 							}catch(final NumberFormatException e){
 								this.sendMessage(sender, 1, "Please enter an announcement index.");
@@ -554,16 +468,11 @@ public class FrogAnnounce extends JavaPlugin{
 		this.updateConfiguration();
 		this.asyncListeners = new ArrayList<AnnouncementListener>();
 		this.syncListeners = new ArrayList<AnnouncementListener>();
-		if(this.strings==null){
-			this.strings = new ArrayList<String>();
-			this.strings.add("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.");
-			this.interval = 5;
-		}
 		if(this.usingPerms)
 			this.checkPermissionsVaultPlugins();
 		if(this.showJoinMessage)
 			super.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-		this.logger.info("Settings loaded "+this.strings.size()+" announcements!");
+		this.logger.info("Settings loaded "+this.announcements.size()+" announcements!");
 		this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
@@ -613,7 +522,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.updateConfiguration();
 			this.turnOn(player);
 			this.sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
-			this.sendMessage(player, 0, "Settings loaded "+this.strings.size()+" announcements!");
+			this.sendMessage(player, 0, "Settings loaded "+this.announcements.size()+" announcements!");
 		}else
 			this.sendMessage(player, 2, "No announcements running!");
 	}
@@ -766,7 +675,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 */
 	public boolean turnOn(final CommandSender player){
 		if(!this.running){
-			if(this.strings.size()>0){
+			if(this.announcements.size()>0){
 				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval*1200, this.interval*1200);
 				if(this.taskId==-1){
 					this.sendMessage(player, 2, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
@@ -857,17 +766,40 @@ public class FrogAnnounce extends JavaPlugin{
 
 	private void updateConfiguration(){
 		final YamlConfiguration config = new ConfigurationHandler(this).getConfig();
+		List<String> groups, worlds;
 		this.interval = config.getInt("Settings.Interval", 5);
 		this.random = config.getBoolean("Settings.Random", false);
 		this.usingPerms = config.getBoolean("Settings.Permission", true);
-		this.strings = config.getStringList("Announcer.Strings");
-		this.tag = this.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-		this.toGroups = config.getBoolean("Announcer.ToGroups", true);
-		this.groups = config.getStringList("Announcer.Groups");
+		this.tag = FrogAnnounce.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+		groups = config.getStringList("Announcer.GlobalGroups");
+		worlds = config.getStringList("Announcer.GlobalWorlds");
 		this.ignoredPlayers = (ArrayList<String>) config.getStringList("ignoredPlayers");
 		this.showJoinMessage = config.getBoolean("Settings.displayMessageOnJoin", false);
 		this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
 		this.showConsoleAnnouncements = config.getBoolean("Settings.showConsoleAnnouncements", false);
+		this.announcements = new ArrayList<Announcement>();
+		int i = 0;
+		while(config.contains("Announcer.Announcements."+(++i)))
+			if(config.getBoolean("Announcer.Announcements."+i+".Enabled", true)){
+				List<String> effectiveWorlds = config.getStringList("Announcer.Announcements."+i+".Worlds"), effectiveGroups = config.getStringList("Announcer.Announcements."+i+".Groups");
+				if(effectiveWorlds==null)
+					effectiveWorlds = worlds;
+				else if(worlds!=null)
+					for(final String world: worlds)
+						if(!effectiveWorlds.contains(world))
+							effectiveWorlds.add(world);
+				if(effectiveGroups==null)
+					effectiveGroups = groups;
+				else if(groups!=null)
+					for(final String group: groups)
+						if(!effectiveGroups.contains(group))
+							effectiveGroups.add(group);
+				this.announcements.add(new Announcement(config.getString("Announcer.Announcements."+i+".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements."+i+".Commands")));
+			}
+		if(this.announcements.isEmpty()){
+			this.announcements.add(new Announcement("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.", null, null, null));
+			this.interval = 5;
+		}
 	}
 
 	class Announcer implements Runnable{

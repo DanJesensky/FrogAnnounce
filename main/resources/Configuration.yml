@@ -57,6 +57,21 @@ Announcer:
             Groups:
                 - Administrators
                 - Donators
+        5:
+            Text: 'Running a command synchronously with this announcement.'
+            #Example of a command.
+            #Obviously, you should change it. I don't want 64 stone every 25 minutes if I log into your server. Please.
+            #Commands will be run after the text is announced. Obviously, there is no limiting a command's effects to
+            #certain groups or worlds, as it is out of a foreign plugin's ability, and must be done by the plugin which that
+            #action is performed by.
+            #
+            Commands:
+                - /give thelunarfrog 1 64
+            Worlds:
+                - world_the_end
+            Groups:
+                - Administrators
+                - Donators
     GlobalGroups:
         - Moderators
     GlobalWorlds:
