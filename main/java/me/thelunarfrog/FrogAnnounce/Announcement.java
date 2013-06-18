@@ -71,7 +71,7 @@ public class Announcement{
 				p.sendMessage(tag+(tag.isEmpty() ? "" : " ")+s);
 		if(FrogAnnounce.getInstance().showConsoleAnnouncements)
 			for(final String s: this.text.split("&NEW_LINE;"))
-				System.out.println(tag+(tag.isEmpty() ? "" : " ")+s);
+				Bukkit.getConsoleSender().sendMessage(tag+(tag.isEmpty() ? "" : " ")+s);
 		if(!this.commands.isEmpty())
 			for(final String command: this.commands){
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replaceFirst("/", ""));
