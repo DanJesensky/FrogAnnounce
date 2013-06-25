@@ -4,17 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class Announcement{
-	private final String text;
+	private String[] text;
 	private final List<String> groups;
 	private final List<String> worlds;
 	private final List<String> commands;
 
 	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
-		this.text = FrogAnnounce.colourizeText(text);
+		this.text = new String[text.split("&NEW_LINE;").length];
+		if(this.text.length<2){
+			this.text = new String[1];
+			this.text[0] = FrogAnnounce.colourizeText(text);
+		}else
+			for(int i = 0; i<text.length(); i++)
+				this.text[i] = FrogAnnounce.colourizeText(text.split("&NEW_LINE;")[i]);
 		if(groups!=null)
 			this.groups = groups;
 		else
@@ -29,7 +36,7 @@ public class Announcement{
 			this.commands = new ArrayList<String>();
 	}
 
-	public String getText(){
+	public String[] getText(){
 		return this.text;
 	}
 
@@ -67,11 +74,11 @@ public class Announcement{
 					players.add(p);
 		final String tag = FrogAnnounce.getInstance().getTag();
 		for(final Player p: players)
-			for(final String s: this.text.split("&NEW_LINE;"))
+			for(final String s: this.text)
 				p.sendMessage(tag+(tag.isEmpty() ? "" : " ")+s);
 		if(FrogAnnounce.getInstance().showConsoleAnnouncements)
-			for(final String s: this.text.split("&NEW_LINE;"))
-				Bukkit.getConsoleSender().sendMessage(tag+(tag.isEmpty() ? "" : " ")+s);
+			for(final String s: this.text)
+				Bukkit.getConsoleSender().sendMessage(tag+(tag.isEmpty() ? "" : " ")+s+ChatColor.DARK_GREEN+" [Announced to "+players.size()+" player(s)]");
 		if(!this.commands.isEmpty())
 			for(final String command: this.commands){
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replaceFirst("/", ""));

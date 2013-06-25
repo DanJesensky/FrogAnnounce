@@ -1,11 +1,13 @@
 package main.java.me.thelunarfrog.FrogAnnounce.events;
 
+import main.java.me.thelunarfrog.FrogAnnounce.Announcement;
+
 public class AnnouncementEvent{
-	private final String announcement;
+	private final Announcement announcement;
 	private final boolean isAutomatic;
 	private final int index;
 
-	public String getAnnouncement(){
+	public Announcement getAnnouncement(){
 		return this.announcement;
 	}
 
@@ -17,8 +19,8 @@ public class AnnouncementEvent{
 		return this.isAutomatic;
 	}
 
-	public AnnouncementEvent(final String announcementString, final boolean isAutomatic, final int index){
-		this.announcement = announcementString;
+	public AnnouncementEvent(final Announcement a, final boolean isAutomatic, final int index){
+		this.announcement = a;
 		this.isAutomatic = isAutomatic;
 		this.index = index;
 	}

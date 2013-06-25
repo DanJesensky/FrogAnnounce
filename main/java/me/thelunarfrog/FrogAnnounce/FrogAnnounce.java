@@ -92,8 +92,8 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 		}else
 			this.announcements.get(index).execute();
-		this.notifySyncAnnouncementListeners(this.announcements.get(index).getText(), auto, index);
-		this.notifyAsyncAnnouncementListeners(this.announcements.get(index).getText(), auto, index);
+		this.notifySyncAnnouncementListeners(this.announcements.get(index), auto, index);
+		this.notifyAsyncAnnouncementListeners(this.announcements.get(index), auto, index);
 	}
 
 	/**
@@ -189,7 +189,8 @@ public class FrogAnnounce extends JavaPlugin{
 	public String[] getAnnouncements(){
 		final String[] announcements = new String[this.announcements.size()];
 		for(int i = 0; i<this.announcements.size(); i++)
-			announcements[i] = this.announcements.get(i).getText();
+			for(final String s: this.announcements.get(i).getText())
+				announcements[i] = s;
 		return announcements;
 	}
 
@@ -302,17 +303,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.usingPerms;
 	}
 
-	// private void normalAnnouncement(final String announce){
-	// final Player[] onlinePlayers = this.getServer().getOnlinePlayers();
-	// for(final Player p: onlinePlayers)
-	// for(final String line: announce.split("&NEW_LINE;"))
-	// if(!this.ignoredPlayers.contains(p.getName()))
-	// if(this.tag.equals("")||this.tag.equals(" ")||this.tag.isEmpty())
-	// p.sendMessage(this.colourizeText(line));
-	// else
-	// p.sendMessage(this.tag+" "+this.colourizeText(line));
-	// }
-	protected void notifyAsyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+	protected void notifyAsyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
 		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener: FrogAnnounce.this.getAsyncAnnouncementListeners())
@@ -325,7 +316,7 @@ public class FrogAnnounce extends JavaPlugin{
 				}).start();
 	}
 
-	protected void notifySyncAnnouncementListeners(final String announcement, final boolean automatic, final int index){
+	protected void notifySyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
 		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener: FrogAnnounce.this.getSyncAnnouncementListeners())
@@ -373,8 +364,12 @@ public class FrogAnnounce extends JavaPlugin{
 						this.reloadConfig();
 					}else if(args[0].equalsIgnoreCase("list")){
 						this.sendMessage(sender, 0, "Loaded announcements:");
-						for(final Announcement a: this.announcements)
-							this.sendMessage(sender, 0, this.announcements.indexOf(a.getText())+". "+FrogAnnounce.colourizeText(a.getText()));
+						for(final Announcement a: this.announcements){
+							String ann = this.announcements.indexOf(a)+". ";
+							for(int i = 0; i<a.getText().length; i++)
+								ann += a.getText()[i];
+							this.sendMessage(sender, 0, ann);
+						}
 					}else if(args[0].equalsIgnoreCase("add")){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i<args.length; i++)

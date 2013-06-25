@@ -64,7 +64,7 @@ Announcer:
             #Commands will be run after the text is announced. Obviously, there is no limiting a command's effects to
             #certain groups or worlds, as it is out of a foreign plugin's ability, and must be done by the plugin which that
             #action is performed by.
-            #
+            #Please be sure that the command can be executed from the console.
             Commands:
                 - /give thelunarfrog 1 64
             Worlds:
@@ -72,7 +72,12 @@ Announcer:
             Groups:
                 - Administrators
                 - Donators
+    #Groups that the plugin should ALWAYS announce to, permitted their world and ignore status allow it.
     GlobalGroups:
         - Moderators
+    #Worlds that the plugin should ALWAYS announce to, permitted their group(s) and ignore status allow it.
     GlobalWorlds:
         - world
+#Players that the plugin should ignore and NOT announce to, regardless of their group or world.
+ignoredPlayers:
+    - TheLunarFrog
