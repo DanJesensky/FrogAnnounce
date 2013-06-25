@@ -84,9 +84,9 @@ public class FrogAnnounce extends JavaPlugin{
 	private void announce(int index, final boolean auto){
 		if(auto){
 			if(this.random)
-				this.announcements.get((index = new Random().nextInt())).execute();
+				this.announcements.get(index = new Random().nextInt()).execute();
 			else{
-				this.announcements.get((index = this.counter++)).execute();
+				this.announcements.get(index = this.counter++).execute();
 				if(this.counter>=this.announcements.size())
 					this.counter = 0;
 			}
