@@ -15,7 +15,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * Handles the FrogAnnounce configuration.
  * 
  * @version 1.5.0.0 (Final? Unless more configuration nodes come to be.)
- * @category Configuration
  * @since 1.0.1.3 (Announced as 1.0)
  * @author Dan | TheLunarFrog
  */

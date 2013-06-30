@@ -29,7 +29,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * @author Dan | TheLunarFrog
  * @version 2.3.0.0
- * @category main
  * 
  */
 public class FrogAnnounce extends JavaPlugin{
@@ -485,7 +484,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface. <br/><br/>This method will register the listener asynchronously, meaning any thread-unsafe calls should <b>NOT</b> be used within the listener being registered. For thread-unsafe calls, use registerSyncAnnouncementListener instead.
 	 * 
-	 * @see registerAsyncAnnouncementListener
+	 * @see #registerAsyncAnnouncementListener(AnnouncementListener)
 	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
 	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
 	 */
@@ -498,6 +497,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method allows you to register an announcement listener to be notified by FrogAnnounce when an announcement ticks. Listeners must be classes which implement the superinterface <b>AnnouncementListener</b> and override the <b>onAnnounceEvent(AnnouncementEvent)</b> method from this superinterface. <br/><br/>This method will register the listener synchronously, meaning any thread-unsafe calls can be used in the listener, as everything will be executed from the main thread.
 	 * 
+	 * @see #registerSyncAnnouncementListener(AnnouncementListener)
 	 * @param listener The listener, a class which implements my <b>AnnouncementListener</b> interface as a superinterface, and implements and overrides the necessary parent methods from such superinterface.
 	 * @return The ID of the listener that you registered. You should keep this ID, as it is used by the <b>unregisterAnnouncementListener(int)</b> method, which unregisters your listener.
 	 */
