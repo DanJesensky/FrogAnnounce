@@ -37,7 +37,7 @@ public class Announcement{
 	}
 
 	public String[] getText(){
-		return this.text;
+		return this.text.clone();
 	}
 
 	public void execute(){

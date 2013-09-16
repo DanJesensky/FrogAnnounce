@@ -15,7 +15,7 @@ Settings:
 #structure is now to complex or something of the sort, but hey -- it was automatically migrated for you, at #
 #least!                                                                                                     #
 #                                                                                                           #
-#With the version this change happened in (2.3.0), there comes the ability to restrict all announcements to #
+#With the version this change happened (2.3.0), there comes the ability to restrict all announcements to #
 #certain groups, along with the ability to specify for each announcement -- so, say you want Administrators #
 #to get every announcement, you add them to the GlobalGroups list. If you the Donators group to only see    #
 #have announcement 2, you'd specify that in announcement 2's groups list.                                   #

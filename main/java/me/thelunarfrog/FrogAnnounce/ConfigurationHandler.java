@@ -28,10 +28,11 @@ public final class ConfigurationHandler extends FrogAnnounce{
 			fos = new FileOutputStream(out);
 			final byte[] buf = new byte[1024];
 			int i = 0;
-			while((i = fis.read(buf))!=-1)
-				fos.write(buf, 0, i);
-			if(fis!=null)
+			if(fis!=null){
+				while((i = fis.read(buf))!=-1)
+					fos.write(buf, 0, i);
 				fis.close();
+			}
 			if(fos!=null)
 				fos.close();
 		}catch(final Exception e){
@@ -68,12 +69,14 @@ public final class ConfigurationHandler extends FrogAnnounce{
 			}
 		}else
 			try{
-				Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir();
-				final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/main/resources/Configuration.yml");
-				ConfigurationHandler.copyFile(jarURL, this.configFile);
-				this.config = new YamlConfiguration();
-				this.config.load(this.configFile);
-				this.info("Configuration loaded successfully.");
+				if(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir()){
+					final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/main/resources/Configuration.yml");
+					ConfigurationHandler.copyFile(jarURL, this.configFile);
+					this.config = new YamlConfiguration();
+					this.config.load(this.configFile);
+					this.info("Configuration loaded successfully.");
+				}else
+					this.severe("Failed to create configuration folder.");
 			}catch(final Exception e){
 				this.severe("Exception occurred while creating a new configuration file!");
 				e.printStackTrace();
@@ -101,7 +104,7 @@ public final class ConfigurationHandler extends FrogAnnounce{
 		this.saveConfig();
 	}
 
-	protected ConfigurationHandler(final FrogAnnounce plugin){
+	protected ConfigurationHandler(){
 		this.configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
 	}
 }

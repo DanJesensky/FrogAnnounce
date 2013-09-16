@@ -37,11 +37,12 @@ public class FrogAnnounce extends JavaPlugin{
 	public Permission permission = null;
 	protected String tag, joinMessage;
 	protected int interval, taskId = -1, counter = 0;
-	protected boolean running = false, random, permissionsEnabled = false, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
+	protected boolean running = false, random, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
 	protected List<Announcement> announcements;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
 	private ArrayList<AnnouncementListener> asyncListeners, syncListeners;
+	private Random r;
 	/** Static accessor */
 	private static FrogAnnounce p;
 
@@ -83,7 +84,7 @@ public class FrogAnnounce extends JavaPlugin{
 	private void announce(int index, final boolean auto){
 		if(auto){
 			if(this.random)
-				this.announcements.get(index = new Random().nextInt()).execute();
+				this.announcements.get(index = this.r.nextInt(this.announcements.size())).execute();
 			else{
 				this.announcements.get(index = this.counter++).execute();
 				if(this.counter>=this.announcements.size())
@@ -364,10 +365,10 @@ public class FrogAnnounce extends JavaPlugin{
 					}else if(args[0].equalsIgnoreCase("list")){
 						this.sendMessage(sender, 0, "Loaded announcements:");
 						for(final Announcement a: this.announcements){
-							String ann = this.announcements.indexOf(a)+". ";
+							final StringBuilder ann = new StringBuilder(this.announcements.indexOf(a)+". ");
 							for(int i = 0; i<a.getText().length; i++)
-								ann += a.getText()[i];
-							this.sendMessage(sender, 0, ann);
+								ann.append(a.getText()[i]);
+							this.sendMessage(sender, 0, ann.toString());
 						}
 					}else if(args[0].equalsIgnoreCase("add")){
 						final StringBuilder sb = new StringBuilder();
@@ -458,7 +459,7 @@ public class FrogAnnounce extends JavaPlugin{
 		FrogAnnounce.p = this;
 		this.pdfFile = this.getDescription();
 		this.logger = new FrogLog();
-		this.cfg = new ConfigurationHandler(this);
+		this.cfg = new ConfigurationHandler();
 		this.updateConfiguration();
 		this.asyncListeners = new ArrayList<AnnouncementListener>();
 		this.syncListeners = new ArrayList<AnnouncementListener>();
@@ -467,6 +468,7 @@ public class FrogAnnounce extends JavaPlugin{
 		if(this.showJoinMessage)
 			super.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 		this.logger.info("Settings loaded "+this.announcements.size()+" announcements!");
+		this.r = new Random();
 		this.turnOn(null);
 		this.logger.info("Version "+this.pdfFile.getVersion()+" by TheLunarFrog has been enabled!");
 	}
@@ -759,8 +761,11 @@ public class FrogAnnounce extends JavaPlugin{
 		this.asyncListeners.set(id, null);
 	}
 
+	public void updateConfigurationFile(){
+	}
+
 	private void updateConfiguration(){
-		final YamlConfiguration config = new ConfigurationHandler(this).getConfig();
+		final YamlConfiguration config = new ConfigurationHandler().getConfig();
 		List<String> groups, worlds;
 		this.interval = config.getInt("Settings.Interval", 5);
 		this.random = config.getBoolean("Settings.Random", false);
