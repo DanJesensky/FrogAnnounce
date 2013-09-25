@@ -19,8 +19,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
  * @author Dan | TheLunarFrog
  */
 public final class ConfigurationHandler extends FrogAnnounce{
-	private YamlConfiguration config = null;
-	private final File configFile;
+	private YamlConfiguration	config	= null;
+	private final File			configFile;
 
 	private static void copyFile(final InputStream fis, final File out) throws Exception{
 		FileOutputStream fos = null;
@@ -28,18 +28,21 @@ public final class ConfigurationHandler extends FrogAnnounce{
 			fos = new FileOutputStream(out);
 			final byte[] buf = new byte[1024];
 			int i = 0;
-			if(fis!=null){
-				while((i = fis.read(buf))!=-1)
+			if(fis != null){
+				while((i = fis.read(buf)) != -1){
 					fos.write(buf, 0, i);
+				}
 				fis.close();
 			}
-			if(fos!=null)
+			if(fos != null){
 				fos.close();
+			}
 		}catch(final Exception e){
 			throw e;
 		}finally{
-			if(fos!=null)
+			if(fos != null){
 				fos.close();
+			}
 		}
 	}
 
@@ -49,7 +52,7 @@ public final class ConfigurationHandler extends FrogAnnounce{
 	}
 
 	private void info(final String s){
-		Logger.getLogger("Minecraft").info("[FrogAnnounce] "+s);
+		Logger.getLogger("Minecraft").info("[FrogAnnounce] " + s);
 	}
 
 	private YamlConfiguration loadConfig(){
@@ -67,21 +70,31 @@ public final class ConfigurationHandler extends FrogAnnounce{
 				this.severe("An exception has occurred while FrogAnnounce was loading the configuration.");
 				ex.printStackTrace();
 			}
-		}else
+		}else{
 			try{
-				if(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir()){
-					final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/main/resources/Configuration.yml");
-					ConfigurationHandler.copyFile(jarURL, this.configFile);
-					this.config = new YamlConfiguration();
-					this.config.load(this.configFile);
-					this.info("Configuration loaded successfully.");
-				}else
-					this.severe("Failed to create configuration folder.");
+				if(!Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().exists()){
+					if(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir()){
+						this.makeFile();
+					}else{
+						this.severe("Failed to create configuration folder.");
+					}
+				}else{
+					this.makeFile();
+				}
 			}catch(final Exception e){
 				this.severe("Exception occurred while creating a new configuration file!");
 				e.printStackTrace();
 			}
+		}
 		return this.config;
+	}
+
+	private void makeFile() throws Exception{
+		final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/main/resources/Configuration.yml");
+		ConfigurationHandler.copyFile(jarURL, this.configFile);
+		this.config = new YamlConfiguration();
+		this.config.load(this.configFile);
+		this.info("Configuration loaded successfully.");
 	}
 
 	@Override
@@ -94,12 +107,13 @@ public final class ConfigurationHandler extends FrogAnnounce{
 	}
 
 	private void severe(final String s){
-		Logger.getLogger("Minecraft").severe("[FrogAnnounce] "+s);
+		Logger.getLogger("Minecraft").severe("[FrogAnnounce] " + s);
 	}
 
 	protected void updateConfiguration(final String path, final Object newValue){
-		if(this.config==null)
+		if(this.config == null){
 			this.config = this.getConfig();
+		}
 		this.config.set(path, newValue);
 		this.saveConfig();
 	}

@@ -15,7 +15,7 @@ Settings:
 #structure is now to complex or something of the sort, but hey -- it was automatically migrated for you, at #
 #least!                                                                                                     #
 #                                                                                                           #
-#With the version this change happened (2.3.0), there comes the ability to restrict all announcements to #
+#With the version this change happened (2.3.0), there comes the ability to restrict all announcements to    #
 #certain groups, along with the ability to specify for each announcement -- so, say you want Administrators #
 #to get every announcement, you add them to the GlobalGroups list. If you the Donators group to only see    #
 #have announcement 2, you'd specify that in announcement 2's groups list.                                   #
@@ -51,7 +51,9 @@ Announcer:
             Worlds:
                 - world_nether
         4:
-            Text: 'What\'s up?'
+            #Don't include "" or '' if there isn't a colour code and there's an escape sequence in the string, like so:
+            #
+            Text: What\'s up?
             Worlds:
                 - world_the_end
             Groups:
@@ -78,6 +80,6 @@ Announcer:
     #Worlds that the plugin should ALWAYS announce to, permitted their group(s) and ignore status allow it.
     GlobalWorlds:
         - world
-#Players that the plugin should ignore and NOT announce to, regardless of their group or world.
+#Players that the plugin should ignore and NOT announce to, regardless of their group or world. This is changed by the plugin often (/fa ignore and /fa unignore).
 ignoredPlayers:
     - TheLunarFrog
