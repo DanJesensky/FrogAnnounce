@@ -3,9 +3,9 @@ package main.java.me.thelunarfrog.FrogAnnounce.events;
 import main.java.me.thelunarfrog.FrogAnnounce.Announcement;
 
 public class AnnouncementEvent{
-	private final Announcement announcement;
-	private final boolean isAutomatic;
-	private final int index;
+	private final Announcement	announcement;
+	private final boolean		isAutomatic;
+	private final int			index;
 
 	public Announcement getAnnouncement(){
 		return this.announcement;
