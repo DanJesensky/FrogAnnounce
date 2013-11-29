@@ -536,10 +536,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	private boolean permit(final CommandSender sender, final String perm){
 		if(sender instanceof Player){
-			if(sender.isOp())
-				return true;
-			else
-				return sender.hasPermission(perm);
+			return sender.hasPermission(perm);
 		}else
 			return true;
 	}
