@@ -520,6 +520,7 @@ public class FrogAnnounce extends JavaPlugin{
 	public void onEnable(){
 		FrogAnnounce.p = this;
 		this.cfg = new ConfigurationHandler();
+		this.updateConfigurationFile();
 		this.updateConfiguration();
 		this.asyncListeners = new ArrayList<AnnouncementListener>();
 		this.syncListeners = new ArrayList<AnnouncementListener>();
@@ -675,7 +676,9 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	private void sendMessage(final CommandSender sender, final Severity severity, final String message){
+	private void sendMessage(CommandSender sender, final Severity severity, final String message){
+		if(sender == null)
+			sender = Bukkit.getConsoleSender();
 		switch(severity){
 			case INFO:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.GREEN + message);
@@ -767,7 +770,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @return Whether or not the announcer core was successfully disabled. Will
 	 *         return false if already disabled.
 	 */
-	public boolean turnOff(final CommandSender player){
+	public boolean turnOff(CommandSender player){
 		if(this.running){
 			this.getServer().getScheduler().cancelTask(this.taskId);
 			this.sendMessage(player, Severity.INFO, "Announcer disabled!");
@@ -790,8 +793,6 @@ public class FrogAnnounce extends JavaPlugin{
 	 *         already running.
 	 */
 	public boolean turnOn(CommandSender player){
-		if(player == null)
-			player = Bukkit.getConsoleSender();
 		if(!this.running){
 			if(this.announcements.size() > 0){
 				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
