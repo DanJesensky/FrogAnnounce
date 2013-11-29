@@ -1,4 +1,4 @@
-package me.thelunarfrog.frogannounce;
+package me.thelunarfrog._;
 
 import org.bukkit.ChatColor;
 

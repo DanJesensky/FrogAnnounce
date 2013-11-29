@@ -1,8 +1,8 @@
-package me.thelunarfrog.frogannounce;
+package me.thelunarfrog._;
 
-import me.thelunarfrog.frogannounce.eventhandlers.PlayerJoinListener;
-import me.thelunarfrog.frogannounce.events.AnnouncementEvent;
-import me.thelunarfrog.frogannounce.listeners.AnnouncementListener;
+import me.thelunarfrog._.eventhandlers.PlayerJoinListener;
+import me.thelunarfrog._.events.AnnouncementEvent;
+import me.thelunarfrog._.listeners.AnnouncementListener;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
