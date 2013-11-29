@@ -1,26 +1,22 @@
 package me.thelunarfrog.frogannounce;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.logging.Logger;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.*;
+import java.util.logging.Logger;
+
 /**
  * Handles the FrogAnnounce configuration.
  *
+ * @author Dan | TheLunarFrog
  * @version 1.5.0.0 (Final? Unless more configuration nodes come to be.)
  * @since 1.0.1.3 (Announced as 1.0)
- * @author Dan | TheLunarFrog
  */
 public final class ConfigurationHandler extends FrogAnnounce{
-	private YamlConfiguration	config	= null;
-	private final File			configFile;
+	private YamlConfiguration config = null;
+	private final File configFile;
 
 	private static void copyFile(final InputStream fis, final File out) throws Exception{
 		FileOutputStream fos = null;

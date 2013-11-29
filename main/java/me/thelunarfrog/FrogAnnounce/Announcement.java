@@ -1,18 +1,18 @@
 package me.thelunarfrog.frogannounce;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Announcement{
-	private String[]			text;
-	private final List<String>	groups;
-	private final List<String>	worlds;
-	private final List<String>	commands;
+	private String[] text;
+	private final List<String> groups;
+	private final List<String> worlds;
+	private final List<String> commands;
 
 	public void execute(){
 		final List<Player> players = new ArrayList<Player>();

@@ -3,9 +3,9 @@ package me.thelunarfrog.frogannounce.events;
 import me.thelunarfrog.frogannounce.Announcement;
 
 public class AnnouncementEvent{
-	private final Announcement	announcement;
-	private final boolean		isAutomatic;
-	private final int			index;
+	private final Announcement announcement;
+	private final boolean isAutomatic;
+	private final int index;
 
 	public Announcement getAnnouncement(){
 		return this.announcement;

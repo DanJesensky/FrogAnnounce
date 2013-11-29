@@ -1,18 +1,9 @@
 package me.thelunarfrog.frogannounce;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import javax.swing.JOptionPane;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-
 import me.thelunarfrog.frogannounce.eventhandlers.PlayerJoinListener;
 import me.thelunarfrog.frogannounce.events.AnnouncementEvent;
 import me.thelunarfrog.frogannounce.listeners.AnnouncementListener;
 import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -24,6 +15,11 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
  * The FrogAnnounce core. Handles loops, grabbing configuration values from
  * ConfigurationManager, commands, and all announcements. API, such as
@@ -31,22 +27,23 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * @author Dan | TheLunarFrog
  * @version 2.3.0.0
- *
  */
 public class FrogAnnounce extends JavaPlugin{
-	private PluginDescriptionFile	pdfFile;
-	protected FrogLog				logger;
-	public Permission				permission		= null;
-	protected String				tag, joinMessage;
-	protected int					interval, taskId = -1, counter = 0;
-	protected boolean				running			= false, random, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
-	protected List<Announcement>	announcements;
-	protected ArrayList<String>		ignoredPlayers	= null;
-	private ConfigurationHandler	cfg				= null;
-	private ArrayList<AnnouncementListener>	asyncListeners, syncListeners;
-	private Random							r;
-	/** Static accessor */
-	private static FrogAnnounce				p;
+	private PluginDescriptionFile pdfFile;
+	protected FrogLog logger;
+	public Permission permission = null;
+	protected String tag, joinMessage;
+	protected int interval, taskId = -1, counter = 0;
+	protected boolean running = false, random, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
+	protected List<Announcement> announcements;
+	protected ArrayList<String> ignoredPlayers = null;
+	private ConfigurationHandler cfg = null;
+	private ArrayList<AnnouncementListener> asyncListeners, syncListeners;
+	private Random r;
+	/**
+	 * Static accessor
+	 */
+	private static FrogAnnounce p;
 
 	public static String colourizeText(String announce){
 		announce = announce.replaceAll("&AQUA;", ChatColor.AQUA.toString());
@@ -122,8 +119,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * Announces one of the announcements from FrogAnnounce's configuration.
 	 * Overload of a private method.
 	 *
-	 * @param index
-	 *            - The index of the announcement to announce.
+	 * @param index - The index of the announcement to announce.
 	 */
 	public void announce(final int index){
 		this.announce(index, false);
@@ -152,10 +148,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * configuration. If you have the index of the announcement you want to
 	 * force, use <b>FrogAnnounce.announce(int, boolean)</b> instead.
 	 *
-	 * @param s
-	 *            - The index of the announcement, as a string.
-	 * @param player
-	 *            - The CommandSender to display the result to.
+	 * @param s      - The index of the announcement, as a string.
+	 * @param player - The CommandSender to display the result to.
 	 */
 	public void broadcastMessage(final String s, final CommandSender player){
 		int _int = 0;
@@ -243,8 +237,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * Makes FrogAnnounce ignore the specified player when announcing. Overload
 	 * of <b>ignorePlayer(CommandSender, String)</b>.
 	 *
-	 * @param player
-	 *            - The CommandSender to ignore.
+	 * @param player - The CommandSender to ignore.
 	 */
 	public void ignorePlayer(final CommandSender player){
 		this.ignorePlayer(player, player.getName());
@@ -253,16 +246,14 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Makes FrogAnnounce not announce to a certain player.
 	 *
-	 * @param player
-	 *            - The player to relay output, as if they had done this to
-	 *            their target.
-	 * @param other
-	 *            - The target player for FrogAnnounce to no longer announce to.
+	 * @param player - The player to relay output, as if they had done this to
+	 *               their target.
+	 * @param other  - The target player for FrogAnnounce to no longer announce to.
 	 */
 	public void ignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer = this.getServer().getPlayer(other);
 		if(other.equals(player.getName())){
-			otherPlayer = (Player) player;
+			otherPlayer = (Player)player;
 		}else{
 			otherPlayer = this.getServer().getPlayer(other);
 		}
@@ -545,16 +536,17 @@ public class FrogAnnounce extends JavaPlugin{
 	 * registered. For thread-unsafe calls, use registerSyncAnnouncementListener
 	 * instead.
 	 *
-	 * @see #registerAsyncAnnouncementListener(AnnouncementListener)
-	 * @param listener
-	 *            The listener, a class which implements my
-	 *            <b>AnnouncementListener</b> interface as a superinterface, and
-	 *            implements and overrides the necessary parent methods from
-	 *            such superinterface.
+	 * @param listener The listener, a class which implements my
+	 *                 <b>AnnouncementListener</b> interface as a superinterface, and
+	 *                 implements and overrides the necessary parent methods from
+	 *                 such superinterface.
+	 *
 	 * @return The ID of the listener that you registered. You should keep this
 	 *         ID, as it is used by the
 	 *         <b>unregisterAnnouncementListener(int)</b> method, which
 	 *         unregisters your listener.
+	 *
+	 * @see #registerAsyncAnnouncementListener(AnnouncementListener)
 	 */
 	public int registerAsyncAnnouncementListener(final AnnouncementListener listener){
 		if(!this.getAsyncAnnouncementListeners().contains(listener)){
@@ -574,16 +566,17 @@ public class FrogAnnounce extends JavaPlugin{
 	 * thread-unsafe calls can be used in the listener, as everything will be
 	 * executed from the main thread.
 	 *
-	 * @see #registerSyncAnnouncementListener(AnnouncementListener)
-	 * @param listener
-	 *            The listener, a class which implements my
-	 *            <b>AnnouncementListener</b> interface as a superinterface, and
-	 *            implements and overrides the necessary parent methods from
-	 *            such superinterface.
+	 * @param listener The listener, a class which implements my
+	 *                 <b>AnnouncementListener</b> interface as a superinterface, and
+	 *                 implements and overrides the necessary parent methods from
+	 *                 such superinterface.
+	 *
 	 * @return The ID of the listener that you registered. You should keep this
 	 *         ID, as it is used by the
 	 *         <b>unregisterAnnouncementListener(int)</b> method, which
 	 *         unregisters your listener.
+	 *
+	 * @see #registerSyncAnnouncementListener(AnnouncementListener)
 	 */
 	public int registerSyncAnnouncementListener(final AnnouncementListener listener){
 		if(!this.getAsyncAnnouncementListeners().contains(listener)){
@@ -593,7 +586,6 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 *
 	 * @param player
 	 */
 	public void reloadPlugin(final CommandSender player){
@@ -612,10 +604,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * This method shows the FrogAnnounce specified help page to the specified
 	 * CommandSender.
 	 *
-	 * @param sender
-	 *            The CommandSender object to send the help to.
-	 * @param pageString
-	 *            The page to send.
+	 * @param sender     The CommandSender object to send the help to.
+	 * @param pageString The page to send.
 	 */
 	public void returnHelp(final CommandSender sender, final String pageString){
 		final String or = ChatColor.WHITE.toString() + "|";
@@ -695,12 +685,10 @@ public class FrogAnnounce extends JavaPlugin{
 	 * This method sets the announcement interval of FrogAnnounce. Will take
 	 * effect immediately.
 	 *
-	 * @param cmdArgs
-	 *            - Based on command structure. To set the interval without the
-	 *            base of /fa interval, you should pass new
-	 *            String[]{<b>null</b>, <b>"new interval"</b>}.
-	 * @param player
-	 *            - The CommandSender object to send output to.
+	 * @param cmdArgs - Based on command structure. To set the interval without the
+	 *                base of /fa interval, you should pass new
+	 *                String[]{<b>null</b>, <b>"new interval"</b>}.
+	 * @param player  - The CommandSender object to send output to.
 	 */
 	public void setInterval(final String[] cmdArgs, final CommandSender player){
 		final int newInterval = Integer.parseInt(cmdArgs[1]);
@@ -718,13 +706,11 @@ public class FrogAnnounce extends JavaPlugin{
 	 * This method sets whether or not FrogAnnounce is announcing in random
 	 * order. Will take effect immediately.
 	 *
-	 * @param args
-	 *            - Command arguments. To set it without a command base, you
-	 *            should pass new String[]{<b>null</b>, <b>"true"</b> (for
-	 *            random order) <i>or</i> <b>"false"</b> (for sequential
-	 *            order)}.
-	 * @param player
-	 *            - The CommandSender object to send output results to.
+	 * @param args   - Command arguments. To set it without a command base, you
+	 *               should pass new String[]{<b>null</b>, <b>"true"</b> (for
+	 *               random order) <i>or</i> <b>"false"</b> (for sequential
+	 *               order)}.
+	 * @param player - The CommandSender object to send output results to.
 	 */
 	public void setRandom(final String[] args, final CommandSender player){
 		final boolean s = Boolean.parseBoolean(args[1]);
@@ -757,8 +743,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * This method disables the announcement module of FrogAnnounce. It will
 	 * stop any further announcements for occurring.
 	 *
-	 * @param player
-	 *            The CommandSender object to send result messages to.
+	 * @param player The CommandSender object to send result messages to.
+	 *
 	 * @return Whether or not the announcer core was successfully disabled. Will
 	 *         return false if already disabled.
 	 */
@@ -778,8 +764,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * This method enables the announcement module of FrogAnnounce when it is
 	 * disabled.
 	 *
-	 * @param player
-	 *            The CommandSender object to send result messages to.
+	 * @param player The CommandSender object to send result messages to.
+	 *
 	 * @return Whether or not the announcer was able to start. Will not
 	 *         automatically restart the announcer. Will return false if it was
 	 *         already running.
@@ -810,17 +796,15 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Makes FrogAnnounce announce to a certain player after they were ignored.
 	 *
-	 * @param player
-	 *            - The player to relay output, as if they had done this to
-	 *            their target.
-	 * @param other
-	 *            - The target player for FrogAnnounce to once again announce
-	 *            to.
+	 * @param player - The player to relay output, as if they had done this to
+	 *               their target.
+	 * @param other  - The target player for FrogAnnounce to once again announce
+	 *               to.
 	 */
 	public void unignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer;
 		if(other.isEmpty()){
-			otherPlayer = (Player) player;
+			otherPlayer = (Player)player;
 		}else{
 			otherPlayer = this.getServer().getPlayer(other);
 		}
@@ -877,9 +861,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * it reaches the end of its execution path, as this method does <b>NOT</b>
 	 * destroy the thread.
 	 *
-	 * @param id
-	 *            The id of the AnnouncementListener in FrogAnnounce's observer
-	 *            list to remove. This is returned by the registration method.
+	 * @param id The id of the AnnouncementListener in FrogAnnounce's observer
+	 *           list to remove. This is returned by the registration method.
 	 */
 	public void unregisterAsyncAnnouncementListener(final int id){
 		this.asyncListeners.set(id, null);
@@ -891,9 +874,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * AnnouncementListener-implementing child no longer be notified of
 	 * AnnouncementEvents.
 	 *
-	 * @param id
-	 *            The id of the AnnouncementListener in FrogAnnounce's observer
-	 *            list to remove. This is returned by the registration method.
+	 * @param id The id of the AnnouncementListener in FrogAnnounce's observer
+	 *           list to remove. This is returned by the registration method.
 	 */
 	public void unregisterSyncAnnouncementListener(final int id){
 		this.syncListeners.set(id, null);
@@ -908,7 +890,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.tag = FrogAnnounce.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
 		groups = config.getStringList("Announcer.GlobalGroups");
 		worlds = config.getStringList("Announcer.GlobalWorlds");
-		this.ignoredPlayers = (ArrayList<String>) config.getStringList("ignoredPlayers");
+		this.ignoredPlayers = (ArrayList<String>)config.getStringList("ignoredPlayers");
 		this.showJoinMessage = config.getBoolean("Settings.displayMessageOnJoin", false);
 		this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
 		this.showConsoleAnnouncements = config.getBoolean("Settings.showConsoleAnnouncements", false);
@@ -948,7 +930,7 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	class Announcer implements Runnable{
-		private final FrogAnnounce	plugin;
+		private final FrogAnnounce plugin;
 
 		@Override
 		public void run(){

@@ -1,12 +1,12 @@
 package me.thelunarfrog.frogannounce;
 
+import org.bukkit.ChatColor;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.bukkit.ChatColor;
-
 public class FrogLog{
-	private final Logger	logger;
+	private final Logger logger;
 
 	protected void info(final String i){
 		this.logger.log(Level.INFO, "[FrogAnnounce] " + ChatColor.stripColor(i));
