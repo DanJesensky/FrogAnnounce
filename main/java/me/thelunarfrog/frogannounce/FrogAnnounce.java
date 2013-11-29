@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -1015,8 +1014,8 @@ public class FrogAnnounce extends JavaPlugin{
 					s = c[1];
 
 				c = s.split(",");
-				for(int x = 0; x < c.length; x++)
-					z.add(c[x].trim());
+				for(String b : c)
+					z.add(b.trim());
 
 				yml.set("Announcer.Announcements." + i + ".Groups", z);
 			}
@@ -1029,8 +1028,8 @@ public class FrogAnnounce extends JavaPlugin{
 					s = c[1];
 
 				c = s.split(";");
-				for(int x = 0; x < c.length; x++)
-					z.add(c[x].trim());
+				for(String b : c)
+					z.add(b.trim());
 
 				yml.set("Announcer.Announcements."+i+".Commands", z);
 			}
