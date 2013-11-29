@@ -792,7 +792,9 @@ public class FrogAnnounce extends JavaPlugin{
 	 *         automatically restart the announcer. Will return false if it was
 	 *         already running.
 	 */
-	public boolean turnOn(final CommandSender player){
+	public boolean turnOn(CommandSender player){
+		if(player == null)
+			player = Bukkit.getConsoleSender();
 		if(!this.running){
 			if(this.announcements.size() > 0){
 				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
