@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -16,6 +17,8 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -906,6 +909,19 @@ public class FrogAnnounce extends JavaPlugin{
 		this.syncListeners.set(id, null);
 	}
 
+	public YamlConfiguration getConfig(){
+		try{
+			return new ConfigurationHandler().getConfig();
+		}catch(Exception e){
+			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while getting the configuration: "+e.getMessage());
+		}
+		return null;
+	}
+
+	public void reloadConfig(){
+		this.updateConfiguration();
+	}
+
 	private void updateConfiguration(){
 		try{
 			final YamlConfiguration config = new ConfigurationHandler().getConfig();
@@ -960,6 +976,87 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	public void updateConfigurationFile(){
+		YamlConfiguration yml = this.getConfig();
+		if(!yml.contains("ConfigVersion")){
+			this.updateConfigFromV1(yml);
+		}else if(yml.getInt("ConfigVersion") < 2){
+			this.updateConfigFromV1(yml);
+		}
+	}
+
+	private void updateConfigFromV1(YamlConfiguration old){
+		YamlConfiguration yml = new YamlConfiguration();
+		String[] c;
+		List<String> z = new ArrayList<String>();
+		String s;
+
+		yml.set("Settings.Interval", old.get("Settings.Interval"));
+		yml.set("Settings.Random", old.get("Settings.Random"));
+		yml.set("Settings.Permission", old.get("Settings.Permission"));
+		yml.set("Settings.displayMessagesOnJoin", old.get("Settings.displayMessagesOnJoin"));
+		yml.set("Settings.showConsoleAnnouncements", old.get("Settings.showConsoleAnnouncements"));
+
+		yml.set("Announcer.Tag", old.get("Announcer.Tag"));
+		yml.set("Announcer.joinMessage", old.getString("Announcer.joinMessage", ""));
+		yml.set("Announcer.GlobalGroups", old.get("Announcer."));
+		yml.set("Announcer.GlobalWorlds", new ArrayList<String>());
+		for(int i = 1; i < old.getList("Announcer.Strings").size(); i++){
+			yml.set("Announcer.Announcements." + i + ".Enabled", true);
+
+			s = (String)old.getList("Announcer.Strings").get(i - 1);
+
+			yml.set("Announcer.Announcements." + i + ".Text", this.stripAnnouncementTags(s));
+
+			c = s.split("&GROUPS;");
+			if(c.length > 1){
+				if(c[1].contains("&USE-CMD;")){
+					s = c[1].split("&USE-CMD;")[0];
+				}else
+					s = c[1];
+
+				c = s.split(",");
+				for(int x = 0; x < c.length; x++)
+					z.add(c[x].trim());
+
+				yml.set("Announcer.Announcements." + i + ".Groups", z);
+			}
+
+			c = s.split("&USE-CMD;");
+			if(c.length > 1){
+				if(c[1].contains("&GROUPS;")){
+					s = c[1].split("&GROUPS;")[0];
+				}else
+					s = c[1];
+
+				c = s.split(";");
+				for(int x = 0; x < c.length; x++)
+					z.add(c[x].trim());
+
+				yml.set("Announcer.Announcements."+i+".Commands", z);
+			}
+
+
+		}
+		yml.set("ignoredPlayers", old.get("ignoredPlayers"));
+
+		try{
+			File f = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
+			if(!f.delete())
+				throw new IOException("Unable to delete old configuration file.");
+			yml.save(f);
+		}catch(IOException e){
+			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while trying to save the configuration: "+e.getMessage());
+		}
+	}
+
+	private String stripAnnouncementTags(String announcement){
+		if(!announcement.contains("&GROUPS;") && !announcement.contains("&USE-CMD;"))
+			return announcement;
+		String[] m = announcement.split("&USE-CMD;");
+
+		if(!m[0].contains("&GROUPS;"))
+			return m[0];
+		return m[0].split("&GROUPS;")[0];
 	}
 
 	class Announcer implements Runnable{
