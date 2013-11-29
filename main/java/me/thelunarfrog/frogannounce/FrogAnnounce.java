@@ -600,17 +600,19 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 * @param player
+	 * Reloads the plugin, sending messages about the reload to the specified CommandSender.
+	 *
+	 * @param sender The CommandSender to send messages to about the reload.
 	 */
-	public void reloadPlugin(final CommandSender player){
+	public void reloadPlugin(final CommandSender sender){
 		if(this.running){
 			this.turnOff(null);
 			this.updateConfiguration();
-			this.turnOn(player);
-			this.sendMessage(player, Severity.INFO, "FrogAnnounce has been successfully reloaded!");
-			this.sendMessage(player, Severity.INFO, "Settings loaded " + this.announcements.size() + " announcements!");
+			this.turnOn(sender);
+			this.sendMessage(sender, Severity.INFO, "FrogAnnounce has been successfully reloaded!");
+			this.sendMessage(sender, Severity.INFO, "Settings loaded " + this.announcements.size() + " announcements!");
 		}else{
-			this.sendMessage(player, Severity.SEVERE, "No announcements running!");
+			this.sendMessage(sender, Severity.SEVERE, "No announcements running!");
 		}
 	}
 
