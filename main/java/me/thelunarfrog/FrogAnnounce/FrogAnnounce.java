@@ -156,13 +156,13 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @param player - The CommandSender to display the result to.
 	 */
 	public void broadcastMessage(final String s, final CommandSender player){
-		int _int = 0;
+		int i;
 		try{
-			_int = Integer.parseInt(s);
-			if(_int > (this.announcements.size() - 1)){
+			i = Integer.parseInt(s);
+			if(i > (this.announcements.size() - 1)){
 				this.sendMessage(player, Severity.WARNING, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			}else{
-				this.announce(_int, false);
+				this.announce(i, false);
 			}
 		}catch(final NumberFormatException e){
 			this.sendMessage(player, Severity.WARNING, "Only numbers can be entered as an index. Remember to start counting at 0.");
@@ -255,7 +255,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @param other  - The target player for FrogAnnounce to no longer announce to.
 	 */
 	public void ignorePlayer(final CommandSender player, final String other){
-		Player otherPlayer = this.getServer().getPlayer(other);
+		Player otherPlayer;
 		if(other.equals(player.getName())){
 			otherPlayer = (Player)player;
 		}else{
@@ -435,7 +435,7 @@ public class FrogAnnounce extends JavaPlugin{
 							this.getServer().broadcastMessage(this.tag + " " + FrogAnnounce.colourizeText(sb.toString().trim()));
 						}
 					}else if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("rem") || args[0].equalsIgnoreCase("del")){
-						int i = 0;
+						int i;
 						if(args.length == 2){
 							try{
 								i = Integer.parseInt(args[1]);
