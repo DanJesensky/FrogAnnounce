@@ -969,7 +969,8 @@ public class FrogAnnounce extends JavaPlugin{
 				this.interval = 5;
 			}
 		}catch(Exception e){
-			this.sendConsoleMessage(Severity.SEVERE, e.getMessage());
+			e.printStackTrace();
+//			this.sendConsoleMessage(Severity.SEVERE, e.getMessage());
 		}
 	}
 
@@ -988,9 +989,6 @@ public class FrogAnnounce extends JavaPlugin{
 
 	private void updateConfigFromV1(YamlConfiguration old){
 		YamlConfiguration yml = new YamlConfiguration();
-		String[] c;
-		List<String> z = new ArrayList<String>();
-		String s;
 
 		yml.set("Settings.Interval", old.get("Settings.Interval"));
 		yml.set("Settings.Random", old.get("Settings.Random"));
@@ -1000,9 +998,16 @@ public class FrogAnnounce extends JavaPlugin{
 
 		yml.set("Announcer.Tag", old.get("Announcer.Tag"));
 		yml.set("Announcer.joinMessage", old.getString("Announcer.joinMessage", ""));
-		yml.set("Announcer.GlobalGroups", old.get("Announcer."));
+		if(old.getBoolean("ToGroups", false))
+			yml.set("Announcer.GlobalGroups", old.get("Announcer.Groups"));
+		else
+			yml.set("Announcer.GlobalGroups", new ArrayList<String>());
 		yml.set("Announcer.GlobalWorlds", new ArrayList<String>());
-		for(int i = 1; i < old.getList("Announcer.Strings").size(); i++){
+		for(int i = 1; i < old.getList("Announcer.Strings").size()+1; i++){
+			List<String> z;
+			String[] c;
+			String s;
+
 			yml.set("Announcer.Announcements." + i + ".Enabled", true);
 
 			s = (String)old.getList("Announcer.Strings").get(i - 1);
@@ -1011,6 +1016,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 			c = s.split("&GROUPS;");
 			if(c.length > 1){
+				z = new ArrayList<String>();
 				if(c[1].contains("&USE-CMD;")){
 					s = c[1].split("&USE-CMD;")[0];
 				}else
@@ -1025,8 +1031,9 @@ public class FrogAnnounce extends JavaPlugin{
 
 			c = s.split("&USE-CMD;");
 			if(c.length > 1){
+				z = new ArrayList<String>();
 				if(c[1].contains("&GROUPS;")){
-					s = c[1].split("&GROUPS;")[0];
+					s = c[1].split("&GROUPS;")[1];
 				}else
 					s = c[1];
 
@@ -1036,8 +1043,6 @@ public class FrogAnnounce extends JavaPlugin{
 
 				yml.set("Announcer.Announcements."+i+".Commands", z);
 			}
-
-
 		}
 		yml.set("ignoredPlayers", old.get("ignoredPlayers"));
 		yml.set("ConfigVersion", 2);
