@@ -1,6 +1,6 @@
-package main.java.me.thelunarfrog.FrogAnnounce.events;
+package me.thelunarfrog.frogannounce.events;
 
-import main.java.me.thelunarfrog.FrogAnnounce.Announcement;
+import me.thelunarfrog.frogannounce.Announcement;
 
 public class AnnouncementEvent{
 	private final Announcement	announcement;

@@ -1,4 +1,4 @@
-package main.java.me.thelunarfrog.FrogAnnounce;
+package me.thelunarfrog.frogannounce;
 
 import java.util.ArrayList;
 import java.util.List;

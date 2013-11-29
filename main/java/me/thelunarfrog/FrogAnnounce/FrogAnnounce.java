@@ -1,4 +1,4 @@
-package main.java.me.thelunarfrog.FrogAnnounce;
+package me.thelunarfrog.frogannounce;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,9 +8,9 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import main.java.me.thelunarfrog.FrogAnnounce.eventhandlers.PlayerJoinListener;
-import main.java.me.thelunarfrog.FrogAnnounce.events.AnnouncementEvent;
-import main.java.me.thelunarfrog.FrogAnnounce.listeners.AnnouncementListener;
+import me.thelunarfrog.frogannounce.eventhandlers.PlayerJoinListener;
+import me.thelunarfrog.frogannounce.events.AnnouncementEvent;
+import me.thelunarfrog.frogannounce.listeners.AnnouncementListener;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -28,10 +28,10 @@ import org.bukkit.plugin.java.JavaPlugin;
  * The FrogAnnounce core. Handles loops, grabbing configuration values from
  * ConfigurationManager, commands, and all announcements. API, such as
  * AnnouncementListener registration, will be found here, too.
- * 
+ *
  * @author Dan | TheLunarFrog
  * @version 2.3.0.0
- * 
+ *
  */
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile	pdfFile;
@@ -94,7 +94,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Gets the current instance of FrogAnnounce.
-	 * 
+	 *
 	 * @return The running instance of this plugin.
 	 */
 	public static FrogAnnounce getInstance(){
@@ -121,7 +121,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Announces one of the announcements from FrogAnnounce's configuration.
 	 * Overload of a private method.
-	 * 
+	 *
 	 * @param index
 	 *            - The index of the announcement to announce.
 	 */
@@ -151,7 +151,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * announcement. Only announces the announcements in FrogAnnounce's
 	 * configuration. If you have the index of the announcement you want to
 	 * force, use <b>FrogAnnounce.announce(int, boolean)</b> instead.
-	 * 
+	 *
 	 * @param s
 	 *            - The index of the announcement, as a string.
 	 * @param player
@@ -188,7 +188,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Gets the array of Strings that the announcer is announcing to players.
-	 * 
+	 *
 	 * @return The messages that players will see, in form of an array.
 	 */
 	public String[] getAnnouncements(){
@@ -208,7 +208,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Gets an arraylist of player names of the players who are not receiving
 	 * announcements.
-	 * 
+	 *
 	 * @return The names of players who aren't getting announcements, as a
 	 *         String arraylist.
 	 */
@@ -219,7 +219,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Gets the return message for this instance of FrogAnnounce. Will return
 	 * null if the plugin isn't even showing the join message.
-	 * 
+	 *
 	 * @return The join message, or null, if this instance isn't showing it.
 	 */
 	public String getJoinMessage(){
@@ -232,7 +232,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Gets the tag for this instance of FrogAnnounce.
-	 * 
+	 *
 	 * @return The tag which appears in front of every announcement.
 	 */
 	public String getTag(){
@@ -242,7 +242,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Makes FrogAnnounce ignore the specified player when announcing. Overload
 	 * of <b>ignorePlayer(CommandSender, String)</b>.
-	 * 
+	 *
 	 * @param player
 	 *            - The CommandSender to ignore.
 	 */
@@ -252,7 +252,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Makes FrogAnnounce not announce to a certain player.
-	 * 
+	 *
 	 * @param player
 	 *            - The player to relay output, as if they had done this to
 	 *            their target.
@@ -298,7 +298,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Gets whether or not the plugin is announcing in a random order.
-	 * 
+	 *
 	 * @return Whether or not the plugin is announcing randomly.
 	 */
 	public boolean isRandom(){
@@ -307,7 +307,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Gets whether or not the plugin's announcer module is running.
-	 * 
+	 *
 	 * @return Whether or not the plugin is announcing.
 	 */
 	public boolean isRunning(){
@@ -317,7 +317,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Gets whether or not the plugin is displaying the joinMessage to players
 	 * when they join the server.
-	 * 
+	 *
 	 * @return The setting of showMessageOnJoin in the configuration.
 	 */
 	public boolean isShowingJoinMessage(){
@@ -326,7 +326,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Whether FrogAnnounce is using OP/Non-OP or permissions.
-	 * 
+	 *
 	 * @return True if using permissions, false if non-op/op
 	 */
 	public boolean isUsingPermissions(){
@@ -544,7 +544,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * thread-unsafe calls should <b>NOT</b> be used within the listener being
 	 * registered. For thread-unsafe calls, use registerSyncAnnouncementListener
 	 * instead.
-	 * 
+	 *
 	 * @see #registerAsyncAnnouncementListener(AnnouncementListener)
 	 * @param listener
 	 *            The listener, a class which implements my
@@ -573,7 +573,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * This method will register the listener synchronously, meaning any
 	 * thread-unsafe calls can be used in the listener, as everything will be
 	 * executed from the main thread.
-	 * 
+	 *
 	 * @see #registerSyncAnnouncementListener(AnnouncementListener)
 	 * @param listener
 	 *            The listener, a class which implements my
@@ -593,7 +593,7 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 * 
+	 *
 	 * @param player
 	 */
 	public void reloadPlugin(final CommandSender player){
@@ -611,7 +611,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method shows the FrogAnnounce specified help page to the specified
 	 * CommandSender.
-	 * 
+	 *
 	 * @param sender
 	 *            The CommandSender object to send the help to.
 	 * @param pageString
@@ -694,7 +694,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method sets the announcement interval of FrogAnnounce. Will take
 	 * effect immediately.
-	 * 
+	 *
 	 * @param cmdArgs
 	 *            - Based on command structure. To set the interval without the
 	 *            base of /fa interval, you should pass new
@@ -717,7 +717,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method sets whether or not FrogAnnounce is announcing in random
 	 * order. Will take effect immediately.
-	 * 
+	 *
 	 * @param args
 	 *            - Command arguments. To set it without a command base, you
 	 *            should pass new String[]{<b>null</b>, <b>"true"</b> (for
@@ -756,7 +756,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method disables the announcement module of FrogAnnounce. It will
 	 * stop any further announcements for occurring.
-	 * 
+	 *
 	 * @param player
 	 *            The CommandSender object to send result messages to.
 	 * @return Whether or not the announcer core was successfully disabled. Will
@@ -777,7 +777,7 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * This method enables the announcement module of FrogAnnounce when it is
 	 * disabled.
-	 * 
+	 *
 	 * @param player
 	 *            The CommandSender object to send result messages to.
 	 * @return Whether or not the announcer was able to start. Will not
@@ -809,7 +809,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	/**
 	 * Makes FrogAnnounce announce to a certain player after they were ignored.
-	 * 
+	 *
 	 * @param player
 	 *            - The player to relay output, as if they had done this to
 	 *            their target.
@@ -876,7 +876,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * AnnouncementEvents. Any code currently running will continue to run until
 	 * it reaches the end of its execution path, as this method does <b>NOT</b>
 	 * destroy the thread.
-	 * 
+	 *
 	 * @param id
 	 *            The id of the AnnouncementListener in FrogAnnounce's observer
 	 *            list to remove. This is returned by the registration method.
@@ -890,7 +890,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * FrogAnnounce's observer list, making your
 	 * AnnouncementListener-implementing child no longer be notified of
 	 * AnnouncementEvents.
-	 * 
+	 *
 	 * @param id
 	 *            The id of the AnnouncementListener in FrogAnnounce's observer
 	 *            list to remove. This is returned by the registration method.

@@ -1,6 +1,6 @@
-package main.java.me.thelunarfrog.FrogAnnounce.listeners;
+package me.thelunarfrog.frogannounce.listeners;
 
-import main.java.me.thelunarfrog.FrogAnnounce.events.AnnouncementEvent;
+import me.thelunarfrog.frogannounce.events.AnnouncementEvent;
 
 public interface AnnouncementListener{
 	public void onAnnounceEvent(AnnouncementEvent evt);

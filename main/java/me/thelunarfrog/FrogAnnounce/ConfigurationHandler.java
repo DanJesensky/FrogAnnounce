@@ -1,4 +1,4 @@
-package main.java.me.thelunarfrog.FrogAnnounce;
+package me.thelunarfrog.frogannounce;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,7 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
  * Handles the FrogAnnounce configuration.
- * 
+ *
  * @version 1.5.0.0 (Final? Unless more configuration nodes come to be.)
  * @since 1.0.1.3 (Announced as 1.0)
  * @author Dan | TheLunarFrog
@@ -90,7 +90,7 @@ public final class ConfigurationHandler extends FrogAnnounce{
 	}
 
 	private void makeFile() throws Exception{
-		final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/main/resources/Configuration.yml");
+		final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/resources/Configuration.yml");
 		ConfigurationHandler.copyFile(jarURL, this.configFile);
 		this.config = new YamlConfiguration();
 		this.config.load(this.configFile);

@@ -1,6 +1,6 @@
-package main.java.me.thelunarfrog.FrogAnnounce.eventhandlers;
+package me.thelunarfrog.frogannounce.eventhandlers;
 
-import main.java.me.thelunarfrog.FrogAnnounce.FrogAnnounce;
+import me.thelunarfrog.frogannounce.FrogAnnounce;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
