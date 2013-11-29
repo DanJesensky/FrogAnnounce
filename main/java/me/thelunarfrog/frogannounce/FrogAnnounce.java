@@ -717,7 +717,7 @@ public class FrogAnnounce extends JavaPlugin{
 			this.random = s;
 			try{
 				this.cfg.updateConfiguration("Settings.Random", s);
-				if(s == true){
+				if(s){
 					this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
 				}else{
 					this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
@@ -726,7 +726,7 @@ public class FrogAnnounce extends JavaPlugin{
 			}catch(Exception e){
 				this.sendMessage(player, Severity.SEVERE, e.getMessage());
 			}
-		}else if(this.random == true){
+		}else if(this.random){
 			this.sendMessage(player, Severity.WARNING, "The announcer is already set to announce randomly! There's no need to change it!");
 		}else{
 			this.sendMessage(player, Severity.WARNING, "The announcer is already set to not announce randomly! There's no need to change it!");
