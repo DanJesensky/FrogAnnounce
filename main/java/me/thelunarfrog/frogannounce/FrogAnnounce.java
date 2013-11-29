@@ -1008,9 +1008,7 @@ public class FrogAnnounce extends JavaPlugin{
 			String s;
 
 			yml.set("Announcer.Announcements." + i + ".Enabled", true);
-
 			s = (String)old.getList("Announcer.Strings").get(i - 1);
-
 			yml.set("Announcer.Announcements." + i + ".Text", this.stripAnnouncementTags(s));
 
 			c = s.split("&GROUPS;");
@@ -1020,26 +1018,24 @@ public class FrogAnnounce extends JavaPlugin{
 					s = c[1].split("&USE-CMD;")[0];
 				}else
 					s = c[1];
-
 				c = s.split(",");
 				for(String b : c)
 					z.add(b.trim());
-
 				yml.set("Announcer.Announcements." + i + ".Groups", z);
 			}
 
+			s = (String)old.getList("Announcer.Strings").get(i - 1);
 			c = s.split("&USE-CMD;");
 			if(c.length > 1){
 				z = new ArrayList<String>();
+
 				if(c[1].contains("&GROUPS;")){
-					s = c[1].split("&GROUPS;")[1];
+					s = c[1].split("&GROUPS;")[0];
 				}else
 					s = c[1];
-
 				c = s.split(";");
 				for(String b : c)
 					z.add(b.trim());
-
 				yml.set("Announcer.Announcements."+i+".Commands", z);
 			}
 		}
