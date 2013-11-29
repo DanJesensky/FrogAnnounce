@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -31,7 +30,6 @@ import java.util.Random;
  * @version 2.3.0.0
  */
 public class FrogAnnounce extends JavaPlugin{
-	private PluginDescriptionFile pdfFile;
 	private Permission permission;
 	private String tag;
 	private String joinMessage;
@@ -372,7 +370,7 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(sender, "frogannounce.admin") || this.permit(sender, "frogannounce.*")){
 				try{
 					if(args.length == 0){
-						this.sendMessage(sender, Severity.INFO, "FrogAnnounce version: " + this.pdfFile.getVersion());
+						this.sendMessage(sender, Severity.INFO, "FrogAnnounce version: " + super.getDescription().getVersion());
 						this.sendMessage(sender, Severity.INFO, "For help, use /fa help.");
 					}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")){
 						if(args.length == 2){
@@ -385,7 +383,7 @@ public class FrogAnnounce extends JavaPlugin{
 					}else if(args[0].equalsIgnoreCase("off")){
 						this.turnOff(sender);
 					}else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")){
-						this.sendMessage(sender, Severity.INFO, "Current version: " + this.pdfFile.getVersion());
+						this.sendMessage(sender, Severity.INFO, "Current version: " + super.getDescription().getVersion());
 					}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
 						if(args.length == 2){
 							this.ignorePlayer(sender, args[1]);
@@ -515,13 +513,12 @@ public class FrogAnnounce extends JavaPlugin{
 	public void onDisable(){
 		this.turnOff(null);
 		this.unregisterAllAnnouncementListeners();
-		this.sendConsoleMessage(Severity.INFO, "Version " + this.pdfFile.getVersion() + " has been disabled.");
+		this.sendConsoleMessage(Severity.INFO, "Version " + super.getDescription().getVersion() + " has been disabled.");
 	}
 
 	@Override
 	public void onEnable(){
 		FrogAnnounce.p = this;
-		this.pdfFile = this.getDescription();
 		this.cfg = new ConfigurationHandler();
 		this.updateConfiguration();
 		this.asyncListeners = new ArrayList<AnnouncementListener>();
@@ -535,7 +532,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.sendConsoleMessage(Severity.INFO, "Settings loaded " + this.announcements.size() + " announcements!");
 		this.r = new Random();
 		this.turnOn(null);
-		this.sendConsoleMessage(Severity.INFO, "Version " + this.pdfFile.getVersion() + " by TheLunarFrog has been enabled!");
+		this.sendConsoleMessage(Severity.INFO, "Version " + super.getDescription().getVersion() + " by TheLunarFrog has been enabled!");
 	}
 
 	private boolean permit(final CommandSender sender, final String perm){
@@ -651,7 +648,7 @@ public class FrogAnnounce extends JavaPlugin{
 			int page;
 			page = Integer.parseInt(pageString);
 			if((page == 1) || (page == 0)){
-				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (1/3)" + main + "*");
+				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + super.getDescription().getVersion() + " (1/3)" + main + "*");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <help" + or + command + "?>" + main + " - Show this message.");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <on" + or + command + "off>" + main + " - Start or stop FrogAnnounce.");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <restart" + or + command + "reload>" + main + " - Restart FrogAnnounce.");
@@ -660,13 +657,13 @@ public class FrogAnnounce extends JavaPlugin{
 				this.sendMessage(sender, Severity.INFO, command + "/fa <broadcast" + or + command + "bc>" + obligatory + " <AnnouncementIndex>" + main + " - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
 				this.sendMessage(sender, Severity.INFO, ChatColor.GOLD + "Use /fa help 2 to see the next page.");
 			}else if(page == 2){
-				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (2/3)" + main + "*");
+				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + super.getDescription().getVersion() + " (2/3)" + main + "*");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <add " + or + command + "add> " + obligatory + "<announcement message>" + main + " - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <remove " + or + command + "delete" + or + command + "rem" + or + command + "del> " + obligatory + "<announcementIndex>" + main + " - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <manualbroadcast" + or + command + "mbc" + obligatory + "<Message>" + main + " - Announces a message to the entire server. Ignores groups in the config.");
 				this.sendMessage(sender, Severity.INFO, ChatColor.GOLD + "Use /fa help 3 to see the next page.");
 			}else if(page == 3){
-				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (3/3)" + main + "*");
+				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + super.getDescription().getVersion() + " (3/3)" + main + "*");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <ignore" + or + command + "optout> " + optional + "[playerName] " + main + " - Ignore announcements. As long as you are ignored, you will not receive announcements. Specifying another player's name will force them to ignore announcements. Saves through disconnect.");
 				this.sendMessage(sender, Severity.INFO, command + "/fa <unignore" + or + command + "optin> " + optional + "[playerName] " + main + " - Unignore announcements. You will receive announcements as normal again. Specifying another player's name will force them to see announcements again. Saves through disconnect.");
 				this.sendMessage(sender, Severity.INFO, ChatColor.GRAY + "There are no more pages of help.");
