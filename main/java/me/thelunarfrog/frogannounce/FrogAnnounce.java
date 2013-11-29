@@ -682,10 +682,13 @@ public class FrogAnnounce extends JavaPlugin{
 		switch(severity){
 			case INFO:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.GREEN + message);
+				break;
 			case WARNING:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.RED + message);
+				break;
 			case SEVERE:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.DARK_RED + message);
+				break;
 		}
 	}
 
