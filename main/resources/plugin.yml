@@ -1,5 +1,5 @@
 name: FrogAnnounce
-main: me.thelunarfrog.frogannounce.FrogAnnounce.FrogAnnounce
+main: me.thelunarfrog.frogannounce.FrogAnnounce
 authors: [TheLunarFrog]
 version: ${project.version}
 dev-url: http://dev.bukkit.org/server-mods/frogannounce/
