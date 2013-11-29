@@ -30,9 +30,12 @@ import java.util.Random;
  */
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
-	public Permission permission = null;
-	protected String tag, joinMessage;
-	protected int interval, taskId = -1, counter = 0;
+	private Permission permission = null;
+	protected String tag;
+	protected String joinMessage;
+	protected int interval;
+	protected int taskId = -1;
+	protected int counter = 0;
 	protected boolean running = false;
 	protected boolean random;
 	protected boolean usingPerms;
@@ -41,7 +44,8 @@ public class FrogAnnounce extends JavaPlugin{
 	protected List<Announcement> announcements;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
-	private ArrayList<AnnouncementListener> asyncListeners, syncListeners;
+	private ArrayList<AnnouncementListener> asyncListeners;
+	private ArrayList<AnnouncementListener> syncListeners;
 	private Random r;
 	/**
 	 * Static accessor
