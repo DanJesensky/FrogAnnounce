@@ -673,7 +673,7 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	private void sendMessage(final Player player, final Severity severity, final String message){
-		this.sendMessage(player, severity, message);
+		this.sendMessage((CommandSender)player, severity, message);
 	}
 
 	/**
