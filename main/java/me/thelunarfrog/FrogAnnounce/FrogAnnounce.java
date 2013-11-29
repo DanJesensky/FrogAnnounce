@@ -156,12 +156,12 @@ public class FrogAnnounce extends JavaPlugin{
 		try{
 			_int = Integer.parseInt(s);
 			if(_int > (this.announcements.size() - 1)){
-				this.sendMessage(player, 1, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
+				this.sendMessage(player, Severity.WARNING, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			}else{
 				this.announce(_int, false);
 			}
 		}catch(final NumberFormatException e){
-			this.sendMessage(player, 1, "Only numbers can be entered as an index. Remember to start counting at 0.");
+			this.sendMessage(player, Severity.WARNING, "Only numbers can be entered as an index. Remember to start counting at 0.");
 		}
 	}
 
@@ -262,28 +262,28 @@ public class FrogAnnounce extends JavaPlugin{
 				if(!this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
 					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(otherPlayer, 0, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else{
-					this.sendMessage(player, 1, "That player is already being ignored.");
+					this.sendMessage(player, Severity.WARNING, "That player is already being ignored.");
 				}
 			}else{
-				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
+				this.sendMessage(player, Severity.WARNING, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
 		}else if((otherPlayer != null) && (otherPlayer != player)){
 			if(this.permit(player, "frogannounce.ignore.other")){
 				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
 					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(player, 0, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
-					this.sendMessage(otherPlayer, 0, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					this.sendMessage(player, Severity.INFO, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
+					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
 				}else{
-					this.sendMessage(player, 1, "You're already being ignored by FrogAnnounce.");
+					this.sendMessage(player, Severity.WARNING, "You're already being ignored by FrogAnnounce.");
 				}
 			}else{
-				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
+				this.sendMessage(player, Severity.WARNING, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
 		}else{
-			this.sendMessage(player, 1, "That player isn't online right now.");
+			this.sendMessage(player, Severity.WARNING, "That player isn't online right now.");
 		}
 	}
 
@@ -355,8 +355,8 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(sender, "frogannounce.admin") || this.permit(sender, "frogannounce.*")){
 				try{
 					if(args.length == 0){
-						this.sendMessage(sender, 0, "FrogAnnounce version: " + this.pdfFile.getVersion());
-						this.sendMessage(sender, 0, "For help, use /fa help.");
+						this.sendMessage(sender, Severity.INFO, "FrogAnnounce version: " + this.pdfFile.getVersion());
+						this.sendMessage(sender, Severity.INFO, "For help, use /fa help.");
 					}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")){
 						if(args.length == 2){
 							this.returnHelp(sender, args[1]);
@@ -368,7 +368,7 @@ public class FrogAnnounce extends JavaPlugin{
 					}else if(args[0].equalsIgnoreCase("off")){
 						this.turnOff(sender);
 					}else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")){
-						this.sendMessage(sender, 0, "Current version: " + this.pdfFile.getVersion());
+						this.sendMessage(sender, Severity.INFO, "Current version: " + this.pdfFile.getVersion());
 					}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
 						if(args.length == 2){
 							this.ignorePlayer(sender, args[1]);
@@ -391,13 +391,13 @@ public class FrogAnnounce extends JavaPlugin{
 						this.reloadPlugin(sender);
 						this.reloadConfig();
 					}else if(args[0].equalsIgnoreCase("list")){
-						this.sendMessage(sender, 0, "Loaded announcements:");
+						this.sendMessage(sender, Severity.INFO, "Loaded announcements:");
 						for(final Announcement a : this.announcements){
 							final StringBuilder ann = new StringBuilder(this.announcements.indexOf(a) + ". ");
 							for(int i = 0; i < a.getText().length; i++){
 								ann.append(a.getText()[i]);
 							}
-							this.sendMessage(sender, 0, ann.toString());
+							this.sendMessage(sender, Severity.INFO, ann.toString());
 						}
 					}else if(args[0].equalsIgnoreCase("add")){
 						final StringBuilder sb = new StringBuilder();
@@ -406,7 +406,7 @@ public class FrogAnnounce extends JavaPlugin{
 						}
 						this.announcements.add(new Announcement(sb.toString().trim(), null, null, null));
 						this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
-						this.sendMessage(sender, 0, "Successfully added the announcement \"" + sb.toString().trim() + "\" to the configuration. Reloading config...");
+						this.sendMessage(sender, Severity.INFO, "Successfully added the announcement \"" + sb.toString().trim() + "\" to the configuration. Reloading config...");
 						this.reloadPlugin(sender);
 					}else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc")){
 						final StringBuilder sb = new StringBuilder();
@@ -424,22 +424,22 @@ public class FrogAnnounce extends JavaPlugin{
 							try{
 								i = Integer.parseInt(args[1]);
 								try{
-									this.sendMessage(sender, 0, "Removing announcement " + i + " (" + this.announcements.get(i) + ")...");
+									this.sendMessage(sender, Severity.INFO, "Removing announcement " + i + " (" + this.announcements.get(i) + ")...");
 									this.announcements.remove(i);
 									this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
-									this.sendMessage(sender, 0, "Announcement " + i + " successfully removed. Reloading configuration...");
+									this.sendMessage(sender, Severity.INFO, "Announcement " + i + " successfully removed. Reloading configuration...");
 									this.reloadPlugin(sender);
 								}catch(final IndexOutOfBoundsException e){
-									this.sendMessage(sender, 1, "Error: There are only " + this.announcements.size() + " announcements. You must count from 0!");
+									this.sendMessage(sender, Severity.WARNING, "Error: There are only " + this.announcements.size() + " announcements. You must count from 0!");
 								}
 							}catch(final NumberFormatException e){
-								this.sendMessage(sender, 1, "Please enter an announcement index.");
+								this.sendMessage(sender, Severity.WARNING, "Please enter an announcement index.");
 							}
 						}else{
-							this.sendMessage(sender, 1, "You must specify an index to remove.");
+							this.sendMessage(sender, Severity.WARNING, "You must specify an index to remove.");
 						}
 					}else{
-						this.sendMessage(sender, 1, "That didn't seem like a valid command. Here's some help...");
+						this.sendMessage(sender, Severity.WARNING, "That didn't seem like a valid command. Here's some help...");
 						if(args.length == 2){
 							this.returnHelp(sender, args[1]);
 						}else{
@@ -456,12 +456,12 @@ public class FrogAnnounce extends JavaPlugin{
 						if(this.permit(sender, "frogannounce.optout.other")){
 							this.ignorePlayer(sender, args[1]);
 						}else{
-							this.sendMessage(sender, 1, "You don't have permission to access that command.");
+							this.sendMessage(sender, Severity.WARNING, "You don't have permission to access that command.");
 						}
 					}else if(this.permit(sender, "frogannounce.optout")){
 						this.ignorePlayer(sender, sender.getName());
 					}else{
-						this.sendMessage(sender, 1, "You don't have permission to access that command.");
+						this.sendMessage(sender, Severity.WARNING, "You don't have permission to access that command.");
 					}
 					return true;
 				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
@@ -469,17 +469,17 @@ public class FrogAnnounce extends JavaPlugin{
 						if(this.permit(sender, "frogannounce.optin.other")){
 							this.unignorePlayer(sender, args[1]);
 						}else{
-							this.sendMessage(sender, 1, "You don't have permission to access that command.");
+							this.sendMessage(sender, Severity.WARNING, "You don't have permission to access that command.");
 						}
 					}else if(this.permit(sender, "frogannounce.optin")){
 						this.unignorePlayer(sender, sender.getName());
 					}else{
-						this.sendMessage(sender, 1, "You don't have permission to access that command.");
+						this.sendMessage(sender, Severity.WARNING, "You don't have permission to access that command.");
 					}
 					return true;
 				}
 			}else{
-				this.sendMessage(sender, 1, ChatColor.RED + "Sorry, but you don't have access to that command.");
+				this.sendMessage(sender, Severity.WARNING, ChatColor.RED + "Sorry, but you don't have access to that command.");
 			}
 			return true;
 		}
@@ -593,10 +593,10 @@ public class FrogAnnounce extends JavaPlugin{
 			this.turnOff(null);
 			this.updateConfiguration();
 			this.turnOn(player);
-			this.sendMessage(player, 0, "FrogAnnounce has been successfully reloaded!");
-			this.sendMessage(player, 0, "Settings loaded " + this.announcements.size() + " announcements!");
+			this.sendMessage(player, Severity.INFO, "FrogAnnounce has been successfully reloaded!");
+			this.sendMessage(player, Severity.INFO, "Settings loaded " + this.announcements.size() + " announcements!");
 		}else{
-			this.sendMessage(player, 2, "No announcements running!");
+			this.sendMessage(player, Severity.SEVERE, "No announcements running!");
 		}
 	}
 
@@ -618,67 +618,46 @@ public class FrogAnnounce extends JavaPlugin{
 			int page;
 			page = Integer.parseInt(pageString);
 			if((page == 1) || (page == 0)){
-				this.sendMessage(sender, 0, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (1/3)" + main + "*");
-				this.sendMessage(sender, 0, command + "/fa <help" + or + command + "?>" + main + " - Show this message.");
-				this.sendMessage(sender, 0, command + "/fa <on" + or + command + "off>" + main + " - Start or stop FrogAnnounce.");
-				this.sendMessage(sender, 0, command + "/fa <restart" + or + command + "reload>" + main + " - Restart FrogAnnounce.");
-				this.sendMessage(sender, 0, command + "/fa <interval" + or + command + "int>" + obligatory + " <minutes>" + main + " - Set the time between each announcement.");
-				this.sendMessage(sender, 0, command + "/fa <random" + or + command + "rand>" + obligatory + " <on" + or + obligatory + "off>" + main + " - Set random or consecutive.");
-				this.sendMessage(sender, 0, command + "/fa <broadcast" + or + command + "bc>" + obligatory + " <AnnouncementIndex>" + main + " - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
-				this.sendMessage(sender, 0, ChatColor.GOLD + "Use /fa help 2 to see the next page.");
+				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (1/3)" + main + "*");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <help" + or + command + "?>" + main + " - Show this message.");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <on" + or + command + "off>" + main + " - Start or stop FrogAnnounce.");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <restart" + or + command + "reload>" + main + " - Restart FrogAnnounce.");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <interval" + or + command + "int>" + obligatory + " <minutes>" + main + " - Set the time between each announcement.");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <random" + or + command + "rand>" + obligatory + " <on" + or + obligatory + "off>" + main + " - Set random or consecutive.");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <broadcast" + or + command + "bc>" + obligatory + " <AnnouncementIndex>" + main + " - Announces the announcement specified by the index immediately. Will not interrupt the normal order/time. Please note that this starts at 0.");
+				this.sendMessage(sender, Severity.INFO, ChatColor.GOLD + "Use /fa help 2 to see the next page.");
 			}else if(page == 2){
-				this.sendMessage(sender, 0, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (2/3)" + main + "*");
-				this.sendMessage(sender, 0, command + "/fa <add " + or + command + "add> " + obligatory + "<announcement message>" + main + " - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
-				this.sendMessage(sender, 0, command + "/fa <remove " + or + command + "delete" + or + command + "rem" + or + command + "del> " + obligatory + "<announcementIndex>" + main + " - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
-				this.sendMessage(sender, 0, command + "/fa <manualbroadcast" + or + command + "mbc" + obligatory + "<Message>" + main + " - Announces a message to the entire server. Ignores groups in the config.");
-				this.sendMessage(sender, 0, ChatColor.GOLD + "Use /fa help 3 to see the next page.");
+				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (2/3)" + main + "*");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <add " + or + command + "add> " + obligatory + "<announcement message>" + main + " - Adds an announcement to the list. (Command /faadd or /fa-add is not a typo; technical restrictions forced this.)");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <remove " + or + command + "delete" + or + command + "rem" + or + command + "del> " + obligatory + "<announcementIndex>" + main + " - Removes the specified announcement (announcementIndex = announcement number from top to bottom in the file; starts at 0).");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <manualbroadcast" + or + command + "mbc" + obligatory + "<Message>" + main + " - Announces a message to the entire server. Ignores groups in the config.");
+				this.sendMessage(sender, Severity.INFO, ChatColor.GOLD + "Use /fa help 3 to see the next page.");
 			}else if(page == 3){
-				this.sendMessage(sender, 0, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (3/3)" + main + "*");
-				this.sendMessage(sender, 0, command + "/fa <ignore" + or + command + "optout> " + optional + "[playerName] " + main + " - Ignore announcements. As long as you are ignored, you will not receive announcements. Specifying another player's name will force them to ignore announcements. Saves through disconnect.");
-				this.sendMessage(sender, 0, command + "/fa <unignore" + or + command + "optin> " + optional + "[playerName] " + main + " - Unignore announcements. You will receive announcements as normal again. Specifying another player's name will force them to see announcements again. Saves through disconnect.");
-				this.sendMessage(sender, 0, ChatColor.GRAY + "There are no more pages of help.");
+				this.sendMessage(sender, Severity.INFO, main + "*" + heading + "Help for FrogAnnounce " + this.pdfFile.getVersion() + " (3/3)" + main + "*");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <ignore" + or + command + "optout> " + optional + "[playerName] " + main + " - Ignore announcements. As long as you are ignored, you will not receive announcements. Specifying another player's name will force them to ignore announcements. Saves through disconnect.");
+				this.sendMessage(sender, Severity.INFO, command + "/fa <unignore" + or + command + "optin> " + optional + "[playerName] " + main + " - Unignore announcements. You will receive announcements as normal again. Specifying another player's name will force them to see announcements again. Saves through disconnect.");
+				this.sendMessage(sender, Severity.INFO, ChatColor.GRAY + "There are no more pages of help.");
 			}else{
-				this.sendMessage(sender, 0, "There's no page " + page + ".");
+				this.sendMessage(sender, Severity.INFO, "There's no page " + page + ".");
 			}
 		}catch(final NumberFormatException e){
-			this.sendMessage(sender, 0, "You must specify a page - positive integers only.");
+			this.sendMessage(sender, Severity.INFO, "You must specify a page - positive integers only.");
 		}
 	}
 
-	private void sendMessage(final CommandSender sender, final int severity, final String message){
-		if(sender instanceof Player){
-			if(severity == 0){
+	private void sendMessage(final CommandSender sender, final Severity severity, final String message){
+		switch(severity){
+			case INFO:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.GREEN + message);
-			}else if(severity == 1){
+			case WARNING:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.RED + message);
-			}else if(severity == 2){
+			case SEVERE:
 				sender.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.DARK_RED + message);
-			}
-		}else if(severity == 0){
-			this.logger.info(message);
-		}else if(severity == 1){
-			this.logger.warning(message);
-		}else if(severity == 2){
-			this.logger.severe(message);
 		}
 	}
 
-	private void sendMessage(final Player player, final int severity, final String message){
-		if(player != null){
-			if(severity == 0){
-				player.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.GREEN + message);
-			}else if(severity == 1){
-				player.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.RED + message);
-			}else if(severity == 2){
-				player.sendMessage(ChatColor.DARK_GREEN + "[FrogAnnounce] " + ChatColor.DARK_RED + message);
-			}
-		}else if(severity == 0){
-			this.logger.info(message);
-		}else if(severity == 1){
-			this.logger.warning(message);
-		}else if(severity == 2){
-			this.logger.severe(message);
-		}
+	private void sendMessage(final Player player, final Severity severity, final String message){
+		this.sendMessage(player, severity, message);
 	}
 
 	/**
@@ -695,10 +674,10 @@ public class FrogAnnounce extends JavaPlugin{
 		if(newInterval != this.interval){
 			this.interval = newInterval;
 			this.cfg.updateConfiguration("Settings.Interval", this.interval);
-			this.sendMessage(player, 0, "Announcement interval has successfully been changed to " + this.interval + ". Reloading configuration...");
+			this.sendMessage(player, Severity.INFO, "Announcement interval has successfully been changed to " + this.interval + ". Reloading configuration...");
 			this.reloadPlugin(player);
 		}else{
-			this.sendMessage(player, 1, "The announcement interval is already set to " + this.interval + "! There's no need to change it!");
+			this.sendMessage(player, Severity.WARNING, "The announcement interval is already set to " + this.interval + "! There's no need to change it!");
 		}
 	}
 
@@ -718,16 +697,16 @@ public class FrogAnnounce extends JavaPlugin{
 			this.random = s;
 			this.cfg.updateConfiguration("Settings.Random", s);
 			if(s == true){
-				this.sendMessage(player, 0, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
+				this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
 			}else{
-				this.sendMessage(player, 0, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
+				this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
 			}
 			this.cfg.saveConfig();
 			this.reloadPlugin(player);
 		}else if(this.random == true){
-			this.sendMessage(player, 1, "The announcer is already set to announce randomly! There's no need to change it!");
+			this.sendMessage(player, Severity.WARNING, "The announcer is already set to announce randomly! There's no need to change it!");
 		}else{
-			this.sendMessage(player, 1, "The announcer is already set to not announce randomly! There's no need to change it!");
+			this.sendMessage(player, Severity.WARNING, "The announcer is already set to not announce randomly! There's no need to change it!");
 		}
 	}
 
@@ -751,11 +730,11 @@ public class FrogAnnounce extends JavaPlugin{
 	public boolean turnOff(final CommandSender player){
 		if(this.running){
 			this.getServer().getScheduler().cancelTask(this.taskId);
-			this.sendMessage(player, 0, "Announcer disabled!");
+			this.sendMessage(player, Severity.INFO, "Announcer disabled!");
 			this.running = false;
 			return true;
 		}else{
-			this.sendMessage(player, 2, "The announcer is not running!");
+			this.sendMessage(player, Severity.SEVERE, "The announcer is not running!");
 			return false;
 		}
 	}
@@ -775,20 +754,20 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.announcements.size() > 0){
 				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
 				if(this.taskId == -1){
-					this.sendMessage(player, 2, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
+					this.sendMessage(player, Severity.SEVERE, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
 					return false;
 				}else{
 					this.counter = 0;
-					this.sendMessage(player, 0, "Success! Now announcing every " + this.interval + " minute(s)!");
+					this.sendMessage(player, Severity.INFO, "Success! Now announcing every " + this.interval + " minute(s)!");
 					this.running = true;
 					return true;
 				}
 			}else{
-				this.sendMessage(player, 2, "The announcer failed to start! There are no announcements!");
+				this.sendMessage(player, Severity.SEVERE, "The announcer failed to start! There are no announcements!");
 				return false;
 			}
 		}else{
-			this.sendMessage(player, 2, ChatColor.DARK_RED + "Announcer is already running.");
+			this.sendMessage(player, Severity.SEVERE, ChatColor.DARK_RED + "Announcer is already running.");
 			return false;
 		}
 	}
@@ -813,26 +792,26 @@ public class FrogAnnounce extends JavaPlugin{
 				if(this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.remove(otherPlayer.getName());
 					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(otherPlayer, 0, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else{
-					this.sendMessage(player, 1, "You're already not being ignored.");
+					this.sendMessage(player, Severity.WARNING, "You're already not being ignored.");
 				}
 			}else{
-				this.sendMessage(player, 1, "You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
+				this.sendMessage(player, Severity.WARNING, "You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
 			}
 		}else if((otherPlayer != null) && (otherPlayer != player)){
 			if(this.permit(player, "frogannounce.unignore.other")){
 				if(this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.remove(otherPlayer.getName());
 					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(player, 0, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
-					this.sendMessage(otherPlayer, 0, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					this.sendMessage(player, Severity.INFO, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
+					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 				}else{
-					this.sendMessage(player, 1, "That player is already not being ignored.");
+					this.sendMessage(player, Severity.WARNING, "That player is already not being ignored.");
 				}
 			}
 		}else{
-			this.sendMessage(player, 1, "That player isn't online right now!");
+			this.sendMessage(player, Severity.WARNING, "That player isn't online right now!");
 		}
 	}
 
@@ -926,6 +905,10 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
+	public void sendConsoleMessage(Severity severity, String message){
+		this.sendMessage(Bukkit.getConsoleSender(), severity, message);
+	}
+
 	public void updateConfigurationFile(){
 	}
 
@@ -940,5 +923,11 @@ public class FrogAnnounce extends JavaPlugin{
 		protected Announcer(final FrogAnnounce plugin){
 			this.plugin = plugin;
 		}
+	}
+
+	enum Severity{
+		INFO,
+		WARNING,
+		SEVERE
 	}
 }
