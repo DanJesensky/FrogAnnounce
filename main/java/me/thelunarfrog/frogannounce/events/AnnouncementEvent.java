@@ -1,6 +1,6 @@
-package me.thelunarfrog._.events;
+package me.thelunarfrog.frogannounce.events;
 
-import me.thelunarfrog._.Announcement;
+import me.thelunarfrog.frogannounce.Announcement;
 
 public class AnnouncementEvent{
 	private final Announcement announcement;

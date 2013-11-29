@@ -1,4 +1,4 @@
-package me.thelunarfrog._;
+package me.thelunarfrog.frogannounce;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;

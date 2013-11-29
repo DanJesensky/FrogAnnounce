@@ -1,6 +1,6 @@
-package me.thelunarfrog._.eventhandlers;
+package me.thelunarfrog.frogannounce.eventhandlers;
 
-import me.thelunarfrog._.FrogAnnounce;
+import me.thelunarfrog.frogannounce.FrogAnnounce;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
