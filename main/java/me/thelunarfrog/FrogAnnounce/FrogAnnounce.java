@@ -34,7 +34,11 @@ public class FrogAnnounce extends JavaPlugin{
 	public Permission permission = null;
 	protected String tag, joinMessage;
 	protected int interval, taskId = -1, counter = 0;
-	protected boolean running = false, random, usingPerms, showJoinMessage = false, showConsoleAnnouncements = false;
+	protected boolean running = false;
+	protected boolean random;
+	protected boolean usingPerms;
+	protected boolean showJoinMessage = false;
+	protected boolean showConsoleAnnouncements = false;
 	protected List<Announcement> announcements;
 	protected ArrayList<String> ignoredPlayers = null;
 	private ConfigurationHandler cfg = null;
@@ -261,8 +265,12 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.ignore")){
 				if(!this.ignoredPlayers.contains(player.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					try{
+						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
+						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					}catch(Exception e){
+						this.sendMessage(otherPlayer, Severity.SEVERE, e.getMessage());
+					}
 				}else{
 					this.sendMessage(player, Severity.WARNING, "That player is already being ignored.");
 				}
@@ -273,9 +281,13 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.permit(player, "frogannounce.ignore.other")){
 				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
 					this.ignoredPlayers.add(otherPlayer.getName());
-					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(player, Severity.INFO, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
-					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					try{
+						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
+						this.sendMessage(player, Severity.INFO, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
+						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
+					}catch(Exception e){
+						this.sendMessage(player, Severity.SEVERE, e.getMessage());
+					}
 				}else{
 					this.sendMessage(player, Severity.WARNING, "You're already being ignored by FrogAnnounce.");
 				}
@@ -405,9 +417,13 @@ public class FrogAnnounce extends JavaPlugin{
 							sb.append(args[i] + " ");
 						}
 						this.announcements.add(new Announcement(sb.toString().trim(), null, null, null));
-						this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
-						this.sendMessage(sender, Severity.INFO, "Successfully added the announcement \"" + sb.toString().trim() + "\" to the configuration. Reloading config...");
-						this.reloadPlugin(sender);
+						try{
+							this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
+							this.sendMessage(sender, Severity.INFO, "Successfully added the announcement \"" + sb.toString().trim() + "\" to the configuration. Reloading config...");
+							this.reloadPlugin(sender);
+						}catch(Exception e){
+							this.sendMessage(sender, Severity.SEVERE, e.getMessage());
+						}
 					}else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc")){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
@@ -426,9 +442,13 @@ public class FrogAnnounce extends JavaPlugin{
 								try{
 									this.sendMessage(sender, Severity.INFO, "Removing announcement " + i + " (" + this.announcements.get(i) + ")...");
 									this.announcements.remove(i);
-									this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
-									this.sendMessage(sender, Severity.INFO, "Announcement " + i + " successfully removed. Reloading configuration...");
-									this.reloadPlugin(sender);
+									try{
+										this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
+										this.sendMessage(sender, Severity.INFO, "Announcement " + i + " successfully removed. Reloading configuration...");
+										this.reloadPlugin(sender);
+									}catch(Exception e){
+										this.sendMessage(sender, Severity.SEVERE, e.getMessage());
+									}
 								}catch(final IndexOutOfBoundsException e){
 									this.sendMessage(sender, Severity.WARNING, "Error: There are only " + this.announcements.size() + " announcements. You must count from 0!");
 								}
@@ -673,9 +693,13 @@ public class FrogAnnounce extends JavaPlugin{
 		final int newInterval = Integer.parseInt(cmdArgs[1]);
 		if(newInterval != this.interval){
 			this.interval = newInterval;
-			this.cfg.updateConfiguration("Settings.Interval", this.interval);
-			this.sendMessage(player, Severity.INFO, "Announcement interval has successfully been changed to " + this.interval + ". Reloading configuration...");
-			this.reloadPlugin(player);
+			try{
+				this.cfg.updateConfiguration("Settings.Interval", this.interval);
+				this.sendMessage(player, Severity.INFO, "Announcement interval has successfully been changed to " + this.interval + ". Reloading configuration...");
+				this.reloadPlugin(player);
+			}catch(Exception e){
+				this.sendMessage(player, Severity.SEVERE, e.getMessage());
+			}
 		}else{
 			this.sendMessage(player, Severity.WARNING, "The announcement interval is already set to " + this.interval + "! There's no need to change it!");
 		}
@@ -695,14 +719,17 @@ public class FrogAnnounce extends JavaPlugin{
 		final boolean s = Boolean.parseBoolean(args[1]);
 		if(s != this.random){
 			this.random = s;
-			this.cfg.updateConfiguration("Settings.Random", s);
-			if(s == true){
-				this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
-			}else{
-				this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
+			try{
+				this.cfg.updateConfiguration("Settings.Random", s);
+				if(s == true){
+					this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce randomly. Reloading configuration...");
+				}else{
+					this.sendMessage(player, Severity.INFO, "Announcer has been successfully changed to announce in sequence. Reloading configuration...");
+				}
+				this.reloadPlugin(player);
+			}catch(Exception e){
+				this.sendMessage(player, Severity.SEVERE, e.getMessage());
 			}
-			this.cfg.saveConfig();
-			this.reloadPlugin(player);
 		}else if(this.random == true){
 			this.sendMessage(player, Severity.WARNING, "The announcer is already set to announce randomly! There's no need to change it!");
 		}else{
@@ -790,9 +817,13 @@ public class FrogAnnounce extends JavaPlugin{
 		if((otherPlayer != null) && (otherPlayer == player)){
 			if(this.permit(player, "frogannounce.unignore")){
 				if(this.ignoredPlayers.contains(player.getName())){
-					this.ignoredPlayers.remove(otherPlayer.getName());
-					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					try{
+						this.ignoredPlayers.remove(otherPlayer.getName());
+						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
+						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					}catch(Exception e){
+						this.sendMessage(otherPlayer, Severity.SEVERE, e.getMessage());
+					}
 				}else{
 					this.sendMessage(player, Severity.WARNING, "You're already not being ignored.");
 				}
@@ -802,10 +833,14 @@ public class FrogAnnounce extends JavaPlugin{
 		}else if((otherPlayer != null) && (otherPlayer != player)){
 			if(this.permit(player, "frogannounce.unignore.other")){
 				if(this.ignoredPlayers.contains(otherPlayer.getName())){
-					this.ignoredPlayers.remove(otherPlayer.getName());
-					this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
-					this.sendMessage(player, Severity.INFO, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
-					this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					try{
+						this.ignoredPlayers.remove(otherPlayer.getName());
+						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
+						this.sendMessage(player, Severity.INFO, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
+						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
+					}catch(Exception e){
+						this.sendMessage(player, Severity.SEVERE, e.getMessage());
+					}
 				}else{
 					this.sendMessage(player, Severity.WARNING, "That player is already not being ignored.");
 				}
@@ -861,47 +896,51 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	private void updateConfiguration(){
-		final YamlConfiguration config = new ConfigurationHandler().getConfig();
-		List<String> groups, worlds;
-		this.interval = config.getInt("Settings.Interval", 5);
-		this.random = config.getBoolean("Settings.Random", false);
-		this.usingPerms = config.getBoolean("Settings.Permission", true);
-		this.tag = FrogAnnounce.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
-		groups = config.getStringList("Announcer.GlobalGroups");
-		worlds = config.getStringList("Announcer.GlobalWorlds");
-		this.ignoredPlayers = (ArrayList<String>)config.getStringList("ignoredPlayers");
-		this.showJoinMessage = config.getBoolean("Settings.displayMessageOnJoin", false);
-		this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
-		this.showConsoleAnnouncements = config.getBoolean("Settings.showConsoleAnnouncements", false);
-		this.announcements = new ArrayList<Announcement>();
-		int i = 0;
-		while(config.contains("Announcer.Announcements." + (++i))){
-			if(config.getBoolean("Announcer.Announcements." + i + ".Enabled", true)){
-				List<String> effectiveWorlds = config.getStringList("Announcer.Announcements." + i + ".Worlds"), effectiveGroups = config.getStringList("Announcer.Announcements." + i + ".Groups");
-				if(effectiveWorlds == null){
-					effectiveWorlds = worlds;
-				}else if(worlds != null){
-					for(final String world : worlds){
-						if(!effectiveWorlds.contains(world)){
-							effectiveWorlds.add(world);
+		try{
+			final YamlConfiguration config = new ConfigurationHandler().getConfig();
+			List<String> groups, worlds;
+			this.interval = config.getInt("Settings.Interval", 5);
+			this.random = config.getBoolean("Settings.Random", false);
+			this.usingPerms = config.getBoolean("Settings.Permission", true);
+			this.tag = FrogAnnounce.colourizeText(config.getString("Announcer.Tag", "&GOLD;[FrogAnnounce]"));
+			groups = config.getStringList("Announcer.GlobalGroups");
+			worlds = config.getStringList("Announcer.GlobalWorlds");
+			this.ignoredPlayers = (ArrayList<String>)config.getStringList("ignoredPlayers");
+			this.showJoinMessage = config.getBoolean("Settings.displayMessageOnJoin", false);
+			this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
+			this.showConsoleAnnouncements = config.getBoolean("Settings.showConsoleAnnouncements", false);
+			this.announcements = new ArrayList<Announcement>();
+			int i = 0;
+			while(config.contains("Announcer.Announcements." + (++i))){
+				if(config.getBoolean("Announcer.Announcements." + i + ".Enabled", true)){
+					List<String> effectiveWorlds = config.getStringList("Announcer.Announcements." + i + ".Worlds"), effectiveGroups = config.getStringList("Announcer.Announcements." + i + ".Groups");
+					if(effectiveWorlds == null){
+						effectiveWorlds = worlds;
+					}else if(worlds != null){
+						for(final String world : worlds){
+							if(!effectiveWorlds.contains(world)){
+								effectiveWorlds.add(world);
+							}
 						}
 					}
-				}
-				if(effectiveGroups == null){
-					effectiveGroups = groups;
-				}else if(groups != null){
-					for(final String group : groups){
-						if(!effectiveGroups.contains(group)){
-							effectiveGroups.add(group);
+					if(effectiveGroups == null){
+						effectiveGroups = groups;
+					}else if(groups != null){
+						for(final String group : groups){
+							if(!effectiveGroups.contains(group)){
+								effectiveGroups.add(group);
+							}
 						}
 					}
+					this.announcements.add(new Announcement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands")));
 				}
-				this.announcements.add(new Announcement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands")));
 			}
-		}
-		if(this.announcements.isEmpty()){
-			this.announcements.add(new Announcement("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.", null, null, null));
-			this.interval = 5;
+			if(this.announcements.isEmpty()){
+				this.announcements.add(new Announcement("This plugin may be improperly configured. Please ensure all announcements have matching quotation marks around them. See plugin help pages for more info.", null, null, null));
+				this.interval = 5;
+			}
+		}catch(Exception e){
+			this.sendConsoleMessage(Severity.SEVERE, e.getMessage());
 		}
 	}
 
