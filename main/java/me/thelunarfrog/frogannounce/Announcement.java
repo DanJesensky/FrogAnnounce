@@ -79,10 +79,9 @@ public class Announcement{
 	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
 		this.text = new String[text.split("&NEW_LINE;").length];
 		if(this.text.length < 2){
-			this.text = new String[1];
 			this.text[0] = FrogAnnounce.colourizeText(text);
 		}else{
-			for(int i = 0; i < text.length(); i++){
+			for(int i = 0; i < this.text.length; i++){
 				this.text[i] = FrogAnnounce.colourizeText(text.split("&NEW_LINE;")[i]);
 			}
 		}
