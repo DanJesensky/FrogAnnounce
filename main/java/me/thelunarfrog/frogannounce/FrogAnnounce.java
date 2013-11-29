@@ -1040,7 +1040,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 		}
 		yml.set("ignoredPlayers", old.get("ignoredPlayers"));
-
+		yml.set("ConfigVersion", 2);
 		try{
 			File f = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
 			if(!f.delete())

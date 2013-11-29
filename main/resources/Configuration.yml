@@ -83,3 +83,5 @@ Announcer:
 #Players that the plugin should ignore and NOT announce to, regardless of their group or world. This is changed by the plugin often (/fa ignore and /fa unignore).
 ignoredPlayers:
     - TheLunarFrog
+#Don't change this. This must be present, or the plugin will simply die.
+ConfigVersion: 2
