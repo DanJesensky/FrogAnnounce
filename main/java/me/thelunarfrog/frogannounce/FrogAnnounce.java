@@ -826,7 +826,7 @@ public class FrogAnnounce extends JavaPlugin{
 			}else{
 				this.sendMessage(player, Severity.WARNING, "You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
 			}
-		}else if((otherPlayer != null) && (otherPlayer != player)){
+		}else if((otherPlayer != null)){
 			if(this.permit(player, "frogannounce.unignore.other")){
 				if(this.ignoredPlayers.contains(otherPlayer.getName())){
 					try{
