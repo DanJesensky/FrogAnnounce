@@ -30,20 +30,20 @@ import java.util.Random;
  */
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
-	private Permission permission = null;
-	protected String tag;
-	protected String joinMessage;
-	protected int interval;
-	protected int taskId = -1;
-	protected int counter = 0;
-	protected boolean running = false;
-	protected boolean random;
-	protected boolean usingPerms;
-	protected boolean showJoinMessage = false;
-	protected boolean showConsoleAnnouncements = false;
-	protected List<Announcement> announcements;
-	protected ArrayList<String> ignoredPlayers = null;
-	private ConfigurationHandler cfg = null;
+	private Permission permission;
+	private String tag;
+	private String joinMessage;
+	private int interval;
+	private int taskId;
+	private int counter;
+	private boolean running;
+	private boolean random;
+	private boolean usingPerms;
+	private boolean showJoinMessage;
+	private boolean showConsoleAnnouncements;
+	private List<Announcement> announcements;
+	private ArrayList<String> ignoredPlayers;
+	private ConfigurationHandler cfg;
 	private ArrayList<AnnouncementListener> asyncListeners;
 	private ArrayList<AnnouncementListener> syncListeners;
 	private Random r;
@@ -339,7 +339,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.usingPerms;
 	}
 
-	protected void notifyAsyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
+	private void notifyAsyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
 		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener : FrogAnnounce.this.getAsyncAnnouncementListeners()){
@@ -354,7 +354,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
-	protected void notifySyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
+	private void notifySyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
 		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener : FrogAnnounce.this.getSyncAnnouncementListeners()){
@@ -538,6 +538,19 @@ public class FrogAnnounce extends JavaPlugin{
 
 	private boolean permit(final CommandSender sender, final String perm){
 		return sender.hasPermission(perm);
+	}
+
+	/**
+	 * This method gets the Vault Permission module. It is package-private intentionally.
+	 *
+	 * @return The permission module of Vault, if present. Otherwise, null.
+	 */
+	Permission getVaultPerms(){
+		return this.permission;
+	}
+
+	public boolean isShowingConsoleAnnouncements(){
+		return this.showConsoleAnnouncements;
 	}
 
 	/**

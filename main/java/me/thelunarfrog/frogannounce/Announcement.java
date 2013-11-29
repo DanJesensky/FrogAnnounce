@@ -26,7 +26,7 @@ public class Announcement{
 							if(this.groups.isEmpty()){
 								players.add(p);
 							}else if(!players.contains(p)){
-								for(final String group : FrogAnnounce.getInstance().permission.getPlayerGroups(p))
+								for(final String group : FrogAnnounce.getInstance().getVaultPerms().getPlayerGroups(p))
 									if(this.groups.contains(group)){
 										players.add(p);
 										break;
@@ -39,7 +39,7 @@ public class Announcement{
 		}else if(!this.groups.isEmpty()){
 			for(final Player p : Bukkit.getServer().getOnlinePlayers())
 				if(!ignored.contains(p.getName())){
-					for(final String group : FrogAnnounce.getInstance().permission.getPlayerGroups(p))
+					for(final String group : FrogAnnounce.getInstance().getVaultPerms().getPlayerGroups(p))
 						if(this.groups.contains(group)){
 							players.add(p);
 							break;
@@ -57,7 +57,7 @@ public class Announcement{
 				p.sendMessage(tag + (tag.isEmpty() ? "" : " ") + s);
 			}
 		}
-		if(FrogAnnounce.getInstance().showConsoleAnnouncements){
+		if(FrogAnnounce.getInstance().isShowingConsoleAnnouncements()){
 			for(final String s : this.text){
 				Bukkit.getConsoleSender().sendMessage(tag + (tag.isEmpty() ? "" : " ") + s + ChatColor.DARK_GREEN + " [Announced to " + players.size() + " player(s)]");
 			}
@@ -65,7 +65,7 @@ public class Announcement{
 		if(!this.commands.isEmpty()){
 			for(final String command : this.commands){
 				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), command.replaceFirst("/", ""));
-				if(FrogAnnounce.getInstance().showConsoleAnnouncements){
+				if(FrogAnnounce.getInstance().isShowingConsoleAnnouncements()){
 					Bukkit.getConsoleSender().sendMessage("Running console command as part of announcement: " + command);
 				}
 			}
