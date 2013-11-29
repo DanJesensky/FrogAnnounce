@@ -115,8 +115,8 @@ public class FrogAnnounce extends JavaPlugin{
 			e.printStackTrace();
 		}finally{
 			JOptionPane.showMessageDialog(null, "Sorry, but FrogAnnounce is a Bukkit plugin, and cannot be run directly like you've attempted.\nTo use the plugin, download and set up a Bukkit Minecraft server, and in the root directory, create a folder called\n\"plugins\" (no quotes, and assuming it hasn't already been created for you), and put this JAR file (FrogAnnounce.jar) there.\nWhen you've done that, start the Bukkit server using the command line java -jar \"path to Bukkit.jar\",\nor if it's already running, type \"reload\" (no quotes) into the command-line.", "FrogAnnounce", JOptionPane.OK_OPTION);
-			System.exit(0);
 		}
+		System.exit(0);
 	}
 
 	/**
