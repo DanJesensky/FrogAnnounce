@@ -969,8 +969,7 @@ public class FrogAnnounce extends JavaPlugin{
 				this.interval = 5;
 			}
 		}catch(Exception e){
-			e.printStackTrace();
-//			this.sendConsoleMessage(Severity.SEVERE, e.getMessage());
+			this.sendConsoleMessage(Severity.SEVERE, e.getMessage());
 		}
 	}
 
