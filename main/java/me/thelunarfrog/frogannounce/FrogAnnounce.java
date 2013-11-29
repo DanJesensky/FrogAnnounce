@@ -30,7 +30,6 @@ import java.util.Random;
  */
 public class FrogAnnounce extends JavaPlugin{
 	private PluginDescriptionFile pdfFile;
-	protected FrogLog logger;
 	public Permission permission = null;
 	protected String tag, joinMessage;
 	protected int interval, taskId = -1, counter = 0;
@@ -173,14 +172,14 @@ public class FrogAnnounce extends JavaPlugin{
 		final Plugin vault = this.getServer().getPluginManager().getPlugin("Vault");
 		if(vault != null){
 			if(this.setupPermissions() != null){
-				this.logger.info("Vault hooked successfully.");
+				this.sendConsoleMessage(Severity.INFO, "Vault hooked successfully.");
 				this.usingPerms = true;
 			}else if(this.setupPermissions() == null){
-				this.logger.info("Vault wasn't found. Defaulting to OP/Non-OP system.");
+				this.sendConsoleMessage(Severity.INFO, "Vault wasn't found. Defaulting to OP/Non-OP system.");
 				this.usingPerms = false;
 			}
 		}else{
-			this.logger.warning("Vault is not in your plugins directory! This plugin has a soft dependency of Vault, so if you don't have it, this will still work (you just can't use permission-based stuff).");
+			this.sendConsoleMessage(Severity.WARNING, "Vault is not in your plugins directory! This plugin has a soft dependency of Vault, so if you don't have it, this will still work (you just can't use permission-based stuff).");
 		}
 	}
 
@@ -510,14 +509,13 @@ public class FrogAnnounce extends JavaPlugin{
 	public void onDisable(){
 		this.turnOff(null);
 		this.unregisterAllAnnouncementListeners();
-		this.logger.info("Version " + this.pdfFile.getVersion() + " has been disabled.");
+		this.sendConsoleMessage(Severity.INFO, "Version " + this.pdfFile.getVersion() + " has been disabled.");
 	}
 
 	@Override
 	public void onEnable(){
 		FrogAnnounce.p = this;
 		this.pdfFile = this.getDescription();
-		this.logger = new FrogLog();
 		this.cfg = new ConfigurationHandler();
 		this.updateConfiguration();
 		this.asyncListeners = new ArrayList<AnnouncementListener>();
@@ -528,10 +526,10 @@ public class FrogAnnounce extends JavaPlugin{
 		if(this.showJoinMessage){
 			super.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this), this);
 		}
-		this.logger.info("Settings loaded " + this.announcements.size() + " announcements!");
+		this.sendConsoleMessage(Severity.INFO, "Settings loaded " + this.announcements.size() + " announcements!");
 		this.r = new Random();
 		this.turnOn(null);
-		this.logger.info("Version " + this.pdfFile.getVersion() + " by TheLunarFrog has been enabled!");
+		this.sendConsoleMessage(Severity.INFO, "Version " + this.pdfFile.getVersion() + " by TheLunarFrog has been enabled!");
 	}
 
 	private boolean permit(final CommandSender sender, final String perm){
