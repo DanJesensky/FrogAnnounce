@@ -27,6 +27,13 @@ Settings:
 #############################################################################################################
 Announcer:
     Tag: '&AQUA;[FrogAnnounce]'
+    joinMessage: 'Welcome to the server! Use /help for assistance.'
+    #Groups that the plugin should ALWAYS announce to, permitted their world and ignore status allow it.
+    GlobalGroups:
+        - Moderators
+    #Worlds that the plugin should ALWAYS announce to, permitted their group(s) and ignore status allow it.
+    GlobalWorlds:
+        - world
     Announcements:
         #Announcements are now numbered. Note that the numbers start at 1, and increment by 1.
         #Skipping numbers (i.e. 1, 2, 3, 4, 6) will result in any after the sequence is broken to go unnoticed
@@ -74,12 +81,6 @@ Announcer:
             Groups:
                 - Administrators
                 - Donators
-    #Groups that the plugin should ALWAYS announce to, permitted their world and ignore status allow it.
-    GlobalGroups:
-        - Moderators
-    #Worlds that the plugin should ALWAYS announce to, permitted their group(s) and ignore status allow it.
-    GlobalWorlds:
-        - world
 #Players that the plugin should ignore and NOT announce to, regardless of their group or world. This is changed by the plugin often (/fa ignore and /fa unignore).
 ignoredPlayers:
     - TheLunarFrog
