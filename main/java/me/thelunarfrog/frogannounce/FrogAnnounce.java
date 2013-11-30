@@ -340,7 +340,6 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	private void notifyAsyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
-		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener : FrogAnnounce.this.getAsyncAnnouncementListeners()){
 			if(listener != null){
@@ -355,7 +354,6 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	private void notifySyncAnnouncementListeners(final Announcement announcement, final boolean automatic, final int index){
-		Bukkit.getPlayer("TheLunarFrog");
 		final AnnouncementEvent evt = new AnnouncementEvent(announcement, automatic, index);
 		for(final AnnouncementListener listener : FrogAnnounce.this.getSyncAnnouncementListeners()){
 			if(listener != null){
