@@ -73,7 +73,7 @@ public class Announcement{
 	}
 
 	public String[] getText(){
-		return this.text.clone();
+		return this.text;
 	}
 
 	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
