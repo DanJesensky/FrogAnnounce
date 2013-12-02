@@ -18,7 +18,7 @@
 		<resources>
 			<!--Configuration.yml -->
 			<resource>
-				<targetPath>/resources</targetPath>
+				<targetPath>./resources</targetPath>
 				<filtering>true</filtering>
 				<directory>main/resources</directory>
 				<includes>
