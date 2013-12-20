@@ -26,9 +26,8 @@ public final class ConfigurationHandler{
 		try{
 			byte[] buffer = new byte[1024];
 			int i;
-			while((i = fis.read(buffer)) != -1){
+			while((i = fis.read(buffer)) != -1)
 				fos.write(buffer, 0, i);
-			}
 			fis.close();
 			fos.close();
 		}catch(Exception e){
@@ -44,6 +43,7 @@ public final class ConfigurationHandler{
 		return this.config;
 	}
 
+	//FIXME sets config to null if file does not exist in some circumstances
 	public void loadConfig() throws Exception{
 		File configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
 		if(configFile.exists()){
@@ -55,9 +55,8 @@ public final class ConfigurationHandler{
 				this.copyFile(jarURL, configFile);
 				this.config = new YamlConfiguration();
 				this.config.load(configFile);
-			}else{
+			}else
 				FrogAnnounce.getInstance().sendConsoleMessage(FrogAnnounce.Severity.SEVERE, "Failed to create the directory for configuration.");
-			}
 		}
 	}
 

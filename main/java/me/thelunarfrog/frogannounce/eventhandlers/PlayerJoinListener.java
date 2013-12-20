@@ -15,9 +15,8 @@ public class PlayerJoinListener implements Listener{
 			for(final String s : this.plugin.getJoinMessage().split("&NEW_LINE;"))
 				if(this.plugin.getTag().isEmpty() || (this.plugin.getTag() == null)){
 					evt.getPlayer().sendMessage(FrogAnnounce.colourizeText(s));
-				}else{
+				}else
 					evt.getPlayer().sendMessage(this.plugin.getTag() + " " + FrogAnnounce.colourizeText(s));
-				}
 		}
 	}
 

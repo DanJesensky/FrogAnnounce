@@ -1,72 +1,106 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                       http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
     <!-- Project Information -->
     <version>2.3.0</version>
-	<groupId>me.thelunarfrog.frogannounce</groupId>
-	<artifactId>FrogAnnounce</artifactId>
+    <groupId>me.thelunarfrog.frogannounce</groupId>
+    <artifactId>FrogAnnounce</artifactId>
     <name>FrogAnnounce</name>
     <description>An automatic announcement plugin for Minecraft Bukkit servers.</description>
     <url>http://dev.bukkit.org/bukkit-plugins/frogannounce/</url>
     <inceptionYear>2011</inceptionYear>
 
-	<!-- Build Settings -->
-	<build>
+    <properties>
+        <repository>FrogAnnounce</repository>
+        <gh.user>TheLunarFrog</gh.user>
+    </properties>
+    <!-- Build Settings -->
+    <build>
         <sourceDirectory>main/java</sourceDirectory>
-		<resources>
-			<!--Configuration.yml -->
-			<resource>
-				<targetPath>./resources</targetPath>
-				<filtering>true</filtering>
-				<directory>main/resources</directory>
-				<includes>
-					<include>Configuration.yml</include>
-				</includes>
-				<excludes>
-				</excludes>
-			</resource>
-			<!--plugin.yml -->
-			<resource>
-				<targetPath>.</targetPath>
-				<filtering>true</filtering>
-				<directory>main/resources</directory>
-				<includes>
-					<include>plugin.yml</include>
-				</includes>
-				<excludes>
-				</excludes>
-			</resource>
-		</resources>
-	</build>
+        <resources>
+            <!--Configuration.yml -->
+            <resource>
+                <targetPath>./resources</targetPath>
+                <filtering>true</filtering>
+                <directory>main/resources</directory>
+                <includes>
+                    <include>Configuration.yml</include>
+                </includes>
+                <excludes>
+                </excludes>
+            </resource>
+            <!--plugin.yml -->
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>main/resources</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+                <excludes>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.eclipse.tycho.extras</groupId>
+                <artifactId>tycho-p2-extras-plugin</artifactId>
+                <version>0.19.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>mirror</goal>
+                        </goals>
+                    </execution>
+                </executions>
 
-	<dependencies>
-		<!--Bukkit -->
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.6.4-R2.0</version>
-			<type>jar</type>
-		</dependency>
-		<!--Vault - Optional -->
-		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
-			<version>1.2.27</version>
-			<type>jar</type>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
+                <configuration>
+                    <!-- source repositories to mirror from -->
+                    <source>
+                        <repository>
+                            <url>.</url>
+                            <layout>p2</layout>
+                        </repository>
+                    </source>
+                    <publishArtifacts>true</publishArtifacts>
+                    <destination>scm:git:https://github.com/${gh.user}/${repository}/b</destination>
+                    <append>false</append>
+                    <mirrorMetadataOnly>false</mirrorMetadataOnly>
+                    <compress>false</compress>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<repositories>
-		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/groups/public</url>
-		</repository>
-		<repository>
-			<id>vault-repo</id>
-			<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
-		</repository>
-	</repositories>
+    <dependencies>
+        <!--Bukkit -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>1.6.4-R2.0</version>
+            <type>jar</type>
+        </dependency>
+        <!--Vault - Optional -->
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>Vault</artifactId>
+            <version>1.2.27</version>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+        <repository>
+            <id>bukkit-repo</id>
+            <url>http://repo.bukkit.org/content/groups/public</url>
+        </repository>
+        <repository>
+            <id>vault-repo</id>
+            <url>http://ci.herocraftonline.com/plugin/repository/everything</url>
+        </repository>
+    </repositories>
 </project>

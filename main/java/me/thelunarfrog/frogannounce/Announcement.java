@@ -81,24 +81,20 @@ public class Announcement{
 		if(this.text.length < 2){
 			this.text[0] = FrogAnnounce.colourizeText(text);
 		}else{
-			for(int i = 0; i < this.text.length; i++){
+			for(int i = 0; i < this.text.length; i++)
 				this.text[i] = FrogAnnounce.colourizeText(text.split("&NEW_LINE;")[i]);
-			}
 		}
-		if(groups != null){
+		if(groups != null)
 			this.groups = groups;
-		}else{
+		else
 			this.groups = new ArrayList<String>();
-		}
-		if(worlds != null){
+		if(worlds != null)
 			this.worlds = worlds;
-		}else{
+		else
 			this.worlds = new ArrayList<String>();
-		}
-		if(commands != null){
+		if(commands != null)
 			this.commands = commands;
-		}else{
+		else
 			this.commands = new ArrayList<String>();
-		}
 	}
 }
