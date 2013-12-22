@@ -25,13 +25,14 @@ public class Announcement{
 						if(!ignored.contains(p.getName()))
 							if(this.groups.isEmpty()){
 								players.add(p);
-							}else if(!players.contains(p)){
+							}else if(!players.contains(p) && FrogAnnounce.getInstance().isUsingPermissions()){
 								for(final String group : FrogAnnounce.getInstance().getVaultPerms().getPlayerGroups(p))
 									if(this.groups.contains(group)){
 										players.add(p);
 										break;
 									}
-							}
+							}else
+								players.add(p);
 				}else{
 					System.err.println("World \"" + world + "\" isn't a valid world, so it couldn't be used in restriction for announcing...");
 				}
