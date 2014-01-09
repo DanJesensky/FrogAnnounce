@@ -54,6 +54,7 @@ public final class ConfigurationHandler{
 				final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/Configuration.yml");
 				//FIXME fails through somewhere here
 				this.copyFile(jarURL, configFile);
+				jarURL.close();
 				this.config = new YamlConfiguration();
 				this.config.load(configFile);
 			}else

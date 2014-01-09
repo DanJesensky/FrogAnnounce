@@ -157,8 +157,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * configuration. If you have the index of the announcement you want to
 	 * force, use <b>FrogAnnounce.announce(int, boolean)</b> instead.
 	 *
-	 * @param s      - The index of the announcement, as a string.
-	 * @param player - The CommandSender to display the result to.
+	 * @param s      The index of the announcement, as a string.
+	 * @param player The CommandSender to display the result to.
 	 */
 	public void broadcastMessage(final String s, final CommandSender player){
 		int i;
@@ -259,9 +259,9 @@ public class FrogAnnounce extends JavaPlugin{
 	/**
 	 * Makes FrogAnnounce not announce to a certain player.
 	 *
-	 * @param player - The player to relay output, as if they had done this to
+	 * @param player The player to relay output, as if they had done this to
 	 *               their target.
-	 * @param other  - The target player for FrogAnnounce to no longer announce to.
+	 * @param other  The target player for FrogAnnounce to no longer announce to.
 	 */
 	public void ignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer;
@@ -983,9 +983,7 @@ public class FrogAnnounce extends JavaPlugin{
 
 	public void updateConfigurationFile(){
 		YamlConfiguration yml = this.getConfig();
-		if(!yml.contains("ConfigVersion")){
-			this.updateConfigFromV1(yml);
-		}else if(yml.getInt("ConfigVersion") < 2){
+		if(!yml.contains("ConfigVersion") || yml.getInt("ConfigVersion") < 2){
 			this.updateConfigFromV1(yml);
 		}
 	}
