@@ -13,9 +13,9 @@
     <inceptionYear>2011</inceptionYear>
 
     <properties>
-        <repository>FrogAnnounce</repository>
-        <gh.user>TheLunarFrog</gh.user>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
     <!-- Build Settings -->
     <build>
         <sourceDirectory>main/java</sourceDirectory>
@@ -45,31 +45,12 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>org.eclipse.tycho.extras</groupId>
-                <artifactId>tycho-p2-extras-plugin</artifactId>
-                <version>0.19.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>mirror</goal>
-                        </goals>
-                    </execution>
-                </executions>
-
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
                 <configuration>
-                    <!-- source repositories to mirror from -->
-                    <source>
-                        <repository>
-                            <url>.</url>
-                            <layout>p2</layout>
-                        </repository>
-                    </source>
-                    <publishArtifacts>true</publishArtifacts>
-                    <destination>scm:git:https://github.com/${gh.user}/${repository}/b</destination>
-                    <append>false</append>
-                    <mirrorMetadataOnly>false</mirrorMetadataOnly>
-                    <compress>false</compress>
+                    <show>protected</show>
+                    <nohelp>true</nohelp>
                 </configuration>
             </plugin>
         </plugins>

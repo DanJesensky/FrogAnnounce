@@ -2,6 +2,7 @@ package me.thelunarfrog.frogannounce;
 
 import me.thelunarfrog.frogannounce.eventhandlers.PlayerJoinListener;
 import me.thelunarfrog.frogannounce.events.AnnouncementEvent;
+import me.thelunarfrog.frogannounce.exceptions.InvalidWorldException;
 import me.thelunarfrog.frogannounce.listeners.AnnouncementListener;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * The FrogAnnounce core. Handles loops, grabbing configuration values from
+ * The FrogAnnounce core. Handles grabbing configuration values from
  * ConfigurationManager, commands, and all announcements. API, such as
  * AnnouncementListener registration, will be found here, too.
  *
@@ -126,13 +127,14 @@ public class FrogAnnounce extends JavaPlugin{
 	 * Announces one of the announcements from FrogAnnounce's configuration.
 	 * Overload of a private method.
 	 *
+	 * @throws me.thelunarfrog.frogannounce.exceptions.InvalidWorldException If any of the {@code World}s this announcement specifies (or globally so) it should be announced to is {@code null}.
 	 * @param index - The index of the announcement to announce.
 	 */
-	public void announce(final int index){
+	public void announce(final int index) throws InvalidWorldException{
 		this.announce(index, false);
 	}
 
-	private void announce(int index, final boolean auto){
+	private void announce(int index, final boolean auto) throws InvalidWorldException{
 		if(auto){
 			if(this.random){
 				this.announcements.get(index = this.r.nextInt(this.announcements.size())).execute();
@@ -165,7 +167,11 @@ public class FrogAnnounce extends JavaPlugin{
 			if(i > (this.announcements.size() - 1)){
 				this.sendMessage(player, Severity.WARNING, "You specified a number that does not correspond to any of the announcements in the file. Remember: it starts at 0! Operation aborted.");
 			}else{
-				this.announce(i, false);
+				try{
+					this.announce(i, false);
+				}catch(InvalidWorldException e){
+					this.sendMessage(player, Severity.SEVERE, e.getMessage());
+				}
 			}
 		}catch(final NumberFormatException e){
 			this.sendMessage(player, Severity.WARNING, "Only numbers can be entered as an index. Remember to start counting at 0.");
@@ -724,9 +730,9 @@ public class FrogAnnounce extends JavaPlugin{
 	 * order. Will take effect immediately.
 	 *
 	 * @param args   - Command arguments. To set it without a command base, you
-	 *               should pass new String[]{<b>null</b>, <b>"true"</b> (for
-	 *               random order) <i>or</i> <b>"false"</b> (for sequential
-	 *               order)}.
+	 *               should pass {@code new String[]{<b>null</b>, <b>"true"</b>} (for
+	 *               random order) <i>or</i> {@code <b>"false"</b>} (for sequential
+	 *               order){@code }}.
 	 * @param player - The CommandSender object to send output results to.
 	 */
 	public void setRandom(final String[] args, final CommandSender player){
@@ -924,8 +930,8 @@ public class FrogAnnounce extends JavaPlugin{
 
 	private void updateConfiguration(){
 		try{
-			final YamlConfiguration config = new ConfigurationHandler().getConfig();
 			List<String> groups, worlds;
+			final YamlConfiguration config = this.getConfig();
 			this.interval = config.getInt("Settings.Interval", 5);
 			this.random = config.getBoolean("Settings.Random", false);
 			this.usingPerms = config.getBoolean("Settings.Permission", true);
@@ -1064,7 +1070,11 @@ public class FrogAnnounce extends JavaPlugin{
 
 		@Override
 		public void run(){
-			this.plugin.announce(-1, true);
+			try{
+				this.plugin.announce(-1, true);
+			}catch(InvalidWorldException e){
+				FrogAnnounce.this.sendConsoleMessage(Severity.SEVERE, e.getMessage());
+			}
 		}
 
 		protected Announcer(final FrogAnnounce plugin){

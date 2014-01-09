@@ -5,6 +5,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -43,7 +44,6 @@ public final class ConfigurationHandler{
 		return this.config;
 	}
 
-	//FIXME sets config to null if file does not exist in some circumstances
 	public void loadConfig() throws Exception{
 		File configFile = new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml");
 		if(configFile.exists()){
@@ -52,18 +52,18 @@ public final class ConfigurationHandler{
 		}else{
 			if(Bukkit.getPluginManager().getPlugin("FrogAnnounce").getDataFolder().exists() || Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir()){
 				final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/Configuration.yml");
+				//FIXME fails through somewhere here
 				this.copyFile(jarURL, configFile);
 				this.config = new YamlConfiguration();
 				this.config.load(configFile);
 			}else
-				FrogAnnounce.getInstance().sendConsoleMessage(FrogAnnounce.Severity.SEVERE, "Failed to create the directory for configuration.");
+				throw new IOException("Failed to create the directory for configuration.");
 		}
 	}
 
 	protected void updateConfiguration(final String path, final Object newValue) throws Exception{
-		if(this.config == null){
+		if(this.config == null)
 			this.config = this.getConfig();
-		}
 		this.config.set(path, newValue);
 		this.config.save(new File(Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder(), "Configuration.yml"));
 	}

@@ -1,5 +1,6 @@
 package me.thelunarfrog.frogannounce;
 
+import me.thelunarfrog.frogannounce.exceptions.InvalidWorldException;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -14,7 +15,7 @@ public class Announcement{
 	private final List<String> worlds;
 	private final List<String> commands;
 
-	public void execute(){
+	public void execute() throws InvalidWorldException {
 		final List<Player> players = new ArrayList<Player>();
 		final List<String> ignored = FrogAnnounce.getInstance().getIgnoredPlayers();
 		if(!this.worlds.isEmpty()){
@@ -34,7 +35,13 @@ public class Announcement{
 							}else
 								players.add(p);
 				}else{
-					System.err.println("World \"" + world + "\" isn't a valid world, so it couldn't be used in restriction for announcing...");
+					StringBuilder announcement = new StringBuilder();
+					for(int i = 0; i < this.getText().length; i++){
+						announcement.append(this.getText()[i]);
+						if(i < this.getText().length - 1)
+							announcement.append("&NEW_LINE;");
+					}
+					throw new InvalidWorldException("World \"" + world + "\" isn't a valid world, so it couldn't be used in restriction for announcing! Announcement: "+announcement.toString());
 				}
 			}
 		}else if(!this.groups.isEmpty()){
