@@ -51,10 +51,8 @@ public final class ConfigurationHandler{
 			this.config.load(configFile);
 		}else{
 			if(Bukkit.getPluginManager().getPlugin("FrogAnnounce").getDataFolder().exists() || Bukkit.getServer().getPluginManager().getPlugin("FrogAnnounce").getDataFolder().mkdir()){
-				final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/Configuration.yml");
-				//FIXME fails through somewhere here
+				final InputStream jarURL = ConfigurationHandler.class.getResourceAsStream("/resources/Configuration.yml");
 				this.copyFile(jarURL, configFile);
-				jarURL.close();
 				this.config = new YamlConfiguration();
 				this.config.load(configFile);
 			}else
