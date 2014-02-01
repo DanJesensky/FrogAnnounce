@@ -23,7 +23,7 @@ public class Announcement{
 				World w;
 				if((w = Bukkit.getServer().getWorld(world)) != null){
 					for(final Player p : w.getPlayers())
-						if(!ignored.contains(p.getName()))
+						if(!ignored.contains(p.getUniqueId().toString()))
 							if(this.groups.isEmpty()){
 								players.add(p);
 							}else if(!players.contains(p) && FrogAnnounce.getInstance().isUsingPermissions()){
@@ -46,7 +46,7 @@ public class Announcement{
 			}
 		}else if(!this.groups.isEmpty()){
 			for(final Player p : Bukkit.getServer().getOnlinePlayers())
-				if(!ignored.contains(p.getName())){
+				if(!ignored.contains(p.getUniqueId().toString())){
 					for(final String group : FrogAnnounce.getInstance().getVaultPerms().getPlayerGroups(p))
 						if(this.groups.contains(group)){
 							players.add(p);
@@ -55,7 +55,7 @@ public class Announcement{
 				}
 		}else{
 			for(final Player p : Bukkit.getServer().getOnlinePlayers())
-				if(!ignored.contains(p.getName())){
+				if(!ignored.contains(p.getUniqueId().toString())){
 					players.add(p);
 				}
 		}
