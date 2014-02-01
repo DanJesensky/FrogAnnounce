@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * The FrogAnnounce core. Handles grabbing configuration values from
@@ -265,15 +266,19 @@ public class FrogAnnounce extends JavaPlugin{
 	 */
 	public void ignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer;
+		UUID playerid;
 		if(other.equals(player.getName())){
 			otherPlayer = (Player)player;
 		}else{
 			otherPlayer = this.getServer().getPlayer(other);
 		}
+
+		playerid = otherPlayer.getUniqueId();
+
 		if((otherPlayer != null) && (otherPlayer == player)){
 			if(this.permit(player, "frogannounce.ignore")){
-				if(!this.ignoredPlayers.contains(player.getName())){
-					this.ignoredPlayers.add(otherPlayer.getName());
+				if(!this.ignoredPlayers.contains(playerid.toString())){
+					this.ignoredPlayers.add(playerid.toString());
 					try{
 						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are now being ignored by FrogAnnounce. You will no longer receive announcements from it until you opt back in.");
@@ -288,8 +293,8 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 		}else if((otherPlayer != null)){
 			if(this.permit(player, "frogannounce.ignore.other")){
-				if(!this.ignoredPlayers.contains(otherPlayer.getName())){
-					this.ignoredPlayers.add(otherPlayer.getName());
+				if(!this.ignoredPlayers.contains(playerid.toString())){
+					this.ignoredPlayers.add(playerid.toString());
 					try{
 						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 						this.sendMessage(player, Severity.INFO, "Success! The player has been added to FrogAnnounce's ignore list and will no longer see its announcements until he/she opts back in.");
@@ -829,16 +834,21 @@ public class FrogAnnounce extends JavaPlugin{
 	 */
 	public void unignorePlayer(final CommandSender player, final String other){
 		Player otherPlayer;
+		UUID playerid;
+
 		if(other.isEmpty()){
 			otherPlayer = (Player)player;
 		}else{
 			otherPlayer = this.getServer().getPlayer(other);
 		}
+
+		playerid = otherPlayer.getUniqueId();
+
 		if((otherPlayer != null) && (otherPlayer == player)){
 			if(this.permit(player, "frogannounce.unignore")){
-				if(this.ignoredPlayers.contains(player.getName())){
+				if(this.ignoredPlayers.contains(playerid.toString())){
 					try{
-						this.ignoredPlayers.remove(otherPlayer.getName());
+						this.ignoredPlayers.remove(playerid.toString());
 						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
 					}catch(Exception e){
@@ -852,9 +862,9 @@ public class FrogAnnounce extends JavaPlugin{
 			}
 		}else if((otherPlayer != null)){
 			if(this.permit(player, "frogannounce.unignore.other")){
-				if(this.ignoredPlayers.contains(otherPlayer.getName())){
+				if(this.ignoredPlayers.contains(playerid.toString())){
 					try{
-						this.ignoredPlayers.remove(otherPlayer.getName());
+						this.ignoredPlayers.remove(playerid.toString());
 						this.cfg.updateConfiguration("ignoredPlayers", this.ignoredPlayers);
 						this.sendMessage(player, Severity.INFO, "Success! The player has been removed from FrogAnnounce's ignore list and will see its announcements again until he/she opts out again.");
 						this.sendMessage(otherPlayer, Severity.INFO, ChatColor.GRAY + "You are no longer being ignored by FrogAnnounce. You will receive announcements until you opt out of them again.");
