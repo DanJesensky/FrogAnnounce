@@ -82,7 +82,8 @@ Announcer:
                 - Administrators
                 - Donators
 #Players that the plugin should ignore and NOT announce to, regardless of their group or world. This is changed by the plugin often (/fa ignore and /fa unignore).
-ignoredPlayers:
-    - TheLunarFrog
+#This key does not accept player names as values -- rather, UUIDs; thereby, it is not recommended that users modify this explicitly, in favour of using /fa ignore [player] or /fa unignore [player].
+#These commands can, but do not need the [player] argument -- if the argument is supplied, it will apply to another player, rather than the command's invoker. Without, it will reference that same invoker.
+ignoredPlayers: []
 #Don't change this. This must be present, or the plugin will simply die.
 ConfigVersion: 2
