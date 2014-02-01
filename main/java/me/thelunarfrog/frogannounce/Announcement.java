@@ -81,7 +81,10 @@ public class Announcement{
 	}
 
 	public String[] getText(){
-		return this.text;
+		String[] copy = new String[this.text.length];
+		for(int i = 0; i < this.text.length; i++)
+			copy[i] = new String(this.text[i]); //deep copy, shouldn't get the same refs either to the array or objects therein
+		return copy;
 	}
 
 	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
