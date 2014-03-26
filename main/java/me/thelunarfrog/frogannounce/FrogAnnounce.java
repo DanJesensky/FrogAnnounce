@@ -128,8 +128,9 @@ public class FrogAnnounce extends JavaPlugin{
 	 * Announces one of the announcements from FrogAnnounce's configuration.
 	 * Overload of a private method.
 	 *
-	 * @throws me.thelunarfrog.frogannounce.exceptions.InvalidWorldException If any of the {@code World}s this announcement specifies (or globally so) it should be announced to is {@code null}.
 	 * @param index - The index of the announcement to announce.
+	 *
+	 * @throws me.thelunarfrog.frogannounce.exceptions.InvalidWorldException If any of the {@code World}s this announcement specifies (or globally so) it should be announced to is {@code null}.
 	 */
 	public void announce(final int index) throws InvalidWorldException{
 		this.announce(index, false);
@@ -137,19 +138,34 @@ public class FrogAnnounce extends JavaPlugin{
 
 	private void announce(int index, final boolean auto) throws InvalidWorldException{
 		if(auto){
-			if(this.random){
-				this.announcements.get(index = this.r.nextInt(this.announcements.size())).execute();
-			}else{
-				this.announcements.get(index = this.counter++).execute();
-				if(this.counter >= this.announcements.size()){
-					this.counter = 0;
+			if(!this.areAllAnnouncementsIndividuallyTimed()){
+				if(this.random){
+					Announcement a;
+					do{
+						a = this.announcements.get(index = this.r.nextInt(this.announcements.size()));
+					}while(a.isTimedIndividually());
+					a.execute();
+				}else{
+					Announcement a;
+					do{
+						a = this.announcements.get(index = this.counter++);
+						if(this.counter >= this.announcements.size()){
+							this.counter = 0;
+						}
+					}while(a.isTimedIndividually());
+					a.execute();
 				}
 			}
 		}else{
 			this.announcements.get(index).execute();
 		}
+
 		this.notifySyncAnnouncementListeners(this.announcements.get(index), auto, index);
 		this.notifyAsyncAnnouncementListeners(this.announcements.get(index), auto, index);
+	}
+
+	public boolean areAllAnnouncementsIndividuallyTimed(){
+		return false;
 	}
 
 	/**
@@ -194,6 +210,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * Gets the array of Strings that the announcer is announcing to players.
 	 *
@@ -218,7 +235,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * announcements.
 	 *
 	 * @return The names of players who aren't getting announcements, as a
-	 *         String arraylist.
+	 * String arraylist.
 	 */
 	public ArrayList<String> getIgnoredPlayers(){
 		return this.ignoredPlayers;
@@ -247,6 +264,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.tag;
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * Makes FrogAnnounce ignore the specified player when announcing. Overload
 	 * of <b>ignorePlayer(CommandSender, String)</b>.
@@ -313,6 +331,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * Gets whether or not the plugin is announcing in a random order.
 	 *
@@ -322,6 +341,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.random;
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * Gets whether or not the plugin's announcer module is running.
 	 *
@@ -426,7 +446,8 @@ public class FrogAnnounce extends JavaPlugin{
 					}else if(args[0].equalsIgnoreCase("add")){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
-							sb.append(args[i] + " ");
+							sb.append(args[i]);
+							sb.append(" ");
 						}
 						this.announcements.add(new Announcement(sb.toString().trim(), null, null, null));
 						try{
@@ -439,7 +460,8 @@ public class FrogAnnounce extends JavaPlugin{
 					}else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc")){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
-							sb.append(args[i] + " ");
+							sb.append(args[i]);
+							sb.append(" ");
 						}
 						if(this.tag.isEmpty()){
 							this.getServer().broadcastMessage(FrogAnnounce.colourizeText(sb.toString().trim()));
@@ -562,6 +584,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.showConsoleAnnouncements;
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * This method allows you to register an announcement listener to be
 	 * notified by FrogAnnounce when an announcement ticks. Listeners must be
@@ -580,9 +603,9 @@ public class FrogAnnounce extends JavaPlugin{
 	 *                 such superinterface.
 	 *
 	 * @return The ID of the listener that you registered. You should keep this
-	 *         ID, as it is used by the
-	 *         <b>unregisterAnnouncementListener(int)</b> method, which
-	 *         unregisters your listener.
+	 * ID, as it is used by the
+	 * <b>unregisterAnnouncementListener(int)</b> method, which
+	 * unregisters your listener.
 	 *
 	 * @see #registerAsyncAnnouncementListener(AnnouncementListener)
 	 */
@@ -593,6 +616,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return this.getAsyncAnnouncementListeners().indexOf(listener);
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * This method allows you to register an announcement listener to be
 	 * notified by FrogAnnounce when an announcement ticks. Listeners must be
@@ -610,9 +634,9 @@ public class FrogAnnounce extends JavaPlugin{
 	 *                 such superinterface.
 	 *
 	 * @return The ID of the listener that you registered. You should keep this
-	 *         ID, as it is used by the
-	 *         <b>unregisterAnnouncementListener(int)</b> method, which
-	 *         unregisters your listener.
+	 * ID, as it is used by the
+	 * <b>unregisterAnnouncementListener(int)</b> method, which
+	 * unregisters your listener.
 	 *
 	 * @see #registerSyncAnnouncementListener(AnnouncementListener)
 	 */
@@ -777,7 +801,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @param player The CommandSender object to send result messages to.
 	 *
 	 * @return Whether or not the announcer core was successfully disabled. Will
-	 *         return false if already disabled.
+	 * return false if already disabled.
 	 */
 	public boolean turnOff(CommandSender player){
 		if(this.running){
@@ -798,8 +822,8 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @param player The CommandSender object to send result messages to.
 	 *
 	 * @return Whether or not the announcer was able to start. Will not
-	 *         automatically restart the announcer. Will return false if it was
-	 *         already running.
+	 * automatically restart the announcer. Will return false if it was
+	 * already running.
 	 */
 	public boolean turnOn(CommandSender player){
 		if(!this.running){
@@ -897,6 +921,7 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * This method unregisters a synchronous announcement listener from
 	 * FrogAnnounce's observer list, making your
@@ -912,6 +937,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.asyncListeners.set(id, null);
 	}
 
+	@SuppressWarnings("unused") //for external use
 	/**
 	 * This method unregisters an asynchronous announcement listener from
 	 * FrogAnnounce's observer list, making your
@@ -929,7 +955,7 @@ public class FrogAnnounce extends JavaPlugin{
 		try{
 			return new ConfigurationHandler().getConfig();
 		}catch(Exception e){
-			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while getting the configuration: "+e.getMessage());
+			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while getting the configuration: " + e.getMessage());
 		}
 		return null;
 	}
@@ -1014,7 +1040,7 @@ public class FrogAnnounce extends JavaPlugin{
 		else
 			yml.set("Announcer.GlobalGroups", new ArrayList<String>());
 		yml.set("Announcer.GlobalWorlds", new ArrayList<String>());
-		for(int i = 1; i < old.getList("Announcer.Strings").size()+1; i++){
+		for(int i = 1; i < old.getList("Announcer.Strings").size() + 1; i++){
 			List<String> z;
 			String[] c;
 			String s;
@@ -1048,7 +1074,7 @@ public class FrogAnnounce extends JavaPlugin{
 				c = s.split(";");
 				for(String b : c)
 					z.add(b.trim());
-				yml.set("Announcer.Announcements."+i+".Commands", z);
+				yml.set("Announcer.Announcements." + i + ".Commands", z);
 			}
 		}
 		yml.set("ignoredPlayers", old.get("ignoredPlayers"));
@@ -1059,7 +1085,7 @@ public class FrogAnnounce extends JavaPlugin{
 				throw new IOException("Unable to delete old configuration file.");
 			yml.save(f);
 		}catch(IOException e){
-			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while trying to save the configuration: "+e.getMessage());
+			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while trying to save the configuration: " + e.getMessage());
 		}
 	}
 
