@@ -833,6 +833,19 @@ public class FrogAnnounce extends JavaPlugin{
 		if(!this.running){
 			if(this.announcements.size() > 0){
 				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
+				for(final Announcement a : this.announcements){
+					if(a.isTimedIndividually()){
+						this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+							public void run(){
+								try{
+									a.execute();
+								}catch(InvalidWorldException e){
+									System.err.println(e.getMessage());
+								}
+							}
+						}, a.getInterval() * 1200, a.getInterval() * 1200);
+					}
+				}
 				if(this.taskId == -1){
 					this.sendMessage(player, Severity.SEVERE, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
 					return false;
@@ -987,6 +1000,7 @@ public class FrogAnnounce extends JavaPlugin{
 			while(config.contains("Announcer.Announcements." + (++i))){
 				if(config.getBoolean("Announcer.Announcements." + i + ".Enabled", true)){
 					List<String> effectiveWorlds = config.getStringList("Announcer.Announcements." + i + ".Worlds"), effectiveGroups = config.getStringList("Announcer.Announcements." + i + ".Groups");
+
 					if(effectiveWorlds == null){
 						effectiveWorlds = worlds;
 					}else if(worlds != null){
@@ -996,6 +1010,7 @@ public class FrogAnnounce extends JavaPlugin{
 							}
 						}
 					}
+
 					if(effectiveGroups == null){
 						effectiveGroups = groups;
 					}else if(groups != null){
@@ -1005,7 +1020,10 @@ public class FrogAnnounce extends JavaPlugin{
 							}
 						}
 					}
-					this.announcements.add(new Announcement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands")));
+
+					interval = config.getInt("Announcer.Announcements." + i + ".Interval", -1);
+
+					this.announcements.add(new Announcement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands"), interval));
 				}
 			}
 			if(this.announcements.isEmpty()){
