@@ -14,7 +14,6 @@ public class Announcement{
 	private final List<String> groups;
 	private final List<String> worlds;
 	private final List<String> commands;
-	private final int time;
 
 	public void execute() throws InvalidWorldException {
 		final List<Player> players = new ArrayList<Player>();
@@ -82,11 +81,7 @@ public class Announcement{
 	}
 
 	public boolean isTimedIndividually(){
-		return this.getInterval() != -1;
-	}
-
-	public int getInterval(){
-		return this.time;
+		return false;
 	}
 
 	@SuppressWarnings("all") //compiler warns of use of string constructor, but it is merited.
@@ -98,10 +93,6 @@ public class Announcement{
 	}
 
 	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
-		this(text, groups, worlds, commands, -1);
-	}
-
-	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands, final int time){
 		this.text = new String[text.split("&NEW_LINE;").length];
 
 		if(this.text.length < 2){
@@ -125,7 +116,5 @@ public class Announcement{
 			this.commands = commands;
 		else
 			this.commands = new ArrayList<String>();
-
-		this.time = time;
 	}
 }

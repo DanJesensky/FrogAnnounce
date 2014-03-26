@@ -145,7 +145,7 @@ public class FrogAnnounce extends JavaPlugin{
 					Announcement a;
 					do{
 						a = this.announcements.get(index = this.r.nextInt(this.announcements.size()));
-					}while(a.isTimedIndividually());
+					}while(a instanceof IndependentAnnouncement);
 					a.execute();
 				}else{
 					Announcement a;
@@ -154,7 +154,7 @@ public class FrogAnnounce extends JavaPlugin{
 						if(this.counter >= this.announcements.size()){
 							this.counter = 0;
 						}
-					}while(a.isTimedIndividually());
+					}while(a instanceof IndependentAnnouncement);
 					a.execute();
 				}
 			}else{
@@ -818,6 +818,11 @@ public class FrogAnnounce extends JavaPlugin{
 			this.getServer().getScheduler().cancelTask(this.taskId);
 			this.sendMessage(player, Severity.INFO, "Announcer disabled!");
 			this.running = false;
+			for(Announcement a : this.announcements){
+				if(a instanceof IndependentAnnouncement){
+					((IndependentAnnouncement)a).stop();
+				}
+			}
 			return true;
 		}else{
 			this.sendMessage(player, Severity.SEVERE, "The announcer is not running!");
@@ -838,24 +843,14 @@ public class FrogAnnounce extends JavaPlugin{
 	public boolean turnOn(CommandSender player){
 		if(!this.running){
 			if(this.announcements.size() > 0){
-				this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
+				if(!this.areAllAnnouncementsIndividuallyTimed())
+					this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
 				for(final Announcement a : this.announcements){
-					if(a.isTimedIndividually()){
-						this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-							public void run(){
-								try{
-									a.execute();
-									int z = FrogAnnounce.this.announcements.indexOf(a);
-									FrogAnnounce.this.notifySyncAnnouncementListeners(a, true, z);
-									FrogAnnounce.this.notifyAsyncAnnouncementListeners(a, true, z);
-								}catch(InvalidWorldException e){
-									System.err.println(e.getMessage());
-								}
-							}
-						}, a.getInterval() * 1200, a.getInterval() * 1200);
+					if(a instanceof IndependentAnnouncement){
+						new Thread(((IndependentAnnouncement)a)).start();
 					}
 				}
-				if(this.taskId == -1){
+				if(this.taskId == -1 && !this.areAllAnnouncementsIndividuallyTimed()){
 					this.sendMessage(player, Severity.SEVERE, "The announcer module has failed to start! Please check your configuration. If this does not fix it, then submit a support ticket on the BukkitDev page for FrogAnnounce.");
 					return false;
 				}else{
@@ -977,6 +972,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.syncListeners.set(id, null);
 	}
 
+	@Override
 	public YamlConfiguration getConfig(){
 		try{
 			return new ConfigurationHandler().getConfig();
@@ -986,6 +982,7 @@ public class FrogAnnounce extends JavaPlugin{
 		return null;
 	}
 
+	@Override
 	public void reloadConfig(){
 		this.updateConfiguration();
 	}
@@ -1030,9 +1027,12 @@ public class FrogAnnounce extends JavaPlugin{
 						}
 					}
 
-					interval = config.getInt("Announcer.Announcements." + i + ".Interval", -1);
-
-					this.announcements.add(new Announcement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands"), interval));
+					int z;
+					z = config.getInt("Announcer.Announcements." + i + ".Interval", -1);
+					if(z == -1)
+						this.announcements.add(new Announcement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands")));
+					else
+						this.announcements.add(new IndependentAnnouncement(config.getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, config.getStringList("Announcer.Announcements." + i + ".Commands"), z * 60000));
 				}
 			}
 			if(this.announcements.isEmpty()){
