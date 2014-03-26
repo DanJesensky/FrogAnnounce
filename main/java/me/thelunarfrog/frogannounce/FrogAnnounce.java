@@ -165,7 +165,11 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	public boolean areAllAnnouncementsIndividuallyTimed(){
-		return false;
+		for(Announcement a : this.announcements){
+			if(!a.isTimedIndividually())
+				return false;
+		}
+		return true;
 	}
 
 	/**
