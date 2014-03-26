@@ -137,6 +137,8 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	private void announce(int index, final boolean auto) throws InvalidWorldException{
+		boolean notifyListeners = true;
+
 		if(auto){
 			if(!this.areAllAnnouncementsIndividuallyTimed()){
 				if(this.random){
@@ -155,13 +157,17 @@ public class FrogAnnounce extends JavaPlugin{
 					}while(a.isTimedIndividually());
 					a.execute();
 				}
+			}else{
+				notifyListeners = false;
 			}
 		}else{
 			this.announcements.get(index).execute();
 		}
 
-		this.notifySyncAnnouncementListeners(this.announcements.get(index), auto, index);
-		this.notifyAsyncAnnouncementListeners(this.announcements.get(index), auto, index);
+		if(notifyListeners){
+			this.notifySyncAnnouncementListeners(this.announcements.get(index), auto, index);
+			this.notifyAsyncAnnouncementListeners(this.announcements.get(index), auto, index);
+		}
 	}
 
 	public boolean areAllAnnouncementsIndividuallyTimed(){
@@ -839,6 +845,9 @@ public class FrogAnnounce extends JavaPlugin{
 							public void run(){
 								try{
 									a.execute();
+									int z = FrogAnnounce.this.announcements.indexOf(a);
+									FrogAnnounce.this.notifySyncAnnouncementListeners(a, true, z);
+									FrogAnnounce.this.notifyAsyncAnnouncementListeners(a, true, z);
 								}catch(InvalidWorldException e){
 									System.err.println(e.getMessage());
 								}
