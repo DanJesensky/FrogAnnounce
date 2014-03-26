@@ -26,10 +26,10 @@ import java.util.UUID;
 /**
  * The FrogAnnounce core. Handles grabbing configuration values from
  * ConfigurationManager, commands, and all announcements. API, such as
- * AnnouncementListener registration, will be found here, too.
+ * AnnouncementListener registration, is be found here, too.
  *
  * @author Dan | TheLunarFrog
- * @version 2.3.0.0
+ * @version 2.4.0
  */
 public class FrogAnnounce extends JavaPlugin{
 	private Permission permission;
@@ -246,7 +246,7 @@ public class FrogAnnounce extends JavaPlugin{
 	}
 
 	/**
-	 * Gets the return message for this instance of FrogAnnounce. Will return
+	 * Gets the message sent to players upon joining the server for this instance of FrogAnnounce. Will return
 	 * null if the plugin isn't even showing the join message.
 	 *
 	 * @return The join message, or null, if this instance isn't showing it.
