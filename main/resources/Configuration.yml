@@ -43,6 +43,11 @@ Announcer:
             Enabled: true
             #Text: The text to be announced. Colour codes work as before.
             Text: '&4;Hi.'
+            #Specifying an interval makes this announcement independent. If the interval is 1, it will announce once every minute, no matter what.
+            #Groups, Worlds, GlobalGroups, and GlobalWorlds filters will still apply. Marking an announcement as independent will not prevent or delay other announcements.
+            #For example, if the default config is left as is, it will announce "Hi." four times before saying both "Hi." and "Moo."
+            #If you're confused or for more information on this, comment on the FrogAnnounce BukkitDev page.
+            Interval: 1
         2:
             Text: '&DARK_GREEN;Moo.'
             #Specific groups.
