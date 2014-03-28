@@ -226,12 +226,10 @@ public class FrogAnnounce extends JavaPlugin{
 	 *
 	 * @return The messages that players will see, in form of an array.
 	 */
-	public String[] getAnnouncements(){
-		final String[] announcements = new String[this.announcements.size()];
+	public Announcement[] getAnnouncements(){
+		final Announcement[] announcements = new Announcement[this.announcements.size()];
 		for(int i = 0; i < this.announcements.size(); i++){
-			for(final String s : this.announcements.get(i).getText()){
-				announcements[i] = s;
-			}
+			announcements[i] = this.announcements.get(i);
 		}
 		return announcements;
 	}
