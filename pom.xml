@@ -19,6 +19,7 @@
     <!-- Build Settings -->
     <build>
         <sourceDirectory>main/java</sourceDirectory>
+        <testSourceDirectory>test/java</testSourceDirectory>
         <resources>
             <!--Configuration.yml -->
             <resource>
@@ -71,6 +72,12 @@
             <version>1.2.27</version>
             <type>jar</type>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

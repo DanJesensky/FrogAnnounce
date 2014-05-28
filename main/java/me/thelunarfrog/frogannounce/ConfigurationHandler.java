@@ -60,7 +60,7 @@ public final class ConfigurationHandler{
 		}
 	}
 
-	protected void updateConfiguration(final String path, final Object newValue) throws Exception{
+	public void updateConfiguration(final String path, final Object newValue) throws Exception{
 		if(this.config == null)
 			this.config = this.getConfig();
 		this.config.set(path, newValue);

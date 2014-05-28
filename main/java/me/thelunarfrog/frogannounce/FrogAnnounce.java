@@ -54,6 +54,10 @@ public class FrogAnnounce extends JavaPlugin{
 	 */
 	private static FrogAnnounce p;
 
+	static{
+		FrogAnnounce.p = null;
+	}
+
 	public static String colourizeText(String announce){
 		announce = announce.replaceAll("&AQUA;", ChatColor.AQUA.toString());
 		announce = announce.replaceAll("&BLACK;", ChatColor.BLACK.toString());
@@ -110,14 +114,8 @@ public class FrogAnnounce extends JavaPlugin{
 	public static void main(final String[] args){
 		try{
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		}catch(final ClassNotFoundException e){
-			e.printStackTrace();
-		}catch(final InstantiationException e){
-			e.printStackTrace();
-		}catch(final IllegalAccessException e){
-			e.printStackTrace();
-		}catch(final UnsupportedLookAndFeelException e){
-			e.printStackTrace();
+		}catch(final Exception e){
+			JOptionPane.showMessageDialog(null, e.getMessage());
 		}finally{
 			JOptionPane.showMessageDialog(null, "Sorry, but FrogAnnounce is a Bukkit plugin, and cannot be run directly like you've attempted.\nTo use the plugin, download and set up a Bukkit Minecraft server, and in the root directory, create a folder called\n\"plugins\" (no quotes, and assuming it hasn't already been created for you), and put this JAR file (FrogAnnounce.jar) there.\nWhen you've done that, start the Bukkit server using the command line java -jar \"path to Bukkit.jar\",\nor if it's already running, type \"reload\" (no quotes) into the command-line.", "FrogAnnounce", JOptionPane.ERROR_MESSAGE);
 		}
@@ -201,7 +199,7 @@ public class FrogAnnounce extends JavaPlugin{
 				}
 			}
 		}catch(final NumberFormatException e){
-			this.sendMessage(player, Severity.WARNING, "Only numbers can be entered as an index. Remember to start counting at 0.");
+			this.sendMessage(player, Severity.WARNING, "Only numbers can be entered as an index. "+e.getMessage());
 		}
 	}
 
@@ -211,12 +209,15 @@ public class FrogAnnounce extends JavaPlugin{
 			if(this.setupPermissions() != null){
 				this.sendConsoleMessage(Severity.INFO, "Vault hooked successfully.");
 				this.usingPerms = true;
-			}else if(this.setupPermissions() == null){
-				this.sendConsoleMessage(Severity.INFO, "Vault wasn't found. Defaulting to OP/Non-OP system.");
-				this.usingPerms = false;
+			}else{
+				Boolean b = this.setupPermissions();
+				if(b == null || !b){
+					this.sendConsoleMessage(Severity.INFO, "Vault wasn't found. Defaulting to OP/Non-OP system.");
+					this.usingPerms = false;
+				}
 			}
 		}else{
-			this.sendConsoleMessage(Severity.WARNING, "Vault is not in your plugins directory! This plugin has a soft dependency of Vault, so if you don't have it, this will still work (you just can't use permission-based stuff).");
+			this.sendConsoleMessage(Severity.INFO, "Vault is not in your plugins directory! This plugin has a soft dependency of Vault, so if you don't have it, this will still work (you just can't use permission-based stuff).");
 		}
 	}
 
@@ -291,17 +292,12 @@ public class FrogAnnounce extends JavaPlugin{
 	 * @param other  The target player for FrogAnnounce to no longer announce to.
 	 */
 	public void ignorePlayer(final CommandSender player, final String other){
-		Player otherPlayer;
+		Player otherPlayer = other.equals(player.getName()) ? (Player)player : this.getServer().getPlayer(other);
 		UUID playerid;
-		if(other.equals(player.getName())){
-			otherPlayer = (Player)player;
-		}else{
-			otherPlayer = this.getServer().getPlayer(other);
-		}
 
 		playerid = otherPlayer.getUniqueId();
 
-		if((otherPlayer != null) && (otherPlayer == player)){
+		if((otherPlayer != null) && (otherPlayer.getUniqueId().toString().equalsIgnoreCase(((Player)player).getUniqueId().toString()))){
 			if(this.permit(player, "frogannounce.ignore")){
 				if(!this.ignoredPlayers.contains(playerid.toString())){
 					this.ignoredPlayers.add(playerid.toString());
@@ -317,7 +313,7 @@ public class FrogAnnounce extends JavaPlugin{
 			}else{
 				this.sendMessage(player, Severity.WARNING, "You don't have sufficient permission to opt another player out of FrogAnnounce's announcements. Sorry!");
 			}
-		}else if((otherPlayer != null)){
+		}else if(otherPlayer != null){
 			if(this.permit(player, "frogannounce.ignore.other")){
 				if(!this.ignoredPlayers.contains(playerid.toString())){
 					this.ignoredPlayers.add(playerid.toString());
@@ -403,46 +399,47 @@ public class FrogAnnounce extends JavaPlugin{
 
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String commandLabel, final String[] args){
-		if(commandLabel.equalsIgnoreCase("fa") || commandLabel.equalsIgnoreCase("frogannounce")){
+		super.onCommand(sender, cmd, commandLabel, args);
+		if("fa".equalsIgnoreCase(commandLabel) || "frogannounce".equalsIgnoreCase(commandLabel)){
 			if(this.permit(sender, "frogannounce.admin") || this.permit(sender, "frogannounce.*")){
 				try{
 					if(args.length == 0){
 						this.sendMessage(sender, Severity.INFO, "FrogAnnounce version: " + super.getDescription().getVersion());
 						this.sendMessage(sender, Severity.INFO, "For help, use /fa help.");
-					}else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")){
+					}else if("help".equalsIgnoreCase(args[0]) || "?".equalsIgnoreCase(args[0])){
 						if(args.length == 2){
 							this.returnHelp(sender, args[1]);
 						}else{
 							this.returnHelp(sender, "0");
 						}
-					}else if(args[0].equalsIgnoreCase("on")){
+					}else if("on".equalsIgnoreCase(args[0])){
 						this.turnOn(sender);
-					}else if(args[0].equalsIgnoreCase("off")){
+					}else if("off".equalsIgnoreCase(args[0])){
 						this.turnOff(sender);
-					}else if(args[0].equalsIgnoreCase("version") || args[0].equalsIgnoreCase("v")){
+					}else if("version".equalsIgnoreCase(args[0]) || "v".equalsIgnoreCase(args[0])){
 						this.sendMessage(sender, Severity.INFO, "Current version: " + super.getDescription().getVersion());
-					}else if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
+					}else if("ignore".equalsIgnoreCase(args[0]) || "optout".equalsIgnoreCase(args[0]) || "opt-out".equalsIgnoreCase(args[0])){
 						if(args.length == 2){
 							this.ignorePlayer(sender, args[1]);
 						}else{
 							this.ignorePlayer(sender, sender.getName());
 						}
-					}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
+					}else if("unignore".equalsIgnoreCase(args[0]) || "optin".equalsIgnoreCase(args[0]) || "opt-in".equalsIgnoreCase(args[0])){
 						if(args.length == 2){
 							this.unignorePlayer(sender, args[1]);
 						}else{
 							this.unignorePlayer(sender, sender.getName());
 						}
-					}else if(args[0].equalsIgnoreCase("interval") || args[0].equalsIgnoreCase("int")){
+					}else if("interval".equalsIgnoreCase(args[0]) || "int".equalsIgnoreCase(args[0])){
 						this.setInterval(args, sender);
-					}else if(args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("rand")){
+					}else if("random".equalsIgnoreCase(args[0]) || "rand".equalsIgnoreCase(args[0])){
 						this.setRandom(args, sender);
-					}else if(args[0].equalsIgnoreCase("broadcast") || args[0].equalsIgnoreCase("bc")){
+					}else if("broadcast".equalsIgnoreCase(args[0]) || "bc".equalsIgnoreCase(args[0])){
 						this.broadcastMessage(args[1], sender);
-					}else if(args[0].equalsIgnoreCase("restart") || args[0].equalsIgnoreCase("reload")){
+					}else if("restart".equalsIgnoreCase(args[0]) || "reload".equalsIgnoreCase(args[0])){
 						this.reloadPlugin(sender);
 						this.reloadConfig();
-					}else if(args[0].equalsIgnoreCase("list")){
+					}else if("list".equalsIgnoreCase(args[0])){
 						this.sendMessage(sender, Severity.INFO, "Loaded announcements:");
 						for(final Announcement a : this.announcements){
 							final StringBuilder ann = new StringBuilder(this.announcements.indexOf(a) + ". ");
@@ -451,7 +448,7 @@ public class FrogAnnounce extends JavaPlugin{
 							}
 							this.sendMessage(sender, Severity.INFO, ann.toString());
 						}
-					}else if(args[0].equalsIgnoreCase("add")){
+					}else if("add".equalsIgnoreCase(args[0])){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
 							sb.append(args[i]);
@@ -459,13 +456,15 @@ public class FrogAnnounce extends JavaPlugin{
 						}
 						this.announcements.add(new Announcement(sb.toString().trim(), null, null, null));
 						try{
-							this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
+
+							//this.cfg.updateConfiguration("Announcer.Announcements", this.announcements);
+							this.addAnnouncement(sb.toString().trim());
 							this.sendMessage(sender, Severity.INFO, "Successfully added the announcement \"" + sb.toString().trim() + "\" to the configuration. Reloading config...");
 							this.reloadPlugin(sender);
 						}catch(Exception e){
 							this.sendMessage(sender, Severity.SEVERE, e.getMessage());
 						}
-					}else if(args[0].equalsIgnoreCase("manualbroadcast") || args[0].equalsIgnoreCase("mbc")){
+					}else if("manualbroadcast".equalsIgnoreCase(args[0]) || "mbc".equalsIgnoreCase(args[0])){
 						final StringBuilder sb = new StringBuilder();
 						for(int i = 1; i < args.length; i++){
 							sb.append(args[i]);
@@ -476,26 +475,27 @@ public class FrogAnnounce extends JavaPlugin{
 						}else{
 							this.getServer().broadcastMessage(this.tag + " " + FrogAnnounce.colourizeText(sb.toString().trim()));
 						}
-					}else if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("rem") || args[0].equalsIgnoreCase("del")){
+					}else if("remove".equalsIgnoreCase(args[0]) || "delete".equalsIgnoreCase(args[0]) || "rem".equalsIgnoreCase(args[0]) || "del".equalsIgnoreCase(args[0])){
 						int i;
 						if(args.length == 2){
 							try{
 								i = Integer.parseInt(args[1]);
 								try{
-									this.sendMessage(sender, Severity.INFO, "Removing announcement " + i + " (" + this.announcements.get(i) + ")...");
+									this.sendMessage(sender, Severity.INFO, "Removing announcement " + i + " (" + this.announcements.get(i).toString() + ")...");
 									this.announcements.remove(i);
 									try{
-										this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
+										//this.cfg.updateConfiguration("Announcer.Strings", this.announcements);
+										this.removeAnnouncement(i);
 										this.sendMessage(sender, Severity.INFO, "Announcement " + i + " successfully removed. Reloading configuration...");
 										this.reloadPlugin(sender);
 									}catch(Exception e){
 										this.sendMessage(sender, Severity.SEVERE, e.getMessage());
 									}
 								}catch(final IndexOutOfBoundsException e){
-									this.sendMessage(sender, Severity.WARNING, "Error: There are only " + this.announcements.size() + " announcements. You must count from 0!");
+									this.sendMessage(sender, Severity.WARNING, "Error: There are only " + this.announcements.size() + " announcements. You must count from 0! "+e.getMessage());
 								}
 							}catch(final NumberFormatException e){
-								this.sendMessage(sender, Severity.WARNING, "Please enter an announcement index.");
+								this.sendMessage(sender, Severity.WARNING, "Please enter an announcement index. "+e.getMessage());
 							}
 						}else{
 							this.sendMessage(sender, Severity.WARNING, "You must specify an index to remove.");
@@ -509,11 +509,12 @@ public class FrogAnnounce extends JavaPlugin{
 						}
 					}
 				}catch(final ArrayIndexOutOfBoundsException e){
+					this.sendMessage(sender, Severity.WARNING, e.getMessage());
 					return false;
 				}
 				return true;
 			}else if(args.length >= 1){
-				if(args[0].equalsIgnoreCase("ignore") || args[0].equalsIgnoreCase("optout") || args[0].equalsIgnoreCase("opt-out")){
+				if("ignore".equalsIgnoreCase(args[0]) || "optout".equalsIgnoreCase(args[0]) || "opt-out".equalsIgnoreCase(args[0])){
 					if(args.length == 2){
 						if(this.permit(sender, "frogannounce.optout.other")){
 							this.ignorePlayer(sender, args[1]);
@@ -526,7 +527,7 @@ public class FrogAnnounce extends JavaPlugin{
 						this.sendMessage(sender, Severity.WARNING, "You don't have permission to access that command.");
 					}
 					return true;
-				}else if(args[0].equalsIgnoreCase("unignore") || args[0].equalsIgnoreCase("optin") || args[0].equalsIgnoreCase("opt-in")){
+				}else if("unignore".equalsIgnoreCase(args[0]) || "optin".equalsIgnoreCase(args[0]) || "opt-in".equalsIgnoreCase(args[0])){
 					if(args.length == 2){
 						if(this.permit(sender, "frogannounce.optin.other")){
 							this.unignorePlayer(sender, args[1]);
@@ -553,6 +554,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.turnOff(null);
 		this.unregisterAllAnnouncementListeners();
 		this.sendConsoleMessage(Severity.INFO, "Version " + super.getDescription().getVersion() + " has been disabled.");
+		super.onDisable();
 	}
 
 	@Override
@@ -573,6 +575,7 @@ public class FrogAnnounce extends JavaPlugin{
 		this.r = new Random();
 		this.turnOn(null);
 		this.sendConsoleMessage(Severity.INFO, "Version " + super.getDescription().getVersion() + " by TheLunarFrog has been enabled!");
+		super.onEnable();
 	}
 
 	private boolean permit(final CommandSender sender, final String perm){
@@ -713,7 +716,7 @@ public class FrogAnnounce extends JavaPlugin{
 				this.sendMessage(sender, Severity.INFO, "There's no page " + page + ".");
 			}
 		}catch(final NumberFormatException e){
-			this.sendMessage(sender, Severity.INFO, "You must specify a page - positive integers only.");
+			this.sendMessage(sender, Severity.INFO, "You must specify a page - positive integers only. "+e.getMessage());
 		}
 	}
 
@@ -840,7 +843,7 @@ public class FrogAnnounce extends JavaPlugin{
 	 */
 	public boolean turnOn(CommandSender player){
 		if(!this.running){
-			if(this.announcements.size() > 0){
+			if(!this.announcements.isEmpty()){
 				if(!this.areAllAnnouncementsIndividuallyTimed())
 					this.taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Announcer(this), this.interval * 1200, this.interval * 1200);
 				for(final Announcement a : this.announcements){
@@ -876,18 +879,12 @@ public class FrogAnnounce extends JavaPlugin{
 	 *               to.
 	 */
 	public void unignorePlayer(final CommandSender player, final String other){
-		Player otherPlayer;
+		Player otherPlayer = other.isEmpty() ? (Player)player : this.getServer().getPlayer(other);
 		UUID playerid;
-
-		if(other.isEmpty()){
-			otherPlayer = (Player)player;
-		}else{
-			otherPlayer = this.getServer().getPlayer(other);
-		}
 
 		playerid = otherPlayer.getUniqueId();
 
-		if((otherPlayer != null) && (otherPlayer == player)){
+		if((otherPlayer != null) && (playerid.toString().equalsIgnoreCase(((Player)player).getUniqueId().toString()))){
 			if(this.permit(player, "frogannounce.unignore")){
 				if(this.ignoredPlayers.contains(playerid.toString())){
 					try{
@@ -903,7 +900,7 @@ public class FrogAnnounce extends JavaPlugin{
 			}else{
 				this.sendMessage(player, Severity.WARNING, "You don't have sufficient permission to opt another player back into FrogAnnounce's announcements. Sorry!");
 			}
-		}else if((otherPlayer != null)){
+		}else if(otherPlayer != null){
 			if(this.permit(player, "frogannounce.unignore.other")){
 				if(this.ignoredPlayers.contains(playerid.toString())){
 					try{
@@ -977,12 +974,14 @@ public class FrogAnnounce extends JavaPlugin{
 		}catch(Exception e){
 			this.sendConsoleMessage(Severity.SEVERE, "An exception occurred while getting the configuration: " + e.getMessage());
 		}
+		super.getConfig();
 		return null;
 	}
 
 	@Override
 	public void reloadConfig(){
 		this.updateConfiguration();
+		super.reloadConfig();
 	}
 
 	private void updateConfiguration(){
@@ -1000,8 +999,9 @@ public class FrogAnnounce extends JavaPlugin{
 			this.joinMessage = config.getString("Announcer.joinMessage", "Welcome to the server! Use /help for assistance.");
 			this.showConsoleAnnouncements = config.getBoolean("Settings.showConsoleAnnouncements", false);
 			this.announcements = new ArrayList<Announcement>();
-			int i = 0;
-			while(config.contains("Announcer.Announcements." + (++i))){
+			//int i = 0;
+			for(String i : config.getConfigurationSection("Announcer.Announcements").getKeys(false)){
+			//while(config.contains("Announcer.Announcements." + (++i))){
 				if(config.getBoolean("Announcer.Announcements." + i + ".Enabled", true)){
 					List<String> effectiveWorlds = config.getStringList("Announcer.Announcements." + i + ".Worlds"), effectiveGroups = config.getStringList("Announcer.Announcements." + i + ".Groups");
 
@@ -1042,13 +1042,57 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 	}
 
+	public void addAnnouncement(String text) throws Exception{
+		List<String> worlds = this.cfg.getConfig().getStringList("Announcer.GlobalWorlds"), groups = this.cfg.getConfig().getStringList("Announcer.GlobalGroups");
+		List<Announcement> a = new ArrayList<Announcement>();
+		int i = 0;
+		while(this.cfg.getConfig().contains("Announcer.Announcements." + (++i))){
+			List<String> effectiveWorlds = this.cfg.getConfig().getStringList("Announcer.Announcements." + i + ".Worlds"), effectiveGroups = this.cfg.getConfig().getStringList("Announcer.Announcements." + i + ".Groups");
+
+			if(effectiveWorlds == null){
+				effectiveWorlds = worlds;
+			}else if(worlds != null){
+				for(final String world : worlds){
+					if(!effectiveWorlds.contains(world)){
+						effectiveWorlds.add(world);
+					}
+				}
+			}
+
+			if(effectiveGroups == null){
+				effectiveGroups = groups;
+			}else if(groups != null){
+				for(final String group : groups){
+					if(!effectiveGroups.contains(group)){
+						effectiveGroups.add(group);
+					}
+				}
+			}
+
+			int z;
+			z = this.cfg.getConfig().getInt("Announcer.Announcements." + i + ".Interval", -1);
+			if(z == -1)
+				a.add(new Announcement(this.cfg.getConfig().getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, this.cfg.getConfig().getStringList("Announcer.Announcements." + i + ".Commands")));
+			else
+				a.add(new IndependentAnnouncement(this.cfg.getConfig().getString("Announcer.Announcements." + i + ".Text"), effectiveGroups, effectiveWorlds, this.cfg.getConfig().getStringList("Announcer.Announcements." + i + ".Commands"), z * 60000));
+		}
+		this.cfg.updateConfiguration("Announcer.Announcements." + i + ".Interval", -1);
+		this.cfg.updateConfiguration("Announcer.Announcements." + i + ".Text", text);
+		this.cfg.updateConfiguration("Announcer.Announcements." + i + ".Worlds", new ArrayList<String>());
+		this.cfg.updateConfiguration("Announcer.Announcements." + i + ".Groups", new ArrayList<String>());
+	}
+
+	public void removeAnnouncement(int index) throws Exception{
+		this.cfg.updateConfiguration("Announcer.Announcements."+index, null);
+	}
+
 	public void sendConsoleMessage(Severity severity, String message){
 		this.sendMessage(Bukkit.getConsoleSender(), severity, message);
 	}
 
 	public void updateConfigurationFile(){
 		YamlConfiguration yml = this.getConfig();
-		if(!yml.contains("ConfigVersion") || yml.getInt("ConfigVersion") < 2){
+		if(yml != null && (!yml.contains("ConfigVersion") || yml.getInt("ConfigVersion") < 2)){
 			this.updateConfigFromV1(yml);
 		}
 	}
@@ -1081,10 +1125,7 @@ public class FrogAnnounce extends JavaPlugin{
 			c = s.split("&GROUPS;");
 			if(c.length > 1){
 				z = new ArrayList<String>();
-				if(c[1].contains("&USE-CMD;")){
-					s = c[1].split("&USE-CMD;")[0];
-				}else
-					s = c[1];
+				s = c[1].contains("&USE-CMD;") ? c[1].split("&USE-CMD;")[0] : c[1];
 				c = s.split(",");
 				for(String b : c)
 					z.add(b.trim());
@@ -1095,11 +1136,7 @@ public class FrogAnnounce extends JavaPlugin{
 			c = s.split("&USE-CMD;");
 			if(c.length > 1){
 				z = new ArrayList<String>();
-
-				if(c[1].contains("&GROUPS;")){
-					s = c[1].split("&GROUPS;")[0];
-				}else
-					s = c[1];
+				s = c[1].contains("&GROUPS;") ? c[1].split("&GROUPS;")[0] : c[1];
 				c = s.split(";");
 				for(String b : c)
 					z.add(b.trim());
@@ -1128,6 +1165,16 @@ public class FrogAnnounce extends JavaPlugin{
 		return m[0].split("&GROUPS;")[0];
 	}
 
+	@Override
+	public String toString(){
+		StringBuilder s = new StringBuilder("FrogAnnounce[Announcements: [");
+		for(Announcement a : this.announcements){
+			s.append(a.toString());
+			s.append(", ");
+		}
+		return s.substring(0, s.length()-2)+"]]";
+	}
+
 	class Announcer implements Runnable{
 		private final FrogAnnounce plugin;
 
@@ -1141,7 +1188,13 @@ public class FrogAnnounce extends JavaPlugin{
 		}
 
 		protected Announcer(final FrogAnnounce plugin){
+			super();
 			this.plugin = plugin;
+		}
+
+		@Override
+		public String toString(){
+			return super.toString();
 		}
 	}
 

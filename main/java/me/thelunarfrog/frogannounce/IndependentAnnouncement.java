@@ -7,11 +7,13 @@ import java.util.List;
 public class IndependentAnnouncement extends Announcement implements Runnable{
 	private boolean isRunning;
 	private int timer;
+	private Thread currentThread;
 
 	public IndependentAnnouncement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands, final int time){
 		super(text, groups, worlds, commands);
 		this.isRunning = true;
 		this.timer = time;
+		this.currentThread = null;
 	}
 
 	@SuppressWarnings("unused") // for external use
@@ -30,23 +32,25 @@ public class IndependentAnnouncement extends Announcement implements Runnable{
 
 	public void stop(){
 		this.isRunning = false;
-		Thread.currentThread().interrupt();
+		if(this.currentThread != null)
+			this.currentThread.interrupt();
 	}
 
 	@Override
 	public void run(){
-			try{
-				while(this.isRunning()){
-					Thread.sleep(this.timer);
-					try{
-						super.execute();
-					}catch(InvalidWorldException e){
-						//as much as I'm against I/O in classes, Runnable gives me little choice
-						FrogAnnounce.getInstance().sendConsoleMessage(FrogAnnounce.Severity.SEVERE, e.getMessage());
-					}
+		this.currentThread = Thread.currentThread();
+		try{
+			while(this.isRunning()){
+				Thread.sleep(this.timer);
+				try{
+					super.execute();
+				}catch(InvalidWorldException e){
+					//as much as I'm against I/O in classes, Runnable gives me little choice
+					FrogAnnounce.getInstance().sendConsoleMessage(FrogAnnounce.Severity.SEVERE, e.getMessage());
 				}
-			}catch(InterruptedException e){
-				// do nothing
 			}
+		}catch(InterruptedException e){
+			// do nothing
+		}
 	}
 }

@@ -7,6 +7,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Announcement{
@@ -26,7 +27,7 @@ public class Announcement{
 						if(!ignored.contains(p.getUniqueId().toString()))
 							if(this.groups.isEmpty()){
 								players.add(p);
-							}else if(!players.contains(p) && FrogAnnounce.getInstance().isUsingPermissions()){
+							}else if(!players.contains(p) && FrogAnnounce.getInstance().isUsingPermissions() && FrogAnnounce.getInstance().getVaultPerms() != null){
 								for(final String group : FrogAnnounce.getInstance().getVaultPerms().getPlayerGroups(p))
 									if(this.groups.contains(group)){
 										players.add(p);
@@ -93,6 +94,7 @@ public class Announcement{
 	}
 
 	public Announcement(final String text, final List<String> groups, final List<String> worlds, final List<String> commands){
+		super();
 		this.text = new String[text.split("&NEW_LINE;").length];
 
 		if(this.text.length < 2){
@@ -102,19 +104,13 @@ public class Announcement{
 				this.text[i] = FrogAnnounce.colourizeText(text.split("&NEW_LINE;")[i]);
 		}
 
-		if(groups != null)
-			this.groups = groups;
-		else
-			this.groups = new ArrayList<String>();
+		this.groups = groups != null ? groups : new ArrayList<String>();
+		this.worlds = worlds != null ? worlds : new ArrayList<String>();
+		this.commands = commands != null ? commands : new ArrayList<String>();
+	}
 
-		if(worlds != null)
-			this.worlds = worlds;
-		else
-			this.worlds = new ArrayList<String>();
-
-		if(commands != null)
-			this.commands = commands;
-		else
-			this.commands = new ArrayList<String>();
+	@Override
+	public String toString(){
+		return "Announcement[Text: "+ Arrays.toString(this.getText())+"]";
 	}
 }
