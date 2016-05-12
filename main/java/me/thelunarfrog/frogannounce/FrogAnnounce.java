@@ -379,7 +379,6 @@ public class FrogAnnounce extends JavaPlugin{
 		for(final AnnouncementListener listener : FrogAnnounce.this.getAsyncAnnouncementListeners()){
 			if(listener != null){
 				new Thread(new Runnable(){
-					@Override
 					public void run(){
 						listener.onAnnounceEvent(evt);
 					}
@@ -1178,7 +1177,6 @@ public class FrogAnnounce extends JavaPlugin{
 	class Announcer implements Runnable{
 		private final FrogAnnounce plugin;
 
-		@Override
 		public void run(){
 			try{
 				this.plugin.announce(-1, true);
