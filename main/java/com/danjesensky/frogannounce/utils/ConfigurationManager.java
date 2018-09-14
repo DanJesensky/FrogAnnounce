@@ -67,7 +67,7 @@ public class ConfigurationManager {
     public Announcement getAnnouncement(String index){
         Announcement a;
         int interval = this.config.getInt("Announcer.Announcements."+index+".Interval");
-        String text = this.config.getString("Announcer.Announcements."+index+".Text");
+        String text = StringUtils.recolorText(this.config.getString("Announcer.Announcements."+index+".Text"));
 
         if(interval <= 0){
             a = new QueuedAnnouncement(index, text);
