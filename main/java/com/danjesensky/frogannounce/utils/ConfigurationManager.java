@@ -6,6 +6,7 @@ import com.danjesensky.frogannounce.QueuedAnnouncement;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.StringUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -65,9 +66,20 @@ public class ConfigurationManager {
     }
 
     public Announcement getAnnouncement(String index){
+        String key = "Announcer.Announcements."+index;
+        if(!this.config.getBoolean(key+".Enabled", true)){
+            return null;
+        }
+
         Announcement a;
-        int interval = this.config.getInt("Announcer.Announcements."+index+".Interval");
-        String text = StringUtils.recolorText(this.config.getString("Announcer.Announcements."+index+".Text"));
+        String text;
+        String tag = StringUtils.recolorText(this.config.getString("Announcer.Tag", "&DARK_GREEN;[FrogAnnounce]"));
+        int interval = this.config.getInt(key+".Interval");
+        text = StringUtils.recolorText(this.config.getString("Announcer.Announcements."+index+".Text"));
+
+        if(this.config.getBoolean(key+".Tag", true)){
+            text = tag + text;
+        }
 
         if(interval <= 0){
             a = new QueuedAnnouncement(index, text);
