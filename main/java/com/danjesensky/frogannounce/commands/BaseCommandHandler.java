@@ -92,7 +92,7 @@ public class BaseCommandHandler implements CommandExecutor {
     }
 
     private void checkPermissions(CommandSender sender, String node) throws InsufficientPermissionsException {
-        if(!sender.hasPermission("") && !(sender instanceof ConsoleCommandSender)){
+        if(!(sender instanceof ConsoleCommandSender) && !sender.hasPermission(node)){
             throw new InsufficientPermissionsException(sender, "Lacking permission \""+node+"\"; access denied.");
         }
     }
