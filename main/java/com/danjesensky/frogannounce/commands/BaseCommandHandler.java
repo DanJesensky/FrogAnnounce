@@ -35,64 +35,78 @@ public class BaseCommandHandler implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         //I'll implement real permissions later
         try {
-            checkPermissions(sender, "frogannounce.*");
+            if (args.length == 0 || StringUtils.anyEqualIgnoreCase(args[0], "help", "h", "?")) {
+                sender.sendMessage("/fa reload: Reload the plugin");
+                return true;
+            }
+
+            //Reload
+            if (StringUtils.anyEqualIgnoreCase(args[0], "reload", "r")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.reload.onCommand(sender, command, label, args);
+            }
+
+            //Enable
+            if (StringUtils.anyEqualIgnoreCase(args[0], "enable", "on")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.enable.onCommand(sender, command, label, args);
+            }
+
+            //Disable
+            if (StringUtils.anyEqualIgnoreCase(args[0], "disable", "off")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.disable.onCommand(sender, command, label, args);
+            }
+
+            //List
+            if (StringUtils.anyEqualIgnoreCase(args[0], "list", "l", "show", "s")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.show.onCommand(sender, command, label, args);
+            }
+
+            //Add
+            if (StringUtils.anyEqualIgnoreCase(args[0], "add", "a")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.add.onCommand(sender, command, label, args);
+            }
+
+            //Remove
+            if (StringUtils.anyEqualIgnoreCase(args[0], "remove", "rm", "del")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.remove.onCommand(sender, command, label, args);
+            }
+
+            //Ignore
+            if (StringUtils.anyEqualIgnoreCase(args[0], "ignore", "optout")) {
+                checkPermissions(sender, "frogannounce.optout", "frogannounce.*");
+                return false; //NYI
+            }
+
+            //Unignore
+            if (StringUtils.anyEqualIgnoreCase(args[0], "unignore", "optin")) {
+                checkPermissions(sender, "frogannounce.optin", "frogannounce.*");
+                return false; //NYI
+            }
         }catch(InsufficientPermissionsException e){
             sender.sendMessage(e.getMessage());
             this.logger.log(Level.INFO, sender.getName()+": "+e.getMessage());
             return true;
         }
 
-        if(args.length == 0 || StringUtils.anyEqualIgnoreCase(args[0], "help", "h", "?")){
-            sender.sendMessage("/fa reload: Reload the plugin");
-            return true;
-        }
-
-        //Reload
-        if(StringUtils.anyEqualIgnoreCase(args[0], "reload", "r")){
-            return this.reload.onCommand(sender, command, label, args);
-        }
-
-        //Enable
-        if(StringUtils.anyEqualIgnoreCase(args[0], "enable", "on")){
-            return this.enable.onCommand(sender, command, label, args);
-        }
-
-        //Disable
-        if(StringUtils.anyEqualIgnoreCase(args[0], "disable", "off")){
-            return this.disable.onCommand(sender, command, label, args);
-        }
-
-        //List
-        if(StringUtils.anyEqualIgnoreCase(args[0], "list", "l", "show", "s")){
-            return this.show.onCommand(sender, command, label, args);
-        }
-
-        //Add
-        if(StringUtils.anyEqualIgnoreCase(args[0], "add", "a")){
-            return this.add.onCommand(sender, command, label, args);
-        }
-
-        //Remove
-        if(StringUtils.anyEqualIgnoreCase(args[0], "remove", "rm", "del")){
-            return this.remove.onCommand(sender, command, label, args);
-        }
-
-        //Ignore
-        if(StringUtils.anyEqualIgnoreCase(args[0], "ignore", "optout")){
-            return false; //NYI
-        }
-
-        //Unignore
-        if(StringUtils.anyEqualIgnoreCase(args[0], "unignore", "optin")){
-            return false; //NYI
-        }
-
         return false;
     }
 
-    private void checkPermissions(CommandSender sender, String node) throws InsufficientPermissionsException {
-        if(!(sender instanceof ConsoleCommandSender) && !sender.hasPermission(node)){
-            throw new InsufficientPermissionsException(sender, "Lacking permission \""+node+"\"; access denied.");
+    private void checkPermissions(CommandSender sender, String... nodes) throws InsufficientPermissionsException {
+        if(sender instanceof ConsoleCommandSender){
+            return;
         }
+
+        for(String node: nodes) {
+            if (sender.hasPermission(node)){
+                return;
+            }
+        }
+
+        throw new InsufficientPermissionsException(sender, "Lacking permission; access denied.");
     }
 }
