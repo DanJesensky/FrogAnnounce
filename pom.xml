@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Project Information -->
-    <version>2.6.0-SNAPSHOT</version>
-    <groupId>me.thelunarfrog.frogannounce</groupId>
+    <version>3.0.0-SNAPSHOT</version>
+    <groupId>com.danjesensky.frogannounce</groupId>
     <artifactId>FrogAnnounce</artifactId>
     <name>FrogAnnounce</name>
     <description>An automatic announcement plugin for Minecraft Bukkit servers.</description>
@@ -81,6 +81,11 @@
             <artifactId>spigot-api</artifactId>
             <version>1.13.1-R0.1-SNAPSHOT</version>
             <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.11.1</version>
         </dependency>
         <!--Vault - Optional -->
         <dependency>
