@@ -7,8 +7,9 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class AddCommand implements CommandExecutor {
     private FrogAnnounce plugin;
@@ -31,7 +32,10 @@ public class AddCommand implements CommandExecutor {
         this.plugin.getConfigurationManager().setValue(key+".Text", StringUtils.join(1, " ", args));
         try {
             this.plugin.getConfigurationManager().save();
-        }catch(Exception ex){}
+        }catch(IOException ex){
+            sender.sendMessage("Failed to save configuration: "+ ex.getMessage());
+            this.plugin.getLogger().log(Level.SEVERE, "Failed to save configuration. Check permissions on files and directories. ", ex);
+        }
         this.reload.onCommand(sender, command, label, args);
         return true;
     }
