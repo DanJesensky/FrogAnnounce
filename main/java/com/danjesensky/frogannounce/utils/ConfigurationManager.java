@@ -44,7 +44,7 @@ public class ConfigurationManager {
         if (!dataDir.exists() && !dataDir.mkdir()) {
             throw new IOException("Failed to create the directory for configuration.");
         }
-        try (final InputStream fis = ConfigurationManager.class.getResourceAsStream("/resources/Configuration.yml");
+        try (final InputStream fis = ConfigurationManager.class.getResourceAsStream("/resources/config.yml");
              final FileOutputStream fos = new FileOutputStream(configFile)) {
 
             byte[] buffer = new byte[1024];
