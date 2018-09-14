@@ -3,12 +3,10 @@ package com.danjesensky.frogannounce.commands;
 import com.danjesensky.frogannounce.FrogAnnounce;
 import com.danjesensky.frogannounce.exceptions.InsufficientPermissionsException;
 import com.danjesensky.frogannounce.utils.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.util.StringUtil;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -24,6 +22,7 @@ public class BaseCommandHandler implements CommandExecutor {
 
     public BaseCommandHandler(FrogAnnounce plugin, Logger logger){
         this.logger = logger;
+
         this.reload = new ReloadCommand(plugin);
         this.enable = new EnableCommand(plugin);
         this.disable = new DisableCommand(plugin);

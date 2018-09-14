@@ -87,14 +87,6 @@
             <artifactId>log4j-core</artifactId>
             <version>2.11.1</version>
         </dependency>
-        <!--Vault - Optional -->
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.5.6</version>
-            <type>jar</type>
-            <optional>true</optional>
-        </dependency>
         <!-- JUnit - test scope -->
         <dependency>
             <groupId>junit</groupId>
