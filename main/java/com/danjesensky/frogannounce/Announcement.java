@@ -27,15 +27,4 @@ public abstract class Announcement {
     public String toString(){
         return "Announcement["+this.text+"]";
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Announcement){
-            return ((Announcement)obj).key.equalsIgnoreCase(this.key);
-        }
-        if(obj instanceof String){
-            return this.key.equalsIgnoreCase((String)obj);
-        }
-        return false;
-    }
 }
