@@ -8,6 +8,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -25,7 +26,14 @@ public class AddCommand implements CommandExecutor {
         String key;
         List<Announcement> announcements = this.plugin.getConfigurationManager().getAnnouncements();
         int index = -1;
-        while(announcements.contains((++index)+"")) plugin.getLogger().info("index: "+index);
+
+        List<String> keys = new LinkedList<>();
+        for(Announcement a: announcements){
+            keys.add(a.getKey());
+        }
+
+        while(keys.contains(String.valueOf(++index)));
+
         key = "Announcer.Announcements." +index;
 
         this.plugin.getConfigurationManager().setValue(key+".Interval", -1);
