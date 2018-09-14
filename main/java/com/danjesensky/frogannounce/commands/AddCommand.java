@@ -32,6 +32,7 @@ public class AddCommand implements CommandExecutor {
         this.plugin.getConfigurationManager().setValue(key+".Text", StringUtils.join(1, " ", args));
         try {
             this.plugin.getConfigurationManager().save();
+            sender.sendMessage("[FrogAnnounce] Announcement "+key+" was added successfully.");
         }catch(IOException ex){
             sender.sendMessage("Failed to save configuration: "+ ex.getMessage());
             this.plugin.getLogger().log(Level.SEVERE, "Failed to save configuration. Check permissions on files and directories. ", ex);
