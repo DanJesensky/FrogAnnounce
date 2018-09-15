@@ -1,11 +1,13 @@
 package com.danjesensky.frogannounce.commands;
 
+import com.danjesensky.frogannounce.Announcement;
 import com.danjesensky.frogannounce.FrogAnnounce;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.logging.Level;
 
 public class RemoveCommand implements CommandExecutor {
@@ -19,12 +21,16 @@ public class RemoveCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        String key = this.plugin.getAnnouncer().getAnnouncements().get(Integer.parseInt(args[1])).getKey();
-        this.plugin.getConfigurationManager().setValue("Announcer.Announcements."+key, null);
+        if(args.length != 1){
+            sender.sendMessage("Usage: /fa remove [announcement-id]");
+            return true;
+        }
+
+        this.plugin.getConfigurationManager().setValue("Announcer.Announcements."+args[0], null);
 
         try {
             this.plugin.getConfigurationManager().save();
-            sender.sendMessage("[FrogAnnounce] Announcement "+key+" was removed successfully.");
+            sender.sendMessage("[FrogAnnounce] Announcement "+args[0]+" was removed successfully.");
         }catch(IOException ex){
             sender.sendMessage("Failed to save configuration: "+ ex.getMessage());
             this.plugin.getLogger().log(Level.SEVERE, "Failed to save configuration. Check permissions on files and directories. ", ex);
