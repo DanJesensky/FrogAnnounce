@@ -48,6 +48,6 @@ public class Announcer implements Runnable {
             }while(a instanceof IndependentAnnouncement);
         }
 
-        a.invoke();
+        a.run();
     }
 }

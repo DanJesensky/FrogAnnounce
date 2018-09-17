@@ -18,7 +18,7 @@ public class ManualAnnouncement extends Announcement {
     }
 
     public void invoke(){
-        super.invoke();
+        super.run();
         this.plugin.getLogger().info(sender.getName()+" has invoked a manual broadcast: "+super.getText());
     }
 }

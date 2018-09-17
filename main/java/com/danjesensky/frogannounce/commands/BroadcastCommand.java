@@ -25,7 +25,7 @@ public class BroadcastCommand implements CommandExecutor {
         List<Announcement> announcements = this.plugin.getAnnouncer().getAnnouncements();
         for(Announcement announcement: announcements){
             if(announcement.getKey().equalsIgnoreCase(StringUtils.join(1, " ", args))){
-                announcement.invoke();
+                announcement.run();
                 return true;
             }
         }
