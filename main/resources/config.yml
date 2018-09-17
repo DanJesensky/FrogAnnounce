@@ -4,27 +4,6 @@ Settings:
     Permission: true
     displayMessageOnJoin: false
     showConsoleAnnouncements: false
-#############################################################################################################
-#                                                                                                           #
-#                                        ############                                                       #
-#                                       #Please READ:#                                                      #
-#                                        ############                                                       #
-#The announcer's announcements section is a new section, and is configured FAR differently than the old.    #
-#                                                                                                           #
-#In the end, the change was a necessary evil. I know I will get rage comments about how the configuration   #
-#structure is now to complex or something of the sort, but hey -- it was automatically migrated for you, at #
-#least!                                                                                                     #
-#                                                                                                           #
-#With the version this change happened (2.3.0), there comes the ability to restrict all announcements to    #
-#certain groups, along with the ability to specify for each announcement -- so, say you want Administrators #
-#to get every announcement, you add them to the GlobalGroups list. If you the Donators group to only see    #
-#have announcement 2, you'd specify that in announcement 2's groups list.                                   #
-#                                                                                                           #
-#In addition to the groups change, there's now the ability to restrict announcements to specific worlds.    #
-#There's a GlobalWorlds setting for this, too, as well as specific worlds for each announcement, as the     #
-#groups system works (see above paragraph).                                                                 #
-#                                                                                                           #
-#############################################################################################################
 Announcer:
     Tag: '&DARK_GREEN;[FrogAnnounce] '
     JoinMessage: 'Welcome to the server! Use /help for assistance.'
