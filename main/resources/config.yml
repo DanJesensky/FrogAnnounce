@@ -13,21 +13,19 @@ Announcer:
     GlobalWorlds:
         - world
     Announcements:
-        #Announcements are now numbered. Note that the numbers start at 1, and increment by 1.
-        #Skipping numbers (i.e. 1, 2, 3, 4, 6) will result in any after the sequence is broken to go unnoticed
-        #by the plugin.
+        #Announcements are now keyed. They don't need to be numbered or sequential.
         1:
             #Enabled: not necessary. If you wish to disable an announcement so that the plugin will no longer announce it or store it in memory, add this key and set set it to false.
             Enabled: true
-            #Text: The text to be announced. Colour codes work as before.
-            Text: '&4;Hi.'
+            #Text: The text to be announced. Colour codes work, but should be followed by a semicolon.
+            Text: '&4;Hello!'
             #Specifying an interval makes this announcement independent. If the interval is 1, it will announce once every minute, no matter what.
             #Groups, Worlds, GlobalGroups, and GlobalWorlds filters will still apply. Marking an announcement as independent will not prevent or delay other announcements.
-            #For example, if the default config is left as is, it will announce "Hi." four times before saying both "Hi." and "Moo."
+            #For example, if the default config is left as is, it will announce announcements 1 and 2, then 1 three times before both 1 and 2 again.
             #If you're confused or for more information on this, comment on the FrogAnnounce BukkitDev page.
             Interval: 1
         2:
-            Text: '&DARK_GREEN;Moo.'
+            Text: '&DARK_GREEN;Please configure FrogAnnounce.'
             #Specific groups.
             #To make it so that ONLY this announcement is seen by certain groups of people, add those groups here.
             #Groups included in GlobalGroups will also receive the announcement.
@@ -52,7 +50,7 @@ Announcer:
         5:
             Text: 'Running a command synchronously with this announcement.'
             #Example of a command.
-            #Obviously, you should change it. I don't want 64 stone every 25 minutes if I log into your server. Please.
+            #Obviously, you should change it. I don't want 64 stone every 20 minutes if I log into your server. Please.
             #Commands will be run after the text is announced. Obviously, there is no limiting a command's effects to
             #certain groups or worlds, as it is out of a foreign plugin's ability, and must be done by the plugin which that
             #action is performed by.
