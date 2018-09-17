@@ -17,7 +17,7 @@ public class ManualBroadcastCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        new ManualAnnouncement(sender, this.plugin.getLogger(), StringUtils.join(1, " ", args)).invoke();
+        new ManualAnnouncement(plugin, sender, StringUtils.join(1, " ", args)).invoke();
         return true;
     }
 }

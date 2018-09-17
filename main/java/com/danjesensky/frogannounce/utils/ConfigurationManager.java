@@ -70,12 +70,11 @@ public class ConfigurationManager {
 
         Announcement a;
         String text;
-        String tag = StringUtils.recolorText(this.config.getString("Announcer.Tag", "&DARK_GREEN;[FrogAnnounce]"));
         int interval = this.config.getInt(key+".Interval");
         text = this.config.getString("Announcer.Announcements."+index+".Text");
 
         if(this.config.getBoolean(key+".Tag", true)){
-            text = tag + text;
+            text = this.getTag() + text;
         }
 
         if(interval <= 0){
@@ -103,5 +102,9 @@ public class ConfigurationManager {
 
     public boolean isRandom(){
         return this.config.getBoolean("Settings.Random", false);
+    }
+
+    public String getTag(){
+        return StringUtils.recolorText(this.config.getString("Announcer.Tag", "&DARK_GREEN;[FrogAnnounce]"));
     }
 }
