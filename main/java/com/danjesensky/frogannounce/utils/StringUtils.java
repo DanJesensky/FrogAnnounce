@@ -62,6 +62,10 @@ public class StringUtils {
     }
 
     public static String join(int startingIndex, String delimiter, String... array){
+        if(array.length - startingIndex == 1){
+            return array[startingIndex];
+        }
+
         StringBuilder sb = new StringBuilder();
         for(int i = startingIndex; i < array.length; i++) {
             sb.append(array[i]);
