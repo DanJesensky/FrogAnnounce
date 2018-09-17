@@ -72,7 +72,7 @@ public class ConfigurationManager {
         String text;
         String tag = StringUtils.recolorText(this.config.getString("Announcer.Tag", "&DARK_GREEN;[FrogAnnounce]"));
         int interval = this.config.getInt(key+".Interval");
-        text = StringUtils.recolorText(this.config.getString("Announcer.Announcements."+index+".Text"));
+        text = this.config.getString("Announcer.Announcements."+index+".Text");
 
         if(this.config.getBoolean(key+".Tag", true)){
             text = tag + text;

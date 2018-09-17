@@ -1,5 +1,6 @@
 package com.danjesensky.frogannounce.infrastructure.announcements;
 
+import com.danjesensky.frogannounce.utils.StringUtils;
 import org.bukkit.Bukkit;
 
 public abstract class Announcement {
@@ -8,7 +9,7 @@ public abstract class Announcement {
 
     public Announcement(String key, String text){
         this.key = key;
-        this.text = text;
+        this.text = StringUtils.recolorText(text);
     }
 
     public String getText(){
