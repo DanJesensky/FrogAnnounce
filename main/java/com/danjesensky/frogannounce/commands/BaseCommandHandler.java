@@ -20,6 +20,7 @@ public class BaseCommandHandler implements CommandExecutor {
     private AddCommand add;
     private RemoveCommand remove;
     private BroadcastCommand broadcast;
+    private ManualBroadcastCommand manualBroadcast;
 
     public BaseCommandHandler(FrogAnnounce plugin, Logger logger){
         this.logger = logger;
@@ -31,6 +32,7 @@ public class BaseCommandHandler implements CommandExecutor {
         this.add = new AddCommand(plugin, this.reload);
         this.remove = new RemoveCommand(plugin, this.reload);
         this.broadcast = new BroadcastCommand(plugin);
+        this.manualBroadcast = new ManualBroadcastCommand(plugin);
     }
 
     @Override
@@ -82,6 +84,12 @@ public class BaseCommandHandler implements CommandExecutor {
             if (StringUtils.anyEqualIgnoreCase(args[0], "broadcast", "bc")) {
                 checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
                 return this.broadcast.onCommand(sender, command, label, args);
+            }
+
+            //Manual Broadcast
+            if (StringUtils.anyEqualIgnoreCase(args[0], "manualbroadcast", "mbc")) {
+                checkPermissions(sender, "frogannounce.admin", "frogannounce.*");
+                return this.manualBroadcast.onCommand(sender, command, label, args);
             }
 
             //Ignore
