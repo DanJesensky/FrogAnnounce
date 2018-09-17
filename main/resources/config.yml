@@ -1,7 +1,6 @@
 Settings:
     Interval: 5
     Random: false
-    Permission: true
     displayMessageOnJoin: false
     showConsoleAnnouncements: false
 Announcer:
