@@ -1,4 +1,4 @@
-package com.danjesensky.frogannounce;
+package com.danjesensky.frogannounce.infrastructure.announcements;
 
 import org.bukkit.Bukkit;
 

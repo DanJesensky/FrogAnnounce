@@ -1,8 +1,9 @@
 package com.danjesensky.frogannounce;
 
+import com.danjesensky.frogannounce.infrastructure.announcements.Announcement;
+import com.danjesensky.frogannounce.infrastructure.announcements.IndependentAnnouncement;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 

@@ -1,12 +1,9 @@
 package com.danjesensky.frogannounce.commands;
 
 import com.danjesensky.frogannounce.FrogAnnounce;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
-import java.util.logging.Level;
 
 public class ReloadCommand implements CommandExecutor {
     private FrogAnnounce plugin;

@@ -1,4 +1,6 @@
-package com.danjesensky.frogannounce;
+package com.danjesensky.frogannounce.infrastructure.announcements;
+
+import com.danjesensky.frogannounce.infrastructure.announcements.Announcement;
 
 public class IndependentAnnouncement extends Announcement {
     private int interval;

@@ -1,12 +1,11 @@
 package com.danjesensky.frogannounce.utils;
 
-import com.danjesensky.frogannounce.Announcement;
-import com.danjesensky.frogannounce.IndependentAnnouncement;
-import com.danjesensky.frogannounce.QueuedAnnouncement;
+import com.danjesensky.frogannounce.infrastructure.announcements.Announcement;
+import com.danjesensky.frogannounce.infrastructure.announcements.IndependentAnnouncement;
+import com.danjesensky.frogannounce.infrastructure.announcements.QueuedAnnouncement;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.StringUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,10 +18,8 @@ public class ConfigurationManager {
     private YamlConfiguration config;
     private final File dataDir;
     private final File configFile;
-    private final JavaPlugin plugin;
 
     public ConfigurationManager(JavaPlugin plugin) throws IOException, InvalidConfigurationException {
-        this.plugin = plugin;
         this.dataDir = plugin.getDataFolder();
         this.configFile = new File(dataDir, "config.yml");
         this.loadConfig();

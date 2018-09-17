@@ -1,6 +1,6 @@
 package com.danjesensky.frogannounce.commands;
 
-import com.danjesensky.frogannounce.Announcement;
+import com.danjesensky.frogannounce.infrastructure.announcements.Announcement;
 import com.danjesensky.frogannounce.FrogAnnounce;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
