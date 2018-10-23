@@ -19,16 +19,16 @@ public class RemoveCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if(args.length != 1){
+        if(args.length != 2){
             sender.sendMessage("Usage: /fa remove [announcement-id]");
             return true;
         }
 
-        this.plugin.getConfigurationManager().setValue("Announcer.Announcements."+args[0], null);
+        this.plugin.getConfigurationManager().setValue("Announcer.Announcements."+args[1], null);
 
         try {
             this.plugin.getConfigurationManager().save();
-            sender.sendMessage("[FrogAnnounce] Announcement "+args[0]+" was removed successfully.");
+            sender.sendMessage("[FrogAnnounce] Announcement "+args[1]+" was removed successfully.");
         }catch(IOException ex){
             sender.sendMessage("Failed to save configuration: "+ ex.getMessage());
             this.plugin.getLogger().log(Level.SEVERE, "Failed to save configuration. Check permissions on files and directories. ", ex);
